@@ -1,0 +1,21 @@
+services:
+  gateway:
+    container_name: ignition
+    image: inductiveautomation/ignition:latest
+    ports:
+      - 9088:8088
+      - 9043:8043
+    # volumes:
+    #   - ./data:/usr/local/bin/ignition/data
+    environment:
+      - IGNITION_UID=0
+      - IGNITION_GID=0
+      - ACCEPT_IGNITION_EULA=Y
+      - GATEWAY_ADMIN_USERNAME=admin
+      - GATEWAY_ADMIN_PASSWORD=password
+      - IGNITION_EDITION=maker
+      - TZ=Europe/Bratislava
+    command:
+     - wrapper.java.maxmemory=2048
+    network_mode: bridge
+    restart: unless-stopped

@@ -1,3 +1,5 @@
-docker/ignition/data
+.env
+notes.txt
+docker/ignition/projects
 docker/mysql/databases
 docker/portainer/data

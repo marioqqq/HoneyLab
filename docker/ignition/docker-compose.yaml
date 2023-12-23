@@ -5,15 +5,15 @@ services:
     ports:
       - 9088:8088
       - 9043:8043
-    # volumes:
-    #   - ./data:/usr/local/bin/ignition/data
+    volumes:
+      - ./projects:/usr/local/bin/ignition/data/projects
     environment:
-      - IGNITION_UID=0
-      - IGNITION_GID=0
       - ACCEPT_IGNITION_EULA=Y
-      - GATEWAY_ADMIN_USERNAME=admin
-      - GATEWAY_ADMIN_PASSWORD=password
-      - IGNITION_EDITION=maker
+      - GATEWAY_ADMIN_USERNAME=${GATEWAY_ADMIN_USERNAME}
+      - GATEWAY_ADMIN_PASSWORD=${GATEWAY_ADMIN_PASSWORD}
+      - IGNITION_LICENSE_KEY=${IGNITION_LICENSE_KEY}
+      - IGNITION_ACTIVATION_TOKEN=${IGNITION_ACTIVATION_TOKEN}
+      - IGNITION_EDITION=maker #standard, edge, or maker
       - TZ=Europe/Bratislava
     command:
      - wrapper.java.maxmemory=2048

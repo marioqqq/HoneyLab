@@ -18,7 +18,7 @@ This repository is a collection of services that I use. Purpose of this reposito
 - [3. To end](#3-to-end)
 - [TODO](#todo)
 
-## 1. My network configuration
+## 1. My configuration
 <div class="network" align="center">
     <img src="./img/network.drawio.png" width="50%" alt="network">
 </div>
@@ -70,8 +70,9 @@ When you are done, you can exit the menu with `Cancel`. After that, you will be 
 ## TODO
 - [x] Make `run.sh` running at least partially
 - [x] Run few docker containers
-- [ ] Make `readme.md`
+- [x] Make `readme.md`
 - [ ] Redo network diagram
+- [ ] Make service diagram
 - [ ] Finish `run.sh`
 - [ ] Add additional services
 - [ ] Make Docker-Compose work with option to edit variables

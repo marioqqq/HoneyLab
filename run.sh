@@ -28,7 +28,7 @@ installServicesFunction(){
 
     # Create checklist
     local selectedApps=$(dialog --title "Services Installation" --checklist \
-        "Choose the services you want to install\nPress 'Space' to select\n* - Currently not used\n** - After all installations it recommend to reboot the device" 20 78 5 \
+        "Choose the services you want to install\nPress 'Space' to select\n* - Currently not used\n** - After all installations it is recommended to reboot the device" 20 78 5 \
         "${checklistArgs[@]}" 3>&1 1>&2 2>&3)
 
     clear
@@ -47,7 +47,7 @@ installServicesFunction(){
                 case $app in
                     "Docker")
                         if ! dpkg -l | grep -q "docker.io"; then
-                             sudo apt install docker.io -y
+                            sudo apt install docker.io -y
                         else
                             echo "Docker already installed."
                             sleep 2
@@ -95,11 +95,11 @@ menu(){
             ["1"]="Post Installation Updates"
             ["2"]="Install Services"
             ["3"]="Run Docker-Compose"
-            ["4"]="ArgonOne configuration (if installed)"
+            ["4"]="ArgonOne Configuration (if installed)"
         )
 
         # Create menu
-        CHOICE=$(dialog --title "Menu Title" \
+        CHOICE=$(dialog --title "Menu" \
                 --menu "Choose one option:" 15 50 3 \
                 "1" "${menuOptions["1"]}" \
                 "2" "${menuOptions["2"]}" \

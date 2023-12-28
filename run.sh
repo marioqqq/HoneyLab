@@ -45,11 +45,29 @@ installServicesFunction(){
             # Install selected apps
             for app in "${selected[@]}"; do
                 case $app in
-                    "Docker") sudo apt install docker.io -y;;
-                    "Docker-Compose") sudo apt install docker-compose -y;;
+                    "Docker")
+                        if ! dpkg -l | grep -q "docker.io"; then
+                             sudo apt install docker.io -y
+                        else
+                            echo "Docker already installed."
+                            sleep 2
+                        fi;;
+                    "Docker-Compose")
+                        if ! dpkg -l | grep -q "docker-compose"; then
+                            sudo apt install docker-compose -y
+                        else
+                            echo "Docker-Compose already installed."
+                            sleep 2
+                        fi;;
                     "PiVPN") echo "Currently not used";;
-                    "ArgonOne") echo 'Rebooting';;
-                    *) echo "Unknown option: $app";;
+                    "ArgonOne") 
+                        if ! [ -d "/etc/argon" ]; then
+                                curl https://download.argon40.com/argon1.sh | bash
+                            else
+                                echo "ArgonOne already installed."
+                                sleep 2
+                            fi;;
+                        *) echo "Unknown option: $app";;
                 esac
             done
             clear
@@ -77,6 +95,7 @@ menu(){
             ["1"]="Post Installation Updates"
             ["2"]="Install Services"
             ["3"]="Run Docker-Compose"
+            ["4"]="ArgonOne configuration (if installed)"
         )
 
         # Create menu
@@ -85,6 +104,7 @@ menu(){
                 "1" "${menuOptions["1"]}" \
                 "2" "${menuOptions["2"]}" \
                 "3" "${menuOptions["3"]}" \
+                "4" "${menuOptions["4"]}" \
                 3>&1 1>&2 2>&3)
 
         # Close dialog
@@ -109,6 +129,10 @@ menu(){
                             # Run docker-compose
                             echo "Docker Compose" # Future implementation
                             ;;
+                        "4")
+                            # Run ArgonOne configuration
+                            argonone-config
+                            ;;
                         *)
                             echo "No valid option selected"
                             ;;
@@ -123,16 +147,16 @@ menu(){
 }
 
 # Start
-# sudo apt install dialog -y # check if dialog is installed
+if ! dpkg -l | grep -q "dialog"; then
+    sudo apt install dialog -y
+fi
 
 # Main
 menu
 
 # Close
 if dialog --title "Exit and reboot" --yesno "Do you want to reboot?" 8 40; then
-    # sudo reboot
-    clear
-    echo "Rebooting"
+    sudo reboot
 else
     clear
     echo "Canceled by user."

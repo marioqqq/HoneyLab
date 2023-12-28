@@ -1,5 +1,6 @@
 .env
 notes.txt
+docker/duckdns/config
 docker/ignition/projects
 docker/mysql/databases
 docker/portainer/data

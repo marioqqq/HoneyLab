@@ -13,7 +13,7 @@ services:
       - GATEWAY_ADMIN_PASSWORD=${GATEWAY_ADMIN_PASSWORD}
       - IGNITION_LICENSE_KEY=${IGNITION_LICENSE_KEY}
       - IGNITION_ACTIVATION_TOKEN=${IGNITION_ACTIVATION_TOKEN}
-      - IGNITION_EDITION=maker #standard, edge, or maker
+      - IGNITION_EDITION=${IGNITION_EDITION} #standard, edge, or maker
       - TZ=Europe/Bratislava
     command:
      - wrapper.java.maxmemory=2048

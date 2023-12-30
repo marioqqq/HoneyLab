@@ -1,0 +1,13 @@
+services:
+  octoprint:
+    container_name: octoprint
+    image: octoprint/octoprint:latest
+    ports:
+      - 9000:80
+    devices:
+     - /dev/ttyACM0:/dev/ttyACM0
+    volumes:
+     - ./uploads:/octoprint/octoprint/uploads
+     - ./plugins:/octoprint/plugins
+    network_mode: bridge
+    restart: unless-stopped

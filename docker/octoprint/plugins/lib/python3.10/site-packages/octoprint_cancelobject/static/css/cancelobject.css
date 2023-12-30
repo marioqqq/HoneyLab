@@ -1,0 +1,50 @@
+.entry-cancel {
+	display: inline-block;
+	padding: 5px;
+	width: 100%;
+	position: relative;
+}
+
+.entrylabel {
+	font-size: 150%;
+}
+
+.cancel-btn {
+	top: 2px;
+	right: 5px;
+	position: absolute;
+}
+
+.activeobject {
+	border-color: red;
+	border-width: 2px;
+	border-style: solid;
+        display: inline-block;
+	padding: 5px;
+	width: 100%;
+	position: relative;
+}
+
+div.entries > div:nth-of-type(odd) {
+    background-color: transparent;
+}
+
+div.entries > div:nth-of-type(even) {
+    background-color: transparent;
+}
+
+div.gcode_canvas_wrapper1 {
+  position: relative;
+}
+
+#gcode_canvas {
+  position: relative;
+}
+
+#gcode_canvas_cancel_overlay {
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+

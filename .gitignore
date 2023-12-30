@@ -3,4 +3,5 @@ notes.txt
 docker/duckdns/config
 docker/ignition/projects
 docker/mysql/databases
+docker/octoprint/uploads
 docker/portainer/data

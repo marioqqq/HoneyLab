@@ -4,10 +4,12 @@ services:
     image: octoprint/octoprint:latest
     ports:
       - 9000:80
-    devices:
-     - /dev/ttyACM0:/dev/ttyACM0
+    environment:
+      - TZ=Eurepe/Bratislava
     volumes:
      - ./uploads:/octoprint/octoprint/uploads
      - ./plugins:/octoprint/plugins
+    devices:
+     - /dev/ttyACM0:/dev/ttyACM0
     network_mode: bridge
     restart: unless-stopped

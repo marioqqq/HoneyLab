@@ -1,0 +1,16 @@
+services:
+  service-name:
+    container_name: name
+    image: image/image:latest
+    ports:
+      - 0:0
+    environment:
+      - TZ=Eurepe/Bratislava
+    volumes:
+      - /volume:/volume
+    devices:
+      - device:device
+    command:
+      - command
+    network_mode: bridge
+    restart: unless-stopped

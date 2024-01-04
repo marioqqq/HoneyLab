@@ -5,8 +5,6 @@ services:
     ports:
       - 9088:8088
       - 9043:8043
-    volumes:
-      - ./projects:/usr/local/bin/ignition/data/projects
     environment:
       - ACCEPT_IGNITION_EULA=Y
       - GATEWAY_ADMIN_USERNAME=${GATEWAY_ADMIN_USERNAME}
@@ -15,6 +13,8 @@ services:
       - IGNITION_ACTIVATION_TOKEN=${IGNITION_ACTIVATION_TOKEN}
       - IGNITION_EDITION=${IGNITION_EDITION} #standard, edge, or maker
       - TZ=Europe/Bratislava
+    volumes:
+      - ./projects:/usr/local/bin/ignition/data/projects
     command:
      - wrapper.java.maxmemory=2048
     network_mode: bridge

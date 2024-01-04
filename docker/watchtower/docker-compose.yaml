@@ -4,5 +4,8 @@ services:
     image: containrrr/watchtower:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_SCHEDULE= 0 0 * * * *
+      - TZ=Europe/Bratislava
     network_mode: bridge
     restart: unless-stopped

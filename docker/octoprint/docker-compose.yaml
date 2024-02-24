@@ -8,9 +8,9 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Bratislava
-    # volumes:
-    #  - uploads:/octoprint/octoprint/uploads
-    #  - plugins:/octoprint/plugins
+    volumes:
+     - uploads:/octoprint/octoprint/uploads
+     - plugins:/octoprint/plugins
     devices:
      - /dev/ttyACM0:/dev/ttyACM0
     network_mode: bridge

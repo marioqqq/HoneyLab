@@ -5,7 +5,9 @@ services:
     ports:
       - 9000:80
     environment:
-      - TZ=Eurepe/Bratislava
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
     volumes:
      - ./uploads:/octoprint/octoprint/uploads
      - ./plugins:/octoprint/plugins

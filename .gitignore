@@ -1,7 +1,12 @@
 .env
 notes.txt
+docker/bazarr/config
 docker/duckdns/config
 docker/ignition/projects
 docker/mysql/databases
 docker/octoprint/uploads
+docker/plex/config
 docker/portainer/data
+docker/prowlarr/config
+docker/radarr/config
+docker/transmission/config

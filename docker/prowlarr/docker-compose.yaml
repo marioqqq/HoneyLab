@@ -1,0 +1,14 @@
+services:
+  prowlarr:
+    container_name: prowlarr
+    image: lscr.io/linuxserver/prowlarr:latest
+    ports:
+      - 9696:9696
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Eurepe/Bratislava
+    volumes:
+      - ./config:/config
+    network_mode: bridge
+    restart: unless-stopped

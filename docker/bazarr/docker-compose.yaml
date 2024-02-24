@@ -1,0 +1,19 @@
+services:
+  bazarr:
+    container_name: bazarr
+    image: lscr.io/linuxserver/bazarr:latest
+    ports:
+      - 6767:6767
+    environment:
+      - PUID=1000
+      - PGID=1000
+      # - TZ=Eurepe/Bratislava
+    volumes:
+      - ./config:/config
+      - movies:/movies
+    network_mode: bridge
+    restart: unless-stopped
+
+volumes:
+  movies:
+    external: true

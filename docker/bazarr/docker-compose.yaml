@@ -7,7 +7,6 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      # - TZ=Eurepe/Bratislava
     volumes:
       - ./config:/config
       - movies:/movies

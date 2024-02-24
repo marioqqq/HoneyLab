@@ -16,8 +16,8 @@ installServicesFunction(){
     local services=(
         "Docker" "Container-based application deployment tool"
         "Docker-Compose" "Multi-container Docker setup tool"
-        "PiVPN" "Simple VPN setup and management software*"
-        "ArgonOne" "Installs fan and power button control**"
+        "PiVPN" "Simple VPN setup and management software"
+        "ArgonOne" "Installs fan and power button control*"
     )
 
     # Create checklist arguments
@@ -28,7 +28,7 @@ installServicesFunction(){
 
     # Create checklist
     local selectedApps=$(dialog --title "Services Installation" --checklist \
-        "Choose the services you want to install\nPress 'Space' to select\n* - Currently not used\n** - After all installations it is recommended to reboot the device" 20 78 5 \
+        "Choose the services you want to install\nPress 'Space' to select\n* - After all installations it is recommended to reboot the device" 20 78 5 \
         "${checklistArgs[@]}" 3>&1 1>&2 2>&3)
 
     clear
@@ -59,13 +59,23 @@ installServicesFunction(){
                             echo "Docker-Compose already installed."
                             sleep 2
                         fi;;
-                    "PiVPN") echo "Currently not used";;
+                    "PiVPN")
+                        if ! dpkg -l | grep -q "openvpn"; then
+                            curl -L https://install.pivpn.io | bash
+                        else
+                            echo "Enter name for the .opvn file:"
+                            read -r name
+                            pivpn add -n "$name"
+                            sudo mv /etc/openvpn/easy-rsa/pki/"$name".ovpn /home/"$USER"/
+                            sudo chown "$USER":"$USER" /home/"$USER"/"$name".ovpn
+                            echo "The .opvn file moved to home directory."
+                            sleep 2
+                        fi;;
                     "ArgonOne") 
                         if ! [ -d "/etc/argon" ]; then
                                 curl https://download.argon40.com/argon1.sh | bash
                             else
-                                echo "ArgonOne already installed."
-                                sleep 2
+                                argonone-config
                             fi;;
                         *) echo "Unknown option: $app";;
                 esac
@@ -104,7 +114,6 @@ menu(){
                 "1" "${menuOptions["1"]}" \
                 "2" "${menuOptions["2"]}" \
                 "3" "${menuOptions["3"]}" \
-                "4" "${menuOptions["4"]}" \
                 3>&1 1>&2 2>&3)
 
         # Close dialog
@@ -128,10 +137,6 @@ menu(){
                         "3")
                             # Run docker-compose
                             echo "Docker Compose" # Future implementation
-                            ;;
-                        "4")
-                            # Run ArgonOne configuration
-                            argonone-config
                             ;;
                         *)
                             echo "No valid option selected"

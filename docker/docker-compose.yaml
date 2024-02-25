@@ -21,18 +21,3 @@ volumes:
       type: cifs
       device: ${WATCH}
       o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
-  # Printer
-  plugins:
-    name: plugins
-    driver: local
-    driver_opts:
-      type: cifs
-      device: ${PLUGINS}
-      o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
-  uploads:
-    name: uploads
-    driver: local
-    driver_opts:
-      type: cifs
-      device: ${UPLOADS}
-      o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000

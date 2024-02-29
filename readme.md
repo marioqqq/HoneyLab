@@ -12,7 +12,6 @@ This repository is a collection of services that I use. Purpose of this reposito
         - [2.2.1 Docker](#221-docker)
         - [2.2.2 Docker-Compose](#222-docker-compose)
         - [2.2.3 Avahi](#223-avahi)
-        - [2.2.4 Cron](#224-cron)
     - [2.3 Run Docker-Compose](#23-run-docker-compose)
 - [3. To end](#3-to-end)
 - [TODO](#todo)
@@ -47,9 +46,6 @@ Checks if already installed. If not it will execute `sudo apt install docker-com
 
 #### 2.2.3 Avahi
 Checks if already installed. If not it will execute `sudo apt install avahi-daemon avahi-utils -y`
-
-#### 2.2.4 Cron
-Checks if already installed. If not it will execute `sudo apt install cron -y`
 
 ### 2.3 Run Docker-Compose
 You can select containers that will be started.

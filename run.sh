@@ -17,6 +17,7 @@ installServicesFunction(){
         "Docker" 
         "Docker-Compose"
         "Avahi"
+        "Cron"
     )
 
     # Create checklist arguments
@@ -64,6 +65,13 @@ installServicesFunction(){
                             sudo apt install avahi-daemon avahi-utils -y
                         else
                             echo "Avahi already installed."
+                            sleep 2
+                        fi;;
+                    "Cron")
+                        if ! dpkg -l | grep -q "cron"; then
+                            sudo apt install cron -y
+                        else
+                            echo "Cron already installed."
                             sleep 2
                         fi;;
                         *) echo "Unknown option: $app";;

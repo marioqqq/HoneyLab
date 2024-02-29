@@ -11,6 +11,8 @@ This repository is a collection of services that I use. Purpose of this reposito
     - [2.2 Install Services](#22-install-services)
         - [2.2.1 Docker](#221-docker)
         - [2.2.2 Docker-Compose](#222-docker-compose)
+        - [2.2.3 Avahi](#223-avahi)
+        - [2.2.4 Cron](#224-cron)
     - [2.3 Run Docker-Compose](#23-run-docker-compose)
 - [3. To end](#3-to-end)
 - [TODO](#todo)
@@ -32,7 +34,7 @@ After starting it will check if `dialog` is installed. If not it will install it
 This will execute `sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y`
 
 ### 2.2 Install Services
-Currently, there are only 3 services available. - change picture
+Currently, there are only 4 services available. - change picture
 <div class="services" align="center">
     <img src="./img/services.png" width="50%" alt="services">
 </div>
@@ -45,6 +47,9 @@ Checks if already installed. If not it will execute `sudo apt install docker-com
 
 #### 2.2.3 Avahi
 Checks if already installed. If not it will execute `sudo apt install avahi-daemon avahi-utils -y`
+
+#### 2.2.4 Cron
+Checks if already installed. If not it will execute `sudo apt install cron -y`
 
 ### 2.3 Run Docker-Compose
 You can select containers that will be started.

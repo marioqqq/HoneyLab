@@ -16,8 +16,6 @@ installServicesFunction(){
     local services=(
         "Docker" "Container-based application deployment tool"
         "Docker-Compose" "Multi-container Docker setup tool"
-        "PiVPN" "Simple VPN setup and management software"
-        "ArgonOne" "Installs fan and power button control*"
     )
 
     # Create checklist arguments
@@ -48,6 +46,7 @@ installServicesFunction(){
                     "Docker")
                         if ! dpkg -l | grep -q "docker.io"; then
                             sudo apt install docker.io -y
+                            sudo usermod -aG docker $USER
                         else
                             echo "Docker already installed."
                             sleep 2
@@ -59,24 +58,6 @@ installServicesFunction(){
                             echo "Docker-Compose already installed."
                             sleep 2
                         fi;;
-                    "PiVPN")
-                        if ! dpkg -l | grep -q "openvpn"; then
-                            curl -L https://install.pivpn.io | bash
-                        else
-                            echo "Enter name for the .opvn file:"
-                            read -r name
-                            pivpn add -n "$name"
-                            sudo mv /etc/openvpn/easy-rsa/pki/"$name".ovpn /home/"$USER"/
-                            sudo chown "$USER":"$USER" /home/"$USER"/"$name".ovpn
-                            echo "The .opvn file moved to home directory."
-                            sleep 2
-                        fi;;
-                    "ArgonOne") 
-                        if ! [ -d "/etc/argon" ]; then
-                                curl https://download.argon40.com/argon1.sh | bash
-                            else
-                                argonone-config
-                            fi;;
                         *) echo "Unknown option: $app";;
                 esac
             done
@@ -105,7 +86,6 @@ menu(){
             ["1"]="Post Installation Updates"
             ["2"]="Install Services"
             ["3"]="Run Docker-Compose"
-            ["4"]="ArgonOne Configuration (if installed)"
         )
 
         # Create menu

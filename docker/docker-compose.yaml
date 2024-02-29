@@ -1,4 +1,8 @@
 volumes:
+  # Portainer
+  portainer:
+    name: portainer
+    driver: local
   # Media
   downloads:
     name: downloads

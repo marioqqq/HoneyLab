@@ -9,7 +9,11 @@ services:
       - PGID=1000
       - TZ=Europe/Bratislava
     volumes:
-      - ./data:/data
+      - portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
     network_mode: bridge
     restart: unless-stopped
+
+volumes:
+  portainer:
+    external: true

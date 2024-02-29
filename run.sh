@@ -16,6 +16,7 @@ installServicesFunction(){
     local services=(
         "Docker" 
         "Docker-Compose"
+        "Avahi"
     )
 
     # Create checklist arguments
@@ -56,6 +57,13 @@ installServicesFunction(){
                             sudo apt install docker-compose -y
                         else
                             echo "Docker-Compose already installed."
+                            sleep 2
+                        fi;;
+                    "Avahi")
+                        if ! dpkg -l | grep -q "avahi-daemon"; then
+                            sudo apt install avahi-daemon avahi-utils -y
+                        else
+                            echo "Avahi already installed."
                             sleep 2
                         fi;;
                         *) echo "Unknown option: $app";;

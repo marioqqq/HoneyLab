@@ -32,7 +32,7 @@ After starting it will check if `dialog` is installed. If not it will install it
 This will execute `sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y`
 
 ### 2.2 Install Services
-Currently, there are only 2 services available.
+Currently, there are only 3 services available. - change picture
 <div class="services" align="center">
     <img src="./img/services.png" width="50%" alt="services">
 </div>
@@ -42,6 +42,9 @@ Checks if already installed. If not it will execute `sudo apt install docker.io 
 
 #### 2.2.2 Docker-Compose
 Checks if already installed. If not it will execute `sudo apt install docker-compose -y`
+
+#### 2.2.3 Avahi
+Checks if already installed. If not it will execute `sudo apt install avahi-daemon avahi-utils -y`
 
 ### 2.3 Run Docker-Compose
 You can select containers that will be started.

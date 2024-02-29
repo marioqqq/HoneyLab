@@ -14,19 +14,19 @@ postInstallUpdates(){
 installServicesFunction(){
     # Define services
     local services=(
-        "Docker" "Container-based application deployment tool"
-        "Docker-Compose" "Multi-container Docker setup tool"
+        "Docker" 
+        "Docker-Compose"
     )
 
     # Create checklist arguments
     local checklistArgs=()
-    for ((i = 0; i < ${#services[@]}; i+=2)); do
-        checklistArgs+=("${services[i]}" "${services[i+1]}" "off")
+    for service in "${services[@]}"; do
+        checklistArgs+=("$service" "" "off")
     done
 
     # Create checklist
     local selectedApps=$(dialog --title "Services Installation" --checklist \
-        "Choose the services you want to install\nPress 'Space' to select\n* - After all installations it is recommended to reboot the device" 20 78 5 \
+        "Choose the services you want to install\nPress 'Space' to select" 20 78 5 \
         "${checklistArgs[@]}" 3>&1 1>&2 2>&3)
 
     clear
@@ -77,6 +77,57 @@ installServicesFunction(){
 
 }
 
+runDockerCompose(){
+    cd docker/
+    # docker-compose up -d
+    dirs=$(ls -d */ | cut -f1 -d'/')
+    local containers=("Create volumes" "" "off")
+    for dir in $dirs; do
+        containers+=("$dir" "" "off")
+    done
+
+    selectedContainers=$(dialog --title "Docker-Compose" --checklist \
+        "Choose the containers you want to run\nPress 'Space' to select" 20 78 5 \
+        "${containers[@]}" 3>&1 1>&2 2>&3)
+
+    clear
+    
+    # Get exit status
+    local exitStatus=$?
+
+    # Check if the user exited the menu or not
+    if [ $exitStatus = 0 ]; then
+        # Check if any services were selected
+        if [ ! -z "$selectedContainers" ]; then
+            # Split selected apps into an array
+            IFS=" " read -r -a selected <<< "$selectedContainers"
+            # Run selected containers
+            for container in "${selected[@]}"; do
+                if [ $container = "Create volumes" ]; then
+                    # Create volumes for containers
+                    docker-compose up -d
+                else
+                    cd $container
+                    docker-compose up -d
+                    cd ..
+                fi
+            done
+            clear
+            echo "Containers started."
+            sleep 2
+        else
+            clear
+            echo "No containers selected or process canceled by user."
+            sleep 2
+        fi
+    else
+        clear
+        echo "An unexpected error occurred (exit status: $exitStatus)."
+        sleep 2
+    fi
+    cd ..
+}
+
 # Main menu
 menu(){
     # Loop until the user exits the menu
@@ -116,8 +167,7 @@ menu(){
                             installServicesFunction;;
                         "3")
                             # Run docker-compose
-                            echo "Docker Compose" # Future implementation
-                            ;;
+                            runDockerCompose;;
                         *)
                             echo "No valid option selected"
                             ;;
@@ -140,9 +190,9 @@ fi
 menu
 
 # Close
-if dialog --title "Exit and reboot" --yesno "Do you want to reboot?" 8 40; then
-    sudo reboot
-else
-    clear
-    echo "Canceled by user."
-fi
+# if dialog --title "Exit and reboot" --yesno "Do you want to reboot?" 8 40; then
+#     sudo reboot
+# else
+#     clear
+#     echo "Canceled by user."
+# fi

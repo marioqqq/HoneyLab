@@ -1,8 +1,12 @@
 volumes:
-  # Portainer
-  portainer:
-    name: portainer
+  # Duplicati
+  backups:
+    name: backups
     driver: local
+    driver_opts:
+      type: cifs
+      device: ${BACKUPS}
+      o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
   # Media
   downloads:
     name: downloads
@@ -25,3 +29,11 @@ volumes:
       type: cifs
       device: ${WATCH}
       o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
+  # Octoprint
+  octoprint:
+    name: octoprint
+    driver: local
+  # Portainer
+  portainer:
+    name: portainer
+    driver: local

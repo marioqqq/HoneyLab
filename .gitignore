@@ -2,6 +2,7 @@
 notes.txt
 docker/bazarr/config
 docker/duckdns/config
+docker/duplicati/config
 docker/ignition/projects
 docker/mysql/databases
 docker/plex/config

@@ -17,6 +17,7 @@ installServicesFunction(){
         "Docker" 
         "Docker-Compose"
         "Avahi"
+        "ArgoneOne"
     )
 
     # Create checklist arguments
@@ -66,6 +67,12 @@ installServicesFunction(){
                             echo "Avahi already installed."
                             sleep 2
                         fi;;
+                    "ArgonOne") 
+                        if ! [ -d "/etc/argon" ]; then
+                                curl https://download.argon40.com/argon1.sh | bash
+                        else
+                            argonone-config
+                        fi;;
                         *) echo "Unknown option: $app";;
                 esac
             done
@@ -89,7 +96,7 @@ runDockerCompose(){
     cd docker/
     # docker-compose up -d
     dirs=$(ls -d */ | cut -f1 -d'/')
-    local containers=("Create volumes" "" "off")
+    local containers=("volumes" "" "off")
     for dir in $dirs; do
         containers+=("$dir" "" "off")
     done

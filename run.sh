@@ -17,6 +17,7 @@ installServicesFunction(){
         "Docker" 
         "Docker-Compose"
         "Avahi"
+        "Nano"
         "ArgoneOne"
     )
 
@@ -65,6 +66,13 @@ installServicesFunction(){
                             sudo apt install avahi-daemon avahi-utils -y
                         else
                             echo "Avahi already installed."
+                            sleep 2
+                        fi;;
+                    "Nano")
+                        if ! dpkg -l | grep -q "nano"; then
+                            sudo apt install nano -y
+                        else
+                            echo "Nano already installed."
                             sleep 2
                         fi;;
                     "ArgonOne") 
@@ -118,7 +126,7 @@ runDockerCompose(){
             IFS=" " read -r -a selected <<< "$selectedContainers"
             # Run selected containers
             for container in "${selected[@]}"; do
-                if [ $container = "Create volumes" ]; then
+                if [ $container = "volumes" ]; then
                     # Create volumes for containers
                     docker-compose up -d
                 else

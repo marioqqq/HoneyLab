@@ -5,6 +5,8 @@ docker/duckdns/config
 docker/duplicati/config
 docker/ignition/projects
 docker/mysql/databases
+docker/npm/data
+docker/npm/letsencrypt
 docker/plex/config
 docker/prowlarr/config
 docker/radarr/config

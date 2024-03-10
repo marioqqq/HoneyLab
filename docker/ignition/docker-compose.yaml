@@ -18,6 +18,6 @@ services:
     volumes:
       - ./projects:/usr/local/bin/ignition/data/projects
     command:
-     - wrapper.java.maxmemory=2048
+      - wrapper.java.maxmemory=2048
     network_mode: bridge
     restart: unless-stopped

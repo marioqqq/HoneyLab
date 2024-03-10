@@ -11,7 +11,7 @@ services:
     volumes:
       - octoprint:/octoprint
     devices:
-     - /dev/ttyACM0:/dev/ttyACM0
+      - /dev/ttyACM0:/dev/ttyACM0
     network_mode: bridge
     restart: unless-stopped
 

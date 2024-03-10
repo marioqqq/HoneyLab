@@ -11,5 +11,5 @@ docker/plex/config
 docker/prowlarr/config
 docker/radarr/config
 docker/transmission/config
-docker/vaultvarden/data
+docker/vaultwarden/data
 docker/wireguard/config

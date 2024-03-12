@@ -29,6 +29,21 @@ volumes:
       type: cifs
       device: ${WATCH}
       o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
+  # Nextcloud
+  nextcloud:
+    name: nextcloud
+    driver: local
+    driver_opts:
+      type: cifs
+      device: ${NEXTCLOUD}
+      o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
+  nextcloud-db:
+    name: nextcloud-db
+    driver: local
+    driver_opts:
+      type: cifs
+      device: ${NEXTCLOUD-DB}
+      o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
   # Octoprint
   octoprint:
     name: octoprint

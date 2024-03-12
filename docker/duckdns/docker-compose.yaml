@@ -5,7 +5,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Eurepe/Bratislava
+      - TZ=Europe/Bratislava
       - SUBDOMAINS=${SUBDOMAINS}
       - TOKEN=${TOKEN}
       - UPDATE_IP=ipv4

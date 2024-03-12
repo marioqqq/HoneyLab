@@ -16,7 +16,7 @@ services:
       - PGID=1000
       - PUID=1000
       - VERSION=docker
-      - TZ=Eurepe/Bratislava
+      - TZ=Europe/Bratislava
     volumes:
       - ./config:/config
       - movies:/movies

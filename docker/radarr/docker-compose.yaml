@@ -7,7 +7,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Eurepe/Bratislava
+      - TZ=Europe/Bratislava
     volumes:
       - ./config:/config
       - downloads:/downloads

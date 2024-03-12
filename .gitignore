@@ -4,7 +4,9 @@ docker/bazarr/config
 docker/duckdns/config
 docker/duplicati/config
 docker/ignition/projects
+docker/mariadb/config
 docker/mysql/databases
+docker/nextcloud/config
 docker/npm/data
 docker/npm/letsencrypt
 docker/plex/config

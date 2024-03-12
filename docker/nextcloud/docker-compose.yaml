@@ -1,20 +1,19 @@
 services:
-  duplicati:
-    container_name: duplicati
-    image: lscr.io/linuxserver/duplicati:latest
+  nextcloud:
+    container_name: nextcloud
+    image: lscr.io/linuxserver/nextcloud:latest
     ports:
-      - 8200:8200
+      - 8443:443
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Bratislava
     volumes:
       - ./config:/config
-      - backups:/backups
-      - ./../../../HoneyLab:/source
+      - nextcloud:/data
     network_mode: bridge
     restart: unless-stopped
 
 volumes:
-  backups:
+  nextcloud:
     external: true

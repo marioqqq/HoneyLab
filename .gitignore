@@ -1,4 +1,5 @@
 .env
+*.sql
 notes.txt
 docker/bazarr/config
 docker/dbeaver/cloudbeaver

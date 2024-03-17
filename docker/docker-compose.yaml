@@ -1,4 +1,12 @@
 volumes:
+  # DB
+  nextcloud-db:
+    name: nextcloud_db
+    driver: local
+    driver_opts:
+      type: cifs
+      device: ${NEXTCLOUD_DB}
+      o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
   # Duplicati
   backups:
     name: backups

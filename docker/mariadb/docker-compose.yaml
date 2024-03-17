@@ -9,13 +9,15 @@ services:
       - PGID=1000
       - TZ=Europe/Bratislava
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=nextcloud
+      # - MYSQL_DATABASE=nextcloud
     volumes:
       - ./config:/config
-      - nextcloud-db:/config/databases/nextcloud
+      - ./nextcloud:/config/databases/nextcloud
     network_mode: bridge
     restart: unless-stopped
 
-volumes:
-  nextcloud-db:
-    external: true
+# volumes:
+#   nextcloud-db:
+#     external: true

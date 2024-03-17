@@ -128,10 +128,10 @@ runDockerCompose(){
             for container in "${selected[@]}"; do
                 if [ $container = "volumes" ]; then
                     # Create volumes for containers
-                    docker-compose up -d
+                    sudo docker-compose up -d
                 else
                     cd $container
-                    docker-compose up -d
+                    sudo docker-compose up -d
                     cd ..
                 fi
             done
@@ -207,10 +207,9 @@ menu(){
 # Start
 if ! dpkg -l | grep -q "dialog"; then
     sudo apt install dialog -y
+else
+    menu
 fi
-
-# Main
-menu
 
 # Close
 # if dialog --title "Exit and reboot" --yesno "Do you want to reboot?" 8 40; then

@@ -15,11 +15,14 @@ services:
     environment:
       - PGID=1000
       - PUID=1000
-      - VERSION=docker
       - TZ=Europe/Bratislava
+      - VERSION=docker
+      # - PLEX_CLAIM=${PLEX_CLAIM}
     volumes:
       - ./config:/config
       - movies:/movies
+    devices:
+      - /dev/dri:/dev/dri
     network_mode: bridge
     # network_mode: host
     restart: unless-stopped

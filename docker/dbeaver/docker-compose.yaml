@@ -1,0 +1,14 @@
+services:
+  dbeaver:
+    container_name: dbeaver
+    image: dbeaver/cloudbeaver:latest
+    ports:
+      - 8978:8978
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./cloudbeaver:/opt/cloudbeaver/workspace 
+    network_mode: bridge
+    restart: unless-stopped

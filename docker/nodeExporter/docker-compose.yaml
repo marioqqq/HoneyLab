@@ -1,0 +1,14 @@
+services:
+  node-exporter:
+    container_name: node-exporter
+    image: quay.io/prometheus/node-exporter:latest
+    ports:
+      - 9100:9100
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - /:/host:ro,rslave
+    network_mode: bridge
+    restart: unless-stopped

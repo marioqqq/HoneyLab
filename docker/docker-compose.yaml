@@ -15,6 +15,10 @@ volumes:
       type: cifs
       device: ${BACKUPS}
       o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
+  # Grafana
+  grafana:
+    name: grafana
+    driver: local
   # Media
   downloads:
     name: downloads
@@ -44,4 +48,8 @@ volumes:
   # Portainer
   portainer:
     name: portainer
+    driver: local
+  # Prometheus
+  prometheus:
+    name: prometheus
     driver: local

@@ -45,3 +45,11 @@ volumes:
   portainer:
     name: portainer
     driver: local
+  # PrusaSlicer
+  prusaslicer:
+    name: prusaslicer
+    driver: local
+    driver_opts:
+      type: cifs
+      device: ${PRUSASLICER}
+      o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000

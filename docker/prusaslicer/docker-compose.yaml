@@ -1,0 +1,20 @@
+services:
+  prusaslicer-novnc:
+    container_name: prusaslicer-novnc
+    image: mikeah/prusaslicer-novnc:latest
+    ports:
+      - 9900:8080
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
+    volumes:
+      - prusaslicer:/prints/
+      - ./config:/configs/
+    network_mode: bridge
+    restart: unless-stopped
+
+volumes:
+  prusaslicer:
+    external: true

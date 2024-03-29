@@ -77,7 +77,7 @@ installServicesFunction(){
                         fi;;
                     "ArgonOne") 
                         if ! [ -d "/etc/argon" ]; then
-                                curl https://download.argon40.com/argon1.sh | bash
+                            curl https://download.argon40.com/argon1.sh | bash
                         else
                             argonone-config
                         fi;;
@@ -102,7 +102,6 @@ installServicesFunction(){
 
 runDockerCompose(){
     cd docker/
-    # docker-compose up -d
     dirs=$(ls -d */ | cut -f1 -d'/')
     local containers=("volumes" "" "off")
     for dir in $dirs; do

@@ -1,0 +1,15 @@
+services:
+  nextcloud:
+    container_name: nextcloud
+    image: lscr.io/linuxserver/nextcloud:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./config:/config
+      - ./data:/data
+    ports:
+      - 8443:443
+    network_mode: bridge
+    restart: unless-stopped

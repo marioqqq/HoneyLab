@@ -9,6 +9,7 @@ docker/ignition/projects
 docker/mariadb/config
 docker/mysql/databases
 docker/nextcloud/config
+docker/nextcloud/data
 docker/npm/data
 docker/npm/letsencrypt
 docker/pihole/dnsmasq.d

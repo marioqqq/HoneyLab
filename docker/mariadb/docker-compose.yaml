@@ -11,10 +11,10 @@ services:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - ./config:/config
-      # - db:/config/databases/db
+      - nextcloud_db:/config/databases/nextcloud
     network_mode: bridge
     restart: unless-stopped
 
-# volumes:
-#   db:
-#     external: true
+volumes:
+  nextcloud_db:
+    external: true

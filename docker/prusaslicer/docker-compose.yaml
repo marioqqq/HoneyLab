@@ -8,7 +8,9 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Bratislava
-      - SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
+      - SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - NVIDIA_VISIBLE_DEVICES=all
     volumes:
       - prusaslicer:/prints/
       - ./config:/configs/

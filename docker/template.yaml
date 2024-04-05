@@ -10,6 +10,7 @@ services:
       - TZ=Europe/Bratislava
     volumes:
       - /volume:/volume
+    runtime: nvidia
     devices:
       - device:device
     command:

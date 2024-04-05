@@ -5,9 +5,7 @@ docker/bazarr/config
 docker/dbeaver/cloudbeaver
 docker/duckdns/config
 docker/duplicati/config
-docker/ignition/projects
 docker/mariadb/config
-docker/mysql/databases
 docker/nextcloud/config
 docker/nextcloud/data
 docker/npm/data

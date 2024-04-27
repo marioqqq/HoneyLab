@@ -6,8 +6,6 @@ docker/dbeaver/cloudbeaver
 docker/duckdns/config
 docker/duplicati/config
 docker/mariadb/config
-docker/nextcloud/config
-docker/nextcloud/data
 docker/npm/data
 docker/npm/letsencrypt
 docker/pihole/dnsmasq.d

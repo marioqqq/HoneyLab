@@ -21,6 +21,6 @@ services:
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - DOMAIN=${DOMAIN}
     volumes:
-      - ./data:/data:rw
+      - ./data:/data
     network_mode: bridge
     restart: unless-stopped

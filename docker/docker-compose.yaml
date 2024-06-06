@@ -1,12 +1,6 @@
 volumes:
   # DB
-  ignition_db:
-    name: ignition_db
-    driver: local
-    driver_opts:
-      type: cifs
-      device: ${IGNITION_DB}
-      o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
+
   # Duplicati
   backups:
     name: backups

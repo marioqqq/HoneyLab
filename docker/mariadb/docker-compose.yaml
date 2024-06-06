@@ -11,7 +11,7 @@ services:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - ./config:/config
-      - ignition_db:/config/databases/ignition
+      # - 
     network_mode: bridge
     restart: unless-stopped
 

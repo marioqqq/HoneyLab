@@ -1,6 +1,6 @@
 services:
-  prusaslicer-novnc:
-    container_name: prusaslicer-novnc
+  prusaslicer:
+    container_name: prusaslicer
     image: mikeah/prusaslicer-novnc:latest
     ports:
       - 9900:8080
@@ -12,11 +12,11 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=all
       - NVIDIA_VISIBLE_DEVICES=all
     volumes:
-      - prusaslicer:/prints/
+      - printing:/prints/
       - ./config:/configs/
     network_mode: bridge
     restart: unless-stopped
 
 volumes:
-  prusaslicer:
+  printing:
     external: true

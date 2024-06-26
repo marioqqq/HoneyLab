@@ -1,13 +1,11 @@
 .env
-*.sql
 notes.txt
 docker/bazarr/config
-docker/dbeaver/cloudbeaver
 docker/duckdns/config
-docker/duplicati/config
+docker/freeCAD/config
 docker/mariadb/config
-docker/npm/data
-docker/npm/letsencrypt
+docker/nginx-proxy-manager/data
+docker/nginx-proxy-manager/letsencrypt
 docker/pihole/dnsmasq.d
 docker/pihole/pihole
 docker/plex/config

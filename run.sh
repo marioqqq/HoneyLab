@@ -100,56 +100,6 @@ installServicesFunction(){
 
 }
 
-runDockerCompose(){
-    cd docker/
-    dirs=$(ls -d */ | cut -f1 -d'/')
-    local containers=("volumes" "" "off")
-    for dir in $dirs; do
-        containers+=("$dir" "" "off")
-    done
-
-    selectedContainers=$(dialog --title "Docker-Compose" --checklist \
-        "Choose the containers you want to run\nPress 'Space' to select" 20 78 5 \
-        "${containers[@]}" 3>&1 1>&2 2>&3)
-
-    clear
-    
-    # Get exit status
-    local exitStatus=$?
-
-    # Check if the user exited the menu or not
-    if [ $exitStatus = 0 ]; then
-        # Check if any services were selected
-        if [ ! -z "$selectedContainers" ]; then
-            # Split selected apps into an array
-            IFS=" " read -r -a selected <<< "$selectedContainers"
-            # Run selected containers
-            for container in "${selected[@]}"; do
-                if [ $container = "volumes" ]; then
-                    # Create volumes for containers
-                    sudo docker-compose up -d
-                else
-                    cd $container
-                    sudo docker-compose up -d
-                    cd ..
-                fi
-            done
-            clear
-            echo "Containers started."
-            sleep 2
-        else
-            clear
-            echo "No containers selected or process canceled by user."
-            sleep 2
-        fi
-    else
-        clear
-        echo "An unexpected error occurred (exit status: $exitStatus)."
-        sleep 2
-    fi
-    cd ..
-}
-
 # Main menu
 menu(){
     # Loop until the user exits the menu
@@ -158,15 +108,13 @@ menu(){
         local menuOptions=(
             ["1"]="Post Installation Updates"
             ["2"]="Install Services"
-            ["3"]="Run Docker-Compose"
         )
 
         # Create menu
         CHOICE=$(dialog --title "Menu" \
-                --menu "Choose one option:" 15 50 3 \
+                --menu "Choose one option:" 15 50 2 \
                 "1" "${menuOptions["1"]}" \
                 "2" "${menuOptions["2"]}" \
-                "3" "${menuOptions["3"]}" \
                 3>&1 1>&2 2>&3)
 
         # Close dialog
@@ -187,9 +135,6 @@ menu(){
                         "2")
                             # Run install services
                             installServicesFunction;;
-                        "3")
-                            # Run docker-compose
-                            runDockerCompose;;
                         *)
                             echo "No valid option selected"
                             ;;
@@ -209,11 +154,3 @@ if ! dpkg -l | grep -q "dialog"; then
 else
     menu
 fi
-
-# Close
-# if dialog --title "Exit and reboot" --yesno "Do you want to reboot?" 8 40; then
-#     sudo reboot
-# else
-#     clear
-#     echo "Canceled by user."
-# fi

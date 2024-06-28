@@ -10,13 +10,13 @@ if [ $? -eq 0 ]; then
     echo "NAS is reachable. Proceeding with backup..."
 
     # Mount the NAS share
-    sudo mount -t cifs -o username=$NAS_USER,password=$NAS_PASS $NAS_SHARE $MOUNT_DIR
+    sudo mount -t cifs -o username=$USERNAME,password=$PASSWORD $SHARE $MOUNT
 
     if [ $? -eq 0 ]; then
         echo "NAS mounted successfully."
 
         # Perform backup using rsync
-        rsync -r --delete $BACKUP_SOURCE $BACKUP_DEST
+        rsync -r --delete $SOURCE $DESTINATION
 
         if [ $? -eq 0 ]; then
             echo "Backup completed successfully."
@@ -25,7 +25,7 @@ if [ $? -eq 0 ]; then
         fi
 
         # Unmount the NAS share
-        sudo umount $MOUNT_DIR
+        sudo umount $MOUNT
 
         if [ $? -eq 0 ]; then
             echo "NAS unmounted successfully."

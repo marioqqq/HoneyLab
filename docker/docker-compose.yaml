@@ -33,11 +33,3 @@ volumes:
   portainer:
     name: portainer
     driver: local
-  # Printing
-  printing:
-    name: printing
-    driver: local
-    driver_opts:
-      type: cifs
-      device: ${PRINTING}
-      o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000

@@ -2,7 +2,6 @@
 notes.txt
 docker/bazarr/config
 docker/duckdns/config
-docker/freeCAD/config
 docker/mariadb/config
 docker/nginx-proxy-manager/data
 docker/nginx-proxy-manager/letsencrypt
@@ -10,7 +9,6 @@ docker/pihole/dnsmasq.d
 docker/pihole/pihole
 docker/plex/config
 docker/prowlarr/config
-docker/prusaslicer/config
 docker/radarr/config
 docker/transmission/config
 docker/vaultwarden/data

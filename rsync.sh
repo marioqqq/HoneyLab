@@ -19,6 +19,7 @@ if [ $? -eq 0 ]; then
         echo "NAS mounted successfully."
 
         # Perform backup using rsync
+        echo "Backup started."
         rsync -r --delete $SOURCE $DESTINATION
 
         if [ $? -eq 0 ]; then

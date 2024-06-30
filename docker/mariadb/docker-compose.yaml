@@ -11,6 +11,6 @@ services:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - ./config:/config
-      # - .your-db:/config/databases/your-db
+      - ./data:/config/databases/data
     network_mode: bridge
     restart: unless-stopped

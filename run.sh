@@ -19,6 +19,7 @@ installServicesFunction(){
         "Avahi"
         "Nano"
         "ArgoneOne"
+        "rsync"
     )
 
     # Create checklist arguments
@@ -29,7 +30,7 @@ installServicesFunction(){
 
     # Create checklist
     local selectedApps=$(dialog --title "Services Installation" --checklist \
-        "Choose the services you want to install\nPress 'Space' to select" 20 78 5 \
+        "Choose the services you want to install\nPress 'Space' to select" 20 78 6 \
         "${checklistArgs[@]}" 3>&1 1>&2 2>&3)
 
     clear
@@ -81,7 +82,14 @@ installServicesFunction(){
                         else
                             argonone-config
                         fi;;
-                        *) echo "Unknown option: $app";;
+                    "rsync")
+                        if ! dpkg -l | grep -q "rsync"; then
+                            sudo apt install rsync -y
+                        else
+                            echo "rsync already installed."
+                            sleep 2
+                        fi;;
+                    *) echo "Unknown option: $app";;
                 esac
             done
             clear

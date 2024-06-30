@@ -8,7 +8,7 @@ services:
       - TZ=Europe/Bratislava
       - WATCHTOWER_MONITOR_ONLY=false
       - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_SCHEDULE=0 0 0 * * 1
+      - WATCHTOWER_SCHEDULE=0 6 0 * * 0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     network_mode: bridge

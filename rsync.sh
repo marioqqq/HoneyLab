@@ -9,6 +9,9 @@ ping -c 1 $NAS_IP &> /dev/null
 if [ $? -eq 0 ]; then
     echo "NAS is reachable. Proceeding with backup..."
 
+    # Create the mount folder
+    mkdir -p $MOUNT
+
     # Mount the NAS share
     sudo mount -t cifs -o username=$USERNAME,password=$PASSWORD $SHARE $MOUNT
 

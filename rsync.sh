@@ -20,7 +20,7 @@ if [ $? -eq 0 ]; then
 
         # Perform backup using rsync
         echo "Backup started."
-        rsync -r --delete $SOURCE $DESTINATION
+        sudo rsync -r --delete $SOURCE $DESTINATION
 
         if [ $? -eq 0 ]; then
             echo "Backup completed successfully."

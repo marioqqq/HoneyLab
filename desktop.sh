@@ -17,6 +17,7 @@ installServices(){
         "DBeaver"
         "Filezilla"
         "Discord"
+        "Wireguard"
     )
 
     # Create checklist arguments
@@ -73,6 +74,9 @@ installServices(){
                         ;;
                     "Discord")
                         sudo apt install discord -y
+                        ;;
+                    "Wireguard")
+                        sudo apt install wireguard-tools -y
                         ;;
                     *) echo "Unknown option: $app";;
                 esac

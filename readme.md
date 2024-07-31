@@ -33,9 +33,11 @@ List of packages that can be installed:
 | - Remove LibreOffice | - Docker**  |
 | - Browser Swap*      | - Avahi     |
 | - Docker**           | - Nano      |
-| - DBeaver            | - ArgoneOne |
-| - FileZilla          | - rsync     |
+| - VS Code            | - ArgoneOne |
+| - DBeaver            | - rsync     |
+| - FileZilla          |             |
 | - Discord            |             |
+| - Wireguard          |             |
 
 *Browser Swap removes Firefox and installs Brave Browser.<br>
 **Docker installs docker and docker-compose.
@@ -67,4 +69,4 @@ Volumes needed for containers are defined in [compose](/docker/docker-compose.ya
 Containers:
 - [ ] lidarr
 - [ ] prometheus with grafana and configs
-- [ ] wordpress
+- [ ] wordpress (or alternative)

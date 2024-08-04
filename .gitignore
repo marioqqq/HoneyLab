@@ -2,6 +2,7 @@
 notes.txt
 docker/bazarr/config
 docker/duckdns/config
+docker/grav/config
 docker/mariadb/config
 docker/mariadb/data
 docker/nginx-proxy-manager/data

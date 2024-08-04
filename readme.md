@@ -68,5 +68,5 @@ Volumes needed for containers are defined in [compose](/docker/docker-compose.ya
 # TODO
 Containers:
 - [ ] lidarr
-- [ ] prometheus with grafana and configs
-- [ ] wordpress (or alternative)
+- [ ] prometheus with grafana and configs - need something better, or be better :)
+- [x] wordpress (or alternative)

@@ -49,6 +49,7 @@ This script uses `rsync` command to sync the repo (or any files) to external loc
 This repo contains docker-compose files for following containers:
 - [bazarr](https://hub.docker.com/r/linuxserver/bazarr)
 - [duckdns](https://hub.docker.com/r/linuxserver/duckdns)
+- [grav](https://hub.docker.com/r/linuxserver/grav)
 - [mariadb](https://hub.docker.com/r/linuxserver/mariadb)
 - [nginx-proxy-manager](https://hub.docker.com/r/jc21/nginx-proxy-manager)
 - [node-red](https://hub.docker.com/r/nodered/node-red)

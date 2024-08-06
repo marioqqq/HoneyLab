@@ -18,6 +18,7 @@ installServices(){
         "Filezilla"
         "Discord"
         "Wireguard"
+        "Thunderbird"
     )
 
     # Create checklist arguments
@@ -77,6 +78,9 @@ installServices(){
                         ;;
                     "Wireguard")
                         sudo apt install wireguard-tools -y
+                        ;;
+                    "Thunderbird")
+                        sudo apt install thunderbird -y
                         ;;
                     *) echo "Unknown option: $app";;
                 esac

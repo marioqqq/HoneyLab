@@ -38,6 +38,7 @@ List of packages that can be installed:
 | - FileZilla          |             |
 | - Discord            |             |
 | - Wireguard          |             |
+| - Thunderbird        |             |
 
 *Browser Swap removes Firefox and installs Brave Browser.<br>
 **Docker installs docker and docker-compose.

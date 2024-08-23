@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# Post install updates
-postInstallUpdates(){
+# Post install updates and drivers
+postInstall(){
     clear
     sudo apt update && apt upgrade -y
+    sudo ubuntu-drivers install 
 }
 
 # Install services
@@ -103,7 +104,7 @@ menu(){
     # Install dialog for menu
     sudo apt install dialog -y
     # Perform updates
-    postInstallUpdates
+    postInstall
     # Install services
     installServices
     # Remove dialog and reboot

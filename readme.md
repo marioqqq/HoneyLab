@@ -5,11 +5,18 @@
 This repository is a collection of scripts and containers that I use after fresh install. It contains scripts for updating system (desktop / server) and compose files for docker containers that I use.
 
 # ToC
+- [Before use](#before-use)
 - [Bash Scripts](#bash-scripts)
     - [desktop.sh, server.sh](#desktopsh-serversh)
     - [rsync.sh](#rsyncsh)
 - [Docker](#docker)
 - [TODO](#todo)
+
+# Before use
+Before using this repo you may need to install git.
+```bash
+sudo apt install git -y
+```
 
 # Bash Scripts
 This repo currently contains 3 scripts:
@@ -17,7 +24,7 @@ This repo currently contains 3 scripts:
 - server.sh
 - rysnc.sh
 
-First two scipts are used after fresh install of Debian based system. They update the system and install packages that you select in menu. The third script is used to sync this repo to NAS.
+First two scipts are used after fresh install of Debian based system (Ubuntu in my case). They update the system, install drivers and packages that you select in menu. The third script is used to sync this repo to NAS.
 
 To run the scripts, you need to make them executable:
 ```bash

@@ -4,6 +4,7 @@
 postInstall(){
     clear
     sudo apt update && apt upgrade -y
+    sudo ubuntu-drivers install
 }
 
 # Install services

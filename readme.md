@@ -10,6 +10,7 @@ This repository is a collection of scripts and containers that I use after fresh
     - [desktop.sh, server.sh](#desktopsh-serversh)
     - [rsync.sh](#rsyncsh)
 - [Docker](#docker)
+- [After use](#after-use)
 - [TODO](#todo)
 
 # Before use
@@ -24,7 +25,7 @@ This repo currently contains 3 scripts:
 - server.sh
 - rysnc.sh
 
-First two scipts are used after fresh install of Debian based system (Ubuntu in my case). They update the system, install drivers and packages that you select in menu. The third script is used to sync this repo to NAS.
+First two scipts are used after fresh install of Debian based system. They update the system, install drivers and packages that you select in menu. The third script is used to sync this repo to NAS.
 
 To run the scripts, you need to make them executable:
 ```bash
@@ -73,6 +74,45 @@ This repo contains docker-compose files for following containers:
 - [wireguard](https://hub.docker.com/r/linuxserver/wireguard)
 
 Volumes needed for containers are defined in [compose](/docker/docker-compose.yaml). Each container that needs additional config has `example.env` present in its folder. You need to copy (move or rename) it to `.env` and modify it.
+
+# After use
+If you have NVIDIA GPU and want to use it with docker, you need to install drivers:
+```bash
+# Search apt for NVIDIA drivers.
+sudo apt search nvidia-driver
+
+# Install the headless server drivers. Change xxx to the version you want to install.
+sudo apt install nvidia-headless-xxx-server
+
+# Install the NVIDIA Utils
+sudo apt install nvidia-utils-xxx-server
+
+# Search apt for libnvidia-encode. Needed for Plex transcoding
+sudo apt search nvidia-encode
+
+# Install the libnvidia-encode package.
+sudo apt install libnvidia-encode-xxx-server
+
+# Verify the installation
+nvidia-smi
+
+# NVIDIA Container Toolkit
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg   && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list |     sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' |     sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.lis
+
+# Update and install NVIDIA Container Toolkit
+sudo apt-get update
+sudo apt-get install nvidia-container-toolkit -y
+
+# Configure NVIDIA Container Toolkit
+sudo nvidia-ctk runtime configure --runtime=docker
+
+sudo systemctl restart docker
+```
+
+I strongly recommend to install drivers for your system. It will install the latest drivers for your system.
+```bash
+sudo ubuntu-drivers install
+```
 
 # TODO
 Containers:

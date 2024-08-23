@@ -107,6 +107,8 @@ sudo apt-get install nvidia-container-toolkit -y
 sudo nvidia-ctk runtime configure --runtime=docker
 
 sudo systemctl restart docker
+
+sudo apt autoremove -y
 ```
 
 I strongly recommend to install drivers for your system. It will install the latest drivers for your system.

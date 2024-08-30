@@ -80,7 +80,7 @@ menu(){
     clear
     # Install dialog for menu
     sudo apt install dialog -y
-    # Perform updates
+    # Perform updates and drivers
     postInstall
     # Install services
     installServices

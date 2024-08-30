@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# Post install updates and drivers
+# Post install updates
 postInstall(){
     clear
     sudo apt update && apt upgrade -y
-    sudo ubuntu-drivers install
 }
 
 # Install services

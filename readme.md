@@ -134,10 +134,10 @@ If timezone is wrong, set it with:
 timedatectl list-timezones
 
 # Set timezone
-timedatectl set-timezone ___
+sudo timedatectl set-timezone ___
 ```
 
-Change hostname
+Change hostname:
 ```bash
 sudo hostnamectl set-hostname ___
 ```

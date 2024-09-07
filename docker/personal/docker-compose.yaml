@@ -1,0 +1,78 @@
+services:
+  grav:
+    container_name: grav
+    image: lscr.io/linuxserver/grav:latest
+    ports:
+      - 80:80
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./grav/config:/config
+    networks:
+      - personal
+    restart: unless-stopped
+
+  node-red:
+    container_name: nodered
+    image: nodered/node-red:latest
+    ports:
+      - 1880:1880
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./nodered/data:/data
+    depends_on:
+      mariadb:
+        condition: service_started
+    restart: unless-stopped
+
+  mariadb:
+    container_name: mariadb
+    image: lscr.io/linuxserver/mariadb:latest
+    ports:
+      - 3306:3306
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./mariadb/config:/config
+      - ./mariadb/init.sql:/config/initdb.d/init.sql:ro # Comment if you don't want to initialize database
+    restart: unless-stopped
+
+  vaultwarden:
+    container_name: vaultwarden
+    image: vaultwarden/server:latest
+    ports:
+      - 80:80
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - WEBSOCKET_ENABLED=true
+      - SIGNUPS_ALLOWED=false
+      - INVITATIONS_ALLOWED=false
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_FROM=${SMTP_FROM}
+      - SMTP_FROM_NAME=${SMTP_FROM_NAME}
+      - SMTP_SECURITY=${SMTP_SECURITY}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - DOMAIN=${DOMAIN}
+    volumes:
+      - ./vaultwarden/data:/data
+    networs:
+      - personal
+    restart: unless-stopped
+
+networks:
+  personal:
+    name: personal
+    driver: bridge

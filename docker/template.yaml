@@ -13,8 +13,10 @@ services:
     runtime: nvidia
     devices:
       - device:device
+    privileged: true
     command:
       - command
+    pid: host
     cap_add:
       - cap_add
     sysctls:
@@ -23,7 +25,9 @@ services:
       - links
     depends_on:
       - depends_on
-    network_mode: bridge
+    network_mode: bridge / host
+    networks:
+      - network
     restart: unless-stopped
 
 volumes:

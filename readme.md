@@ -9,8 +9,9 @@ This repository is a collection of scripts and containers that I use after fresh
 - [Bash Scripts](#bash-scripts)
     - [desktop.sh, server.sh](#desktopsh-serversh)
     - [rsync.sh](#rsyncsh)
+    - [nvidia_docker.sh](#nvidia_dockersh)
 - [Docker](#docker)
-- [NVIDIA drivers for docker - this section is in testing](#nvidia-drivers-for-docker---this-section-is-in-testing)
+- [Misc](#misc)
 - [TODO](#todo)
 
 # Before use
@@ -20,12 +21,11 @@ sudo apt install git -y
 ```
 
 # Bash Scripts
-This repo currently contains 3 scripts:
+This repo currently contains 4 scripts:
 - desktop.sh
 - server.sh
-- rysnc.sh
-
-First two scipts are used after fresh install of Debian based system. They update the system, install drivers and packages that you select in menu. The third script is used to sync this repo to NAS.
+- rsync.sh
+- nvidia_docker.sh
 
 To run the scripts, you need to make them executable:
 ```bash
@@ -54,6 +54,9 @@ List of packages that can be installed:
 ## rsync.sh
 This script uses `rsync` command to sync the repo (or any files) to external location (in this case NAS). To use it, you need to copy (move or rename) `example.env` to `.env` and modify it.
 
+## nvidia_docker.sh
+If you have NVIDIA GPU drivers installed, you can use this script to install NVIDIA Container Toolkit. It will also install NVIDIA drivers for docker. Test if drivers are installed with `nvidia-smi` command. If not, please refer to [NVIDIA drivers installation](https://ubuntu.com/server/docs/nvidia-drivers-installation). Then run the script. Verify the installation with `ddocker run --gpus all nvidia/cuda:11.5.2-base-ubuntu20.04 nvidia-smi`.
+
 # Docker
 This repo contains docker-compose files for following containers:
 - [bazarr](https://hub.docker.com/r/linuxserver/bazarr)
@@ -75,59 +78,7 @@ This repo contains docker-compose files for following containers:
 
 Volumes needed for containers are defined in [compose](/docker/docker-compose.yaml). Each container that needs additional config has `example.env` present in its folder. You need to copy (move or rename) it to `.env` and modify it.
 
-# NVIDIA drivers for docker - this section is in testing
-This section may not be needed (drivers part).
-Although the NVIDIA drivers are installed with the `___.sh` and `server.sh` scripts, they are probably not newest. So you need to install them and addtions manually.
-```bash
-Note:
-dpkg -l | grep nvidia
-
-# Search apt for NVIDIA drivers.
-sudo apt search nvidia-driver | grep headless
-
-# Install the headless server drivers. Change xxx to the version you want to install.
-sudo apt install nvidia-headless-xxx-server -y
-
-# Install the NVIDIA Utils
-sudo apt install nvidia-utils-xxx-server -y
-
-# Search apt for NVIDIA Compute Utils
-sudo apt search nvidia-compute-utils
-
-# Install the NVIDIA Compute Utils
-sudo apt install nvidia-compute-utils-xxx-server -y
-
-# Search apt for libnvidia-encode. Needed for Plex transcoding
-sudo apt search nvidia-encode
-
-# Install the libnvidia-encode package.
-sudo apt install libnvidia-encode-xxx-server -y
-
-# Reboot the system
-sudo reboot
-
-# Verify the installation
-nvidia-smi
-
-# NVIDIA Container Toolkit
-curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg   && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list |     sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' |     sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
-
-# Update and install NVIDIA Container Toolkit
-sudo apt update
-sudo apt install nvidia-container-toolkit -y
-
-# Configure NVIDIA Container Toolkit
-sudo nvidia-ctk runtime configure --runtime=docker
-
-sudo systemctl restart docker
-
-# Test GPU integration
-docker run --gpus all nvidia/cuda:11.5.2-base-ubuntu20.04 nvidia-smi
-
-sudo apt autoremove -y
-sudo reboot
-```
-
+# Misc
 If timezone is wrong, set it with:
 ```bash
 # List available timezones

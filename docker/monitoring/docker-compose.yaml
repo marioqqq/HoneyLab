@@ -22,23 +22,10 @@ services:
       - prometheus:/prometheus
     command: "--config.file=/etc/prometheus/prometheus.yaml"
     depends_on:
-      - node_exporter
       - cadvisor
+      - graphite_exporter
+      - node_exporter
       - nvidia_smi_exporter
-    networks:
-      - monitoring
-    restart: unless-stopped
-
-  # System metrics
-  node_exporter:
-    container_name: node_exporter
-    image: quay.io/prometheus/node-exporter:latest
-    ports:
-      - 9100:9100
-    volumes:
-      - /:/host:ro,rslave
-    command: "--path.rootfs=/host"
-    pid: host
     networks:
       - monitoring
     restart: unless-stopped
@@ -62,10 +49,35 @@ services:
       - monitoring
     restart: unless-stopped
 
+  # TrueNAS metrics
+  graphite_exporter:
+    container_name: graphite_exporter
+    image: prom/graphite-exporter:latest
+    ports:
+      - 9108:9108
+      - 9109:9109
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  # System metrics
+  node_exporter:
+    container_name: node_exporter
+    image: quay.io/prometheus/node-exporter:latest
+    ports:
+      - 9100:9100
+    volumes:
+      - /:/host:ro,rslave
+    command: "--path.rootfs=/host"
+    pid: host
+    networks:
+      - monitoring
+    restart: unless-stopped
+
   # Nvidia GPU metrics - comment if not using Nvidia GPUs
   nvidia_smi_exporter:
     container_name: nvidia_smi_exporter
-    image: utkuozdemir/nvidia_gpu_exporter:latest
+    image: utkuozdemir/nvidia_gpu_exporter:1.2.1
     ports:
       - 9835:9835
     volumes:

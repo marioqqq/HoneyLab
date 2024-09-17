@@ -12,7 +12,6 @@ This repository is a collection of scripts and containers that I use after fresh
     - [nvidia_docker.sh](#nvidia_dockersh)
 - [Docker](#docker)
 - [Misc](#misc)
-- [TODO](#todo)
 
 # Before use
 Before using this repo you may need to install git.
@@ -58,25 +57,42 @@ This script uses `rsync` command to sync the repo (or any files) to external loc
 If you have NVIDIA GPU drivers installed, you can use this script to install NVIDIA Container Toolkit. It will also install NVIDIA drivers for docker. Test if drivers are installed with `nvidia-smi` command. If not, please refer to [NVIDIA drivers installation](https://ubuntu.com/server/docs/nvidia-drivers-installation). Then run the script. Verify the installation with `ddocker run --gpus all nvidia/cuda:11.5.2-base-ubuntu20.04 nvidia-smi`.
 
 # Docker
-This repo contains docker-compose files for following containers:
-- [bazarr](https://hub.docker.com/r/linuxserver/bazarr)
-- [duckdns](https://hub.docker.com/r/linuxserver/duckdns)
-- [grav](https://hub.docker.com/r/linuxserver/grav)
-- [mariadb](https://hub.docker.com/r/linuxserver/mariadb)
-- [nginx-proxy-manager](https://hub.docker.com/r/jc21/nginx-proxy-manager)
-- [node-red](https://hub.docker.com/r/nodered/node-red)
-- [octoprint](https://hub.docker.com/r/octoprint/octoprint)
-- [pihole](https://hub.docker.com/r/pihole/pihole)
-- [portainer](https://hub.docker.com/r/portainer/portainer-ce)
-- [portainer-agent](https://hub.docker.com/r/portainer/agent)
-- [prowlarr](https://hub.docker.com/r/linuxserver/prowlarr)
-- [radaarr](https://hub.docker.com/r/linuxserver/radarr)
-- [transmission](https://hub.docker.com/r/linuxserver/transmission)
-- [vaultwarden](https://hub.docker.com/r/vaultwarden/server)
-- [watchtower](https://hub.docker.com/r/containrrr/watchtower)
-- [wireguard](https://hub.docker.com/r/linuxserver/wireguard)
+This repo contains docker-compose files that are separated into:
+- [cloud](/docker/cloud/) - contains containers that are accessible from the internet
+    - [grav](https://hub.docker.com/r/linuxserver/grav)
+    - [minecraft](https://hub.docker.com/r/itzg/minecraft-server)
+- [management-clinet](/docker/management-client/) - contains containers that are used for managing the client
+    - [portainer-agent](https://hub.docker.com/r/portainer/agent)
+    - [watchtower](https://hub.docker.com/r/containrrr/watchtower)
+- [management-server](/docker/management-server/) - contains containers that are used for managing the server
+    - [portainer](https://hub.docker.com/r/portainer/portainer-ce)
+    - [watchtower](https://hub.docker.com/r/containrrr/watchtower)
+- [media*](/docker/media/) - contains containers that are used for media
+    - [bazarr](https://hub.docker.com/r/linuxserver/bazarr)
+    - [lidarr](https://hub.docker.com/r/linuxserver/lidarr)
+    - [plex](https://hub.docker.com/r/linuxserver/plex)
+    - [prowlarr](https://hub.docker.com/r/linuxserver/prowlarr)
+    - [radarr](https://hub.docker.com/r/linuxserver/radarr)
+    - [transmission](https://hub.docker.com/r/linuxserver/transmission)
+- [misc](/docker/misc/) - contains containers that are not used, but are helpful
+    - [octoprint](https://hub.docker.com/r/octoprint/octoprint)
+- [monitoring](/docker/monitoring/) - contains containers that are used for monitoring
+    - [grafana](https://hub.docker.com/r/grafana/grafana)
+    - [prometheus](https://hub.docker.com/r/prom/prometheus)
+    - [cadvisor](https://hub.docker.com/r/google/cadvisor)
+    - [graphite_exporter](https://hub.docker.com/r/prom/graphite-exporter)
+    - [node_exporter](https://hub.docker.com/r/prom/node-exporter)
+    - [nvidia_smi_exporter](https://hub.docker.com/r/utkuozdemir/nvidia_gpu_exporter)
+- [networking*](/docker/networking/) - contains containers that are used for networking
+    - [duckdns](https://hub.docker.com/r/linuxserver/duckdns)
+    - [nginx-proxy-manager](https://hub.docker.com/r/jc21/nginx-proxy-manager)
+    - [wireguard](https://hub.docker.com/r/linuxserver/wireguard)
+- [personal*](/docker/personal/) - contains containers that are used for personal use
+    - [homepage](https://hub.docker.com/r/linuxserver/homepage)
+    - [node-red](https://hub.docker.com/r/nodered/node-red)
+    - [vaultwarden](https://hub.docker.com/r/vaultwarden/server)
 
-Volumes needed for containers are defined in [compose](/docker/docker-compose.yaml). Each container that needs additional config has `example.env` present in its folder. You need to copy (move or rename) it to `.env` and modify it.
+Composes with * need .env file.
 
 # Misc
 If timezone is wrong, set it with:
@@ -92,10 +108,3 @@ Change hostname:
 ```bash
 sudo hostnamectl set-hostname ___
 ```
-
-# TODO
-Containers:
-- [ ] lidarr
-- [ ] prometheus with grafana and configs - need something better, or be better :)
-- [x] wordpress (or alternative)
-- [ ] script for drivers

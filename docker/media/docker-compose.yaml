@@ -15,17 +15,21 @@ services:
       - media
     restart: unless-stopped
 
-  prowlarr:
-    container_name: prowlarr
-    image: lscr.io/linuxserver/prowlarr:latest
+  lidarr:
+    container_name: lidarr
+    image: lscr.io/linuxserver/lidarr:latest
     ports:
-      - 9696:9696
+      - 8686:8686
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Bratislava
     volumes:
-      - ./prowlarr/config:/config
+      - ./lidarr/config:/config
+      - downloads:/downloads
+      - music:/music
+    depends_on:
+      - prowlarr
     networks:
       - media
     restart: unless-stopped
@@ -43,6 +47,25 @@ services:
       - ./radarr/config:/config
       - downloads:/downloads
       - movies:/movies
+    depends_on:
+      - prowlarr
+    networks:
+      - media
+    restart: unless-stopped
+
+  prowlarr:
+    container_name: prowlarr
+    image: lscr.io/linuxserver/prowlarr:latest
+    ports:
+      - 9696:9696
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./prowlarr/config:/config
+    depends_on:
+      - transmission
     networks:
       - media
     restart: unless-stopped
@@ -80,8 +103,9 @@ services:
     volumes:
       - ./plex/config:/config
       - movies:/movies
-    devices:
-      # - /dev/dri:/dev/dri # uncomment out if you don't have a nvidia card
+      - music:/music
+    # devices: # uncomment out if you don't have a nvidia card
+    #   - /dev/dri:/dev/dri # uncomment out if you don't have a nvidia card
     runtime: nvidia # comment out if you don't have a nvidia card
     network_mode: host
     restart: unless-stopped
@@ -105,6 +129,13 @@ volumes:
     driver_opts:
       type: cifs
       device: ${MOVIES}
+      o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
+  music:
+    name: music
+    driver: local
+    driver_opts:
+      type: cifs
+      device: ${MUSIC}
       o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
   watch:
     name: watch

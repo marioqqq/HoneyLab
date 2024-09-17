@@ -1,21 +1,22 @@
 services:
-  grav:
-    container_name: grav
-    image: lscr.io/linuxserver/grav:latest
+  homepage:
+    container_name: homepage
+    image: ghcr.io/gethomepage/homepage:latest
     ports:
-      - 80:80
+      - 3080:3000
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Bratislava
     volumes:
-      - ./grav/config:/config
+      - ./homepage/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - personal
     restart: unless-stopped
 
   node-red:
-    container_name: nodered
+    container_name: node-red
     image: nodered/node-red:latest
     ports:
       - 1880:1880
@@ -24,10 +25,12 @@ services:
       - PGID=1000
       - TZ=Europe/Bratislava
     volumes:
-      - ./nodered/data:/data
+      - node-red:/data
     depends_on:
       mariadb:
         condition: service_started
+    networks:
+      - personal
     restart: unless-stopped
 
   mariadb:
@@ -43,13 +46,15 @@ services:
     volumes:
       - ./mariadb/config:/config
       - ./mariadb/init.sql:/config/initdb.d/init.sql:ro # Comment if you don't want to initialize database
+    networks:
+      - personal
     restart: unless-stopped
 
   vaultwarden:
     container_name: vaultwarden
     image: vaultwarden/server:latest
     ports:
-      - 80:80
+      - 9080:80
     environment:
       - PUID=1000
       - PGID=1000
@@ -57,7 +62,7 @@ services:
       - ADMIN_TOKEN=${ADMIN_TOKEN}
       - WEBSOCKET_ENABLED=true
       - SIGNUPS_ALLOWED=false
-      - INVITATIONS_ALLOWED=false
+      - INVITATIONS_ALLOWED=true
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_FROM=${SMTP_FROM}
       - SMTP_FROM_NAME=${SMTP_FROM_NAME}
@@ -68,7 +73,7 @@ services:
       - DOMAIN=${DOMAIN}
     volumes:
       - ./vaultwarden/data:/data
-    networs:
+    networks:
       - personal
     restart: unless-stopped
 
@@ -76,3 +81,8 @@ networks:
   personal:
     name: personal
     driver: bridge
+
+volumes:
+  node-red:
+    name: node-red
+    driver: local

@@ -38,4 +38,5 @@ networks:
 
 volumes:
   portainer:
-    external: true
+    name: portainer
+    driver: local

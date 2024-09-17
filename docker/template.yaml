@@ -10,6 +10,7 @@ services:
       - TZ=Europe/Bratislava
     volumes:
       - /volume:/volume
+    env_file: .env
     runtime: nvidia
     devices:
       - device:device

@@ -31,7 +31,3 @@ networks:
   management:
     name: management
     driver: bridge
-
-volumes:
-  portainer:
-    external: true

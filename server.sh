@@ -46,7 +46,6 @@ installServices(){
                     "Docker")
                         sudo apt install docker.io docker-compose -y
                         sudo usermod -aG docker $USER
-                        sudo apt install nfs-common -y
                         ;;
                     "Avahi")
                         sudo apt install avahi-daemon avahi-utils -y

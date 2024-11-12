@@ -7,6 +7,8 @@ docker/media/prowlarr/
 docker/media/radarr/
 docker/media/transmission/
 
+docker/media-alt
+
 docker/monitoring/prometheus/
 
 docker/networking/duckdns/
@@ -15,5 +17,4 @@ docker/networking/wireguard/
 
 docker/personal/homepage/
 docker/personal/mariadb/
-docker/personal/node_red/
 docker/personal/vaultwarden/

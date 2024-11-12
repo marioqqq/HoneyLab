@@ -75,6 +75,7 @@ This repo contains docker-compose files that are separated into:
     - [radarr](https://hub.docker.com/r/linuxserver/radarr)
     - [transmission](https://hub.docker.com/r/linuxserver/transmission)
 - [misc](/docker/misc/) - contains containers that are not used, but are helpful
+    - [node-red](https://hub.docker.com/r/nodered/node-red)
     - [octoprint](https://hub.docker.com/r/octoprint/octoprint)
 - [monitoring](/docker/monitoring/) - contains containers that are used for monitoring
     - [grafana](https://hub.docker.com/r/grafana/grafana)
@@ -89,7 +90,6 @@ This repo contains docker-compose files that are separated into:
     - [wireguard](https://hub.docker.com/r/linuxserver/wireguard)
 - [personal*](/docker/personal/) - contains containers that are used for personal use
     - [homepage](https://hub.docker.com/r/linuxserver/homepage)
-    - [node-red](https://hub.docker.com/r/nodered/node-red)
     - [vaultwarden](https://hub.docker.com/r/vaultwarden/server)
 
 Composes with * need .env file.

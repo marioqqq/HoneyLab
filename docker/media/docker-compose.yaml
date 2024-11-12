@@ -103,6 +103,7 @@ services:
     volumes:
       - ./plex/config:/config
       - movies:/movies
+      - movies-czsk:/movies-czsk # remove if you don't have a czech/slovak movies share
       - music:/music
     # devices: # uncomment out if you don't have a nvidia card
     #   - /dev/dri:/dev/dri # uncomment out if you don't have a nvidia card
@@ -129,6 +130,13 @@ volumes:
     driver_opts:
       type: cifs
       device: ${MOVIES}
+      o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
+  movies-czsk: # remove if you don't have a czech/slovak movies share
+    name: movies-czsk
+    driver: local
+    driver_opts:
+      type: cifs
+      device: ${MOVIES_CZSK}
       o: username=${USERNAME},password=${PASSWORD},uid=1000,gid=1000
   music:
     name: music

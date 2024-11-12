@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Start
+echo $(date +"%Y-%m-%d %H:%M:%S")
+
 # Source the environment file
 source .env
 
@@ -42,3 +45,6 @@ if [ $? -eq 0 ]; then
 else
     echo "NAS is not reachable. Backup aborted."
 fi
+
+# End
+echo $(date +"%Y-%m-%d %H:%M:%S")

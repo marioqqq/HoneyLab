@@ -61,7 +61,7 @@ This repo contains docker-compose files that are separated into:
 - [cloud](/docker/cloud/) - contains containers that are accessible from the internet
     - [grav](https://hub.docker.com/r/linuxserver/grav)
     - [minecraft](https://hub.docker.com/r/itzg/minecraft-server)
-- [management-clinet](/docker/management-client/) - contains containers that are used for managing the client
+- [management-client](/docker/management-client/) - contains containers that are used for managing the client
     - [portainer-agent](https://hub.docker.com/r/portainer/agent)
     - [watchtower](https://hub.docker.com/r/containrrr/watchtower)
 - [management-server](/docker/management-server/) - contains containers that are used for managing the server

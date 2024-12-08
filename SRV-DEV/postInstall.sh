@@ -7,7 +7,7 @@ postInstall(){
     sudo ubuntu-drivers install
 }
 
-# Install and setup services
+# Install services
 installServices(){
     sudo apt install nano -y
     sudo apt install docker.io

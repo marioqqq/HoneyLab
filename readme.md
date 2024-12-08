@@ -20,9 +20,9 @@ To run the scripts, you need to make them executable:
 ```bash
 chmod +x ___.sh
 ```
+Script will perform update and upgrade of the system, sets user do use docker without `sudo` and sets timezone. After that, it will install following packages:
 
 ## PC-Personal postInstall.sh
-Script will perform update and upgrade of the system, sets user do use docker without `sudo`. After that, it will install and remove following packages:
 - ❌ LibreOffice
 - Brave browser
 - ❌ Firefox
@@ -35,21 +35,50 @@ Script will perform update and upgrade of the system, sets user do use docker wi
 - Wireguard
 - Thunderbird
 
-## SRV-xxx postInstall.sh
-Script will perform update and upgrade of the system, sets user do use docker without `sudo` and sets timezone. After that, it will install following packages:
+## SRV-Cloud postInstall.sh
+- nano
 - docker
 - docker-compose
+- set timezone
+
+## SRV-DEV postInstall.sh
+- nano
+- docker
+- docker-compose
+- set timezone
+
+## SRV-Managemet postInstall.sh
+- nano
+- docker
+- docker-compose
+- set timezone
+
+## SRV-Media postInstall.sh
+- nano
+- docker
+- docker-compose
+- set timezone
+
+## SRV-Media nvidiaDocker.sh
+- nvidia container toolkit
+- set nvidia runtime for docker
+
+If you have NVIDIA GPU drivers installed, you can use this script to install NVIDIA Container Toolkit. It will also install NVIDIA drivers for docker. Test if drivers are installed with `nvidia-smi` command. If not, please refer to [NVIDIA drivers installation](https://ubuntu.com/server/docs/nvidia-drivers-installation). Then run the script. Verify the installation with `ddocker run --gpus all nvidia/cuda:11.5.2-base-ubuntu20.04 nvidia-smi`.
+
+## SRV-Personal postInstall.sh
+- nano
+- docker
+- docker-compose
+- set timezone
 
 ## SRV-VPN postInstall.sh
 Script will perform update and upgrade of the system, sets user do use docker without `sudo`. After that, it will install following packages:
 - docker
 - docker-compose
 - #ArgonOne
+In docs you can find instructions on how to install PiVPN your for Raspberry Pi.
 
-## SRV-Media nvidiaDocker.sh
-If you have NVIDIA GPU drivers installed, you can use this script to install NVIDIA Container Toolkit. It will also install NVIDIA drivers for docker. Test if drivers are installed with `nvidia-smi` command. If not, please refer to [NVIDIA drivers installation](https://ubuntu.com/server/docs/nvidia-drivers-installation). Then run the script. Verify the installation with `ddocker run --gpus all nvidia/cuda:11.5.2-base-ubuntu20.04 nvidia-smi`.
-
-# Machines / VMS
+# Machines / VMS docs
 Docs for containers and services on each machine / VM:
 - [SRV-Cloud](/SRV-Cloud/readme.md)
 - [SRV-Management](/SRV-Management/readme.md)

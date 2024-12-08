@@ -10,6 +10,7 @@ postInstall(){
 installServices(){
     apt install docker.io -y
     apt install docker-compose -y
+    sudo timedatectl set-timezone Europe/Bratislava
     apt autoremove -y
     reboot
 }

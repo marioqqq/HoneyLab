@@ -1,4 +1,5 @@
 services:
+  # Common
   protainer-agent:
     container_name: protainer-agent
     image: portainer/agent:latest
@@ -8,7 +9,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/volumes:/var/lib/docker/volumes
     networks:
-      - management
+      - vpn
     restart: unless-stopped
 
   watchtower:
@@ -24,10 +25,28 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - management
+      - vpn
+    restart: unless-stopped
+
+  # Specific
+  duckdns:
+    container_name: duckdns
+    image: lscr.io/linuxserver/duckdns:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - SUBDOMAINS=${SUBDOMAINS}
+      - TOKEN=${TOKEN}
+      - UPDATE_IP=ipv4
+      - LOG_FILE=true
+    volumes:
+      - ./duckdns/config:/config
+    networks:
+      - vpn
     restart: unless-stopped
 
 networks:
-  management:
-    name: management
+  vpn:
+    name: vpn
     driver: bridge

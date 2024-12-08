@@ -1,0 +1,78 @@
+services:
+  # Common
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - WATCHTOWER_MONITOR_ONLY=false
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 6 0 * * 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - cloud
+    restart: unless-stopped
+
+  # Specific
+  grav:
+    container_name: grav
+    image: lscr.io/linuxserver/grav:latest
+    ports:
+      - 8088:80
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./grav/config:/config
+    networks:
+      - cloud
+    restart: unless-stopped
+
+  minecraft:
+    container_name: Minecraft
+    image: itzg/minecraft-server:latest
+    ports:
+      - 25565:25565
+    environment:
+      EULA: "TRUE"
+      TYPE: VANILLA
+      DEBUG: true
+      DIFFICULTY: normal
+      VERSION: 1.20.1
+      MAX_PLAYERS: 10
+      ONLINE_MODE: TRUE
+      INIT_MEMORY: 2G
+      MAX_MEMORY: 8G
+      MOTD: "Minecraft server"
+    volumes:
+      - ./data:/data
+    networks:
+      - cloud
+    restart: unless-stopped.
+
+  nginx_proxy_manager:
+    container_name: nginx_proxy_manager
+    image: jc21/nginx-proxy-manager:latest
+    ports:
+      - 80:80
+      - 81:81
+      - 443:443
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./nginx_proxy_manager/data:/data
+      - ./nginx_proxy_manager/letsencrypt:/etc/letsencrypt
+    networks:
+      - cloud
+    restart: unless-stopped
+
+networks:
+  cloud:
+    name: cloud
+    external: true

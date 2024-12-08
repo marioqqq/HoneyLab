@@ -1,4 +1,38 @@
 services:
+  # Common
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    ports:
+      - 9443:9443
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - management
+    restart: unless-stopped
+
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - WATCHTOWER_MONITOR_ONLY=false
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 6 0 * * 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - management
+    restart: unless-stopped
+
+  # Specific
   duckdns:
     container_name: duckdns
     image: lscr.io/linuxserver/duckdns:latest
@@ -13,7 +47,7 @@ services:
     volumes:
       - ./duckdns/config:/config
     networks:
-      - networking
+      - management
     restart: unless-stopped
 
   nginx_proxy_manager:
@@ -31,7 +65,7 @@ services:
       - ./nginx_proxy_manager/data:/data
       - ./nginx_proxy_manager/letsencrypt:/etc/letsencrypt
     networks:
-      - networking
+      - management
     restart: unless-stopped
 
   wireguard:
@@ -57,10 +91,15 @@ services:
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
     networks:
-      - networking
+      - management
     restart: unless-stopped
 
 networks:
-  networking:
-    name: networking
+  management:
+    name: management
     driver: bridge
+
+volumes:
+  portainer:
+    name: portainer
+    driver: local

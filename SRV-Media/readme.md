@@ -1,0 +1,10 @@
+# Common
+- [portainer-agent](https://hub.docker.com/r/portainer/agent)
+- [watchtower](https://hub.docker.com/r/containrrr/watchtower)
+# Specific
+- [bazarr](https://hub.docker.com/r/linuxserver/bazarr)
+- [lidarr](https://hub.docker.com/r/linuxserver/lidarr)
+- [plex](https://hub.docker.com/r/linuxserver/plex)
+- [prowlarr](https://hub.docker.com/r/linuxserver/prowlarr)
+- [radarr](https://hub.docker.com/r/linuxserver/radarr)
+- [transmission](https://hub.docker.com/r/linuxserver/transmission)

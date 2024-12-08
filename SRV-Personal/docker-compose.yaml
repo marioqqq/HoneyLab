@@ -1,9 +1,52 @@
 services:
+  # Common
+  protainer-agent:
+    container_name: protainer-agent
+    image: portainer/agent:latest
+    ports:
+      - 9001:9001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    networks:
+      - personal
+    restart: unless-stopped
+
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - WATCHTOWER_MONITOR_ONLY=false
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 6 0 * * 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - personal
+    restart: unless-stopped
+
+  # Specific
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana:/var/lib/grafana
+    depends_on:
+      - mariadb
+    networks:
+      - personal
+    restart: unless-stopped
+
   homepage:
     container_name: homepage
     image: ghcr.io/gethomepage/homepage:latest
     ports:
-      - 3080:3000
+      - 3000:3000
     environment:
       - PUID=1000
       - PGID=1000
@@ -37,7 +80,7 @@ services:
     container_name: vaultwarden
     image: vaultwarden/server:latest
     ports:
-      - 9080:80
+      - 80:80
     environment:
       - PUID=1000
       - PGID=1000
@@ -64,3 +107,8 @@ networks:
   personal:
     name: personal
     driver: bridge
+
+volumes:
+  grafana:
+      name: grafana
+      driver: local

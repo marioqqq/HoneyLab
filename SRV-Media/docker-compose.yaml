@@ -1,0 +1,200 @@
+services:
+  # Common
+  protainer-agent:
+    container_name: protainer-agent
+    image: portainer/agent:latest
+    ports:
+      - 9001:9001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    networks:
+      - media
+    restart: unless-stopped
+
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - WATCHTOWER_MONITOR_ONLY=false
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 6 0 * * 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - media
+    restart: unless-stopped
+
+  # Specific
+  bazarr:
+    container_name: bazarr
+    image: lscr.io/linuxserver/bazarr:latest
+    ports:
+      - 6767:6767
+    environment:
+      - PUID=3000
+      - PGID=3000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./bazarr/config:/config
+      - movies:/movies
+    networks:
+      - media
+    restart: unless-stopped
+
+  lidarr:
+    container_name: lidarr
+    image: lscr.io/linuxserver/lidarr:latest
+    ports:
+      - 8686:8686
+    environment:
+      - PUID=3000
+      - PGID=3000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./lidarr/config:/config
+      - downloads:/downloads
+      - music:/music
+    depends_on:
+      - prowlarr
+    networks:
+      - media
+    restart: unless-stopped
+
+  plex:
+    container_name: plex
+    image: lscr.io/linuxserver/plex:latest
+    environment:
+      - PGID=3000
+      - PUID=3000
+      - TZ=Europe/Bratislava
+      - VERSION=docker
+      - NVIDIA_VISIBLE_DEVICES=all # comment out if you don't have a nvidia card
+      - NVIDIA_DRIVER_CAPABILITIES=all # comment out if you don't have a nvidia card
+    volumes:
+      - ./plex/config:/config
+      - movies:/movies
+      - movies-czsk:/movies-czsk # remove if you don't have a czech/slovak movies share
+      - music:/music
+    # devices: # uncomment out if you don't have a nvidia card
+    #   - /dev/dri:/dev/dri # uncomment out if you don't have a nvidia card
+    runtime: nvidia # comment out if you don't have a nvidia card
+    network_mode: host
+    restart: unless-stopped
+
+  prowlarr:
+    container_name: prowlarr
+    image: lscr.io/linuxserver/prowlarr:latest
+    ports:
+      - 9696:9696
+    environment:
+      - PUID=3000
+      - PGID=3000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./prowlarr/config:/config
+    depends_on:
+      - transmission
+    networks:
+      - media
+    restart: unless-stopped
+
+  radarr:
+    container_name: radarr
+    image: lscr.io/linuxserver/radarr:latest
+    ports:
+      - 7878:7878
+    environment:
+      - PUID=3000
+      - PGID=3000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./radarr/config:/config
+      - downloads:/downloads
+      - movies:/movies
+    depends_on:
+      - prowlarr
+    networks:
+      - media
+    restart: unless-stopped
+
+  radarr-czsk:
+    container_name: radarr-czsk
+    image: lscr.io/linuxserver/radarr:latest
+    ports:
+      - 7879:7878
+    environment:
+      - PUID=3000
+      - PGID=3000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./radarr-czsk/config:/config
+      - downloads:/downloads
+      - movies-czsk:/movies
+    networks:
+      - media
+    restart: unless-stopped
+
+  transmission:
+    container_name: transmission
+    image: lscr.io/linuxserver/transmission:latest
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    environment:
+      - PUID=3000
+      - PGID=3000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./transmission/config:/config
+      - downloads:/downloads
+      - watch:/watch
+    networks:
+      - media
+    restart: unless-stopped
+
+networks:
+  media:
+    name: media
+    driver: bridge
+
+volumes:
+  downloads:
+    name: downloads
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${IP},rw,nolock,soft,nfsvers=4
+      device: ${DOWNLOADS}
+  movies:
+    name: movies
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${IP},rw,nolock,soft,nfsvers=4
+      device: ${MOVIES}
+  movies-czsk:
+    name: movies-czsk
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${IP},rw,nolock,soft,nfsvers=4
+      device: ${MOVIES_CZSK}
+  music:
+    name: music
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${IP},rw,nolock,soft,nfsvers=4
+      device: ${MUSIC}
+  watch:
+    name: watch
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${IP},rw,nolock,soft,nfsvers=4
+      device: ${WATCH}

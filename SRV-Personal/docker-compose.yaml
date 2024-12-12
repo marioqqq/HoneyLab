@@ -76,6 +76,19 @@ services:
       - personal
     restart: unless-stopped
 
+  nocodb:
+    container_name: nocodb
+    image: nocodb/nocodb:latest
+    ports:
+      - 8080:8080
+    volumes:
+      - ./nocodb/config:/usr/src/app/config
+    depends_on:
+      - mariadb
+    networks:
+      - personal
+    restart: unless-stopped
+
   vaultwarden:
     container_name: vaultwarden
     image: vaultwarden/server:latest

@@ -5,4 +5,5 @@
 - [grafana](https://hub.docker.com/r/grafana/grafana)
 - [homepage](https://hub.docker.com/r/linuxserver/homepage)
 - [mariadb](https://hub.docker.com/_/mariadb)
+- [nocodb](https://hub.docker.com/r/nocodb/nocodb)
 - [vaultwarden](https://hub.docker.com/r/vaultwarden/server)

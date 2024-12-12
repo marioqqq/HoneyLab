@@ -82,7 +82,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./nocodb/config:/usr/src/app/config
+      - ./nocodb/data:/usr/app/data
     depends_on:
       - mariadb
     networks:

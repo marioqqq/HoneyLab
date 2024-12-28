@@ -35,8 +35,8 @@ services:
     ports:
       - 6767:6767
     environment:
-      - PUID=3000
-      - PGID=3000
+      - PUID=1000
+      - PGID=1000
       - TZ=Europe/Bratislava
     volumes:
       - ./bazarr/config:/config
@@ -51,8 +51,8 @@ services:
     ports:
       - 8686:8686
     environment:
-      - PUID=3000
-      - PGID=3000
+      - PUID=1000
+      - PGID=1000
       - TZ=Europe/Bratislava
     volumes:
       - ./lidarr/config:/config
@@ -68,8 +68,8 @@ services:
     container_name: plex
     image: lscr.io/linuxserver/plex:latest
     environment:
-      - PGID=3000
-      - PUID=3000
+      - PGID=1000
+      - PUID=1000
       - TZ=Europe/Bratislava
       - VERSION=docker
       - NVIDIA_VISIBLE_DEVICES=all # comment out if you don't have a nvidia card
@@ -91,8 +91,8 @@ services:
     ports:
       - 9696:9696
     environment:
-      - PUID=3000
-      - PGID=3000
+      - PUID=1000
+      - PGID=1000
       - TZ=Europe/Bratislava
     volumes:
       - ./prowlarr/config:/config
@@ -108,8 +108,8 @@ services:
     ports:
       - 7878:7878
     environment:
-      - PUID=3000
-      - PGID=3000
+      - PUID=1000
+      - PGID=1000
       - TZ=Europe/Bratislava
     volumes:
       - ./radarr/config:/config
@@ -127,8 +127,8 @@ services:
     ports:
       - 7879:7878
     environment:
-      - PUID=3000
-      - PGID=3000
+      - PUID=1000
+      - PGID=1000
       - TZ=Europe/Bratislava
     volumes:
       - ./radarr-czsk/config:/config
@@ -146,8 +146,8 @@ services:
       - 51413:51413
       - 51413:51413/udp
     environment:
-      - PUID=3000
-      - PGID=3000
+      - PUID=1000
+      - PGID=1000
       - TZ=Europe/Bratislava
     volumes:
       - ./transmission/config:/config

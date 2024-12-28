@@ -31,6 +31,19 @@ services:
       - network
     restart: unless-stopped
 
+networks:
+  network-name:
+    name: network-name
+    driver: bridge
+
 volumes:
   volume-name:
-    external: true
+    name: volume-name
+    driver: local
+  volume-name:
+    name: volume-name
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${IP},rw,nolock,soft,nfsvers=4
+      device: ${DEVICE}

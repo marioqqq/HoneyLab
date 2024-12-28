@@ -28,7 +28,7 @@ installServices(){
     sudo apt update
     sudo apt install dbeaver-ce -y
     sudo apt install filezilla -y
-    sudo apt install discord -y
+    snap install discord
     sudo apt install wireguard-tools -y
     sudo apt install thunderbird -y
     sudo apt autoremove -y

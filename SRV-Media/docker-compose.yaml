@@ -121,7 +121,7 @@ services:
       - media
     restart: unless-stopped
 
-  radarr-czsk:
+  radarr-czsk: # remove if you don't have a czech/slovak movies share
     container_name: radarr-czsk
     image: lscr.io/linuxserver/radarr:latest
     ports:
@@ -134,6 +134,8 @@ services:
       - ./radarr-czsk/config:/config
       - downloads:/downloads
       - movies-czsk:/movies
+    depends_on:
+      - prowlarr
     networks:
       - media
     restart: unless-stopped
@@ -177,7 +179,7 @@ volumes:
       type: nfs
       o: addr=${IP},rw,nolock,soft,nfsvers=4
       device: ${MOVIES}
-  movies-czsk:
+  movies-czsk: # remove if you don't have a czech/slovak movies share
     name: movies-czsk
     driver: local
     driver_opts:

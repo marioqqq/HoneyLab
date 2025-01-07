@@ -45,6 +45,42 @@ services:
       - media
     restart: unless-stopped
 
+  immich:
+    container_name: immich
+    image: ghcr.io/imagegenius/immich:cuda # change tag if you don't have a nvidia card, check docs
+    ports:
+      - 8080:8080
+    environment:
+      - PUID=3000
+      - PGID=3000
+      - TZ=Europe/Bratislava
+      - DB_HOSTNAME=x.x.x.x
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE_NAME=${DB_DATABASE_NAME}
+      - REDIS_HOSTNAME=x.x.x.x
+      - DB_PORT=5432
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - MACHINE_LEARNING_HOST=0.0.0.0
+      - MACHINE_LEARNING_PORT=3003
+      - MACHINE_LEARNING_WORKERS=1
+      - MACHINE_LEARNING_WORKER_TIMEOUT=120
+      - NVIDIA_VISIBLE_DEVICES=all # comment out if you don't have a nvidia card
+      - NVIDIA_DRIVER_CAPABILITIES=all # comment out if you don't have a nvidia card
+    volumes:
+      - ./immich/config:/config
+      - libraries:/libraries
+      - photos:/photos
+      - copy:/copy:ro # if you want to copy photos from another location
+    depends_on:
+      - postgres
+      - redis
+    runtime: nvidia # comment out if you don't have a nvidia card
+    networks:
+      - media
+    restart: unless-stopped
+
   lidarr:
     container_name: lidarr
     image: lscr.io/linuxserver/lidarr:latest
@@ -83,6 +119,24 @@ services:
     #   - /dev/dri:/dev/dri # uncomment out if you don't have a nvidia card
     runtime: nvidia # comment out if you don't have a nvidia card
     network_mode: host
+    restart: unless-stopped
+
+  postgres:
+    container_name: postgres
+    image: tensorchord/pgvecto-rs:pg14-v0.2.0
+    ports:
+      - 5432:5432
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE_NAME}
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    networks:
+      - media
     restart: unless-stopped
 
   prowlarr:
@@ -140,6 +194,18 @@ services:
       - media
     restart: unless-stopped
 
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis/dаta:/data
+    entrypoint: redis-server --requirepass ${REDIS_PASSWORD}
+    networks:
+      - media
+    restart: unless-stopped
+
   transmission:
     container_name: transmission
     image: lscr.io/linuxserver/transmission:latest
@@ -165,6 +231,13 @@ networks:
     driver: bridge
 
 volumes:
+  copy:
+    name: copy
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${IP},rw,nolock,soft,nfsvers=4
+      device: ${COPY}
   downloads:
     name: downloads
     driver: local
@@ -172,6 +245,13 @@ volumes:
       type: nfs
       o: addr=${IP},rw,nolock,soft,nfsvers=4
       device: ${DOWNLOADS}
+  libraries:
+    name: libraries
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${IP},rw,nolock,soft,nfsvers=4
+      device: ${LIBRARIES}
   movies:
     name: movies
     driver: local
@@ -193,6 +273,13 @@ volumes:
       type: nfs
       o: addr=${IP},rw,nolock,soft,nfsvers=4
       device: ${MUSIC}
+  photos:
+    name: photos
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${IP},rw,nolock,soft,nfsvers=4
+      device: ${PHOTOS}
   watch:
     name: watch
     driver: local

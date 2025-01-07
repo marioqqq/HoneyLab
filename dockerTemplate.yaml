@@ -17,6 +17,7 @@ services:
     privileged: true
     command:
       - command
+    entrypoint: entrypoint
     pid: host
     cap_add:
       - cap_add

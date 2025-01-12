@@ -51,8 +51,8 @@ services:
     ports:
       - 8080:8080
     environment:
-      - PUID=3000
-      - PGID=3000
+      - PUID=1000
+      - PGID=1000
       - TZ=Europe/Bratislava
       - DB_HOSTNAME=x.x.x.x
       - DB_USERNAME=${DB_USERNAME}

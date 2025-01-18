@@ -6,7 +6,7 @@
 This repository contains scripts and docker containers for each machine / VM after fresh install. It is spread across multiple folders, depending on the purpose of the machine.
 
 <div class="intro" align="center">
-    <img src="./img/services.svg" width="50%" alt="services">
+    <img src="./img/services.svg" width="75%" alt="services">
 </div>
 
 # Before use

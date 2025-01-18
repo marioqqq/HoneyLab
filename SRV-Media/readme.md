@@ -8,6 +8,6 @@
 - [plex](https://hub.docker.com/r/linuxserver/plex)
 - [postgres](https://hub.docker.com/r/tensorchord/pgvecto-rs)
 - [prowlarr](https://hub.docker.com/r/linuxserver/prowlarr)
-- [redis](https://hub.docker.com/_/redis)
 - [radarr](https://hub.docker.com/r/linuxserver/radarr)
+- [redis](https://hub.docker.com/_/redis)
 - [transmission](https://hub.docker.com/r/linuxserver/transmission)

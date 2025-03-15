@@ -32,6 +32,27 @@ services:
       - cloud
     restart: unless-stopped
 
+  kasm:
+    container_name: kasm
+    image: lscr.io/linuxserver/kasm:latest
+    ports:
+      - 3000:3000
+      - 8443:8443
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - KASM_PORT=8443
+    volumes:
+      - ./data:/opt
+      - ./profiles:/profiles
+      - /dev/input:/dev/input
+      - /run/udev/data:/run/udev/data
+    privileged: true
+    networks:
+      - cloud
+    restart: unless-stopped
+
   minecraft:
     container_name: Minecraft
     image: itzg/minecraft-server:latest

@@ -9,6 +9,9 @@ This repository contains scripts and docker containers for each machine / VM aft
     <img src="./img/services.svg" width="75%" alt="services">
 </div>
 
+*[Icons](https://github.com/free-icons/free-icons)
+
+
 # Before use
 Before using this repo you may need to install git.
 ```bash

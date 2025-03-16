@@ -15,6 +15,7 @@ services:
     devices:
       - device:device
     privileged: true
+    user: 0:0
     command:
       - command
     entrypoint: entrypoint

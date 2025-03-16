@@ -1,0 +1,72 @@
+services:
+  ignition-gateway:
+    container_name: ignition-gateway
+    image: inductiveautomation/ignition:latest
+    ports:
+      - 9088:8088
+      - 9043:8043
+    volumes:
+      - ./ignition/certificates:/usr/local/bin/ignition/data/certificates
+      - ./ignition/db:/usr/local/bin/ignition/data/db
+      - ./ignition/diagnostics:/usr/local/bin/ignition/data/diagnostics
+      - ./ignition/email-profiles:/usr/local/bin/ignition/data/email-profiles
+      - ./ignition/gateway-network:/usr/local/bin/ignition/data/gateway-network
+      - ./ignition/local:/usr/local/bin/ignition/data/local
+      - ./ignition/metricsdb:/usr/local/bin/ignition/data/metricsdb
+      - ./ignition/module-info:/usr/local/bin/ignition/data/module-info
+      - ./ignition/modules:/usr/local/bin/ignition/data/modules
+      - ./ignition/opcua:/usr/local/bin/ignition/data/opcua
+      - ./ignition/projects:/usr/local/bin/ignition/data/projects
+      - ./ignition/sfc:/usr/local/bin/ignition/data/sfc
+    environment:
+      - IGNITION_UID=1000
+      - IGNITION_GID=1000
+      - ACCEPT_IGNITION_EULA=Y
+      - GATEWAY_ADMIN_USERNAME=admin
+      - GATEWAY_ADMIN_PASSWORD=admin-password
+      - IGNITION_EDITION=maker # maker / edge / maker
+      - IGNITION_LICENSE_KEY=license-key
+      - IGNITION_ACTIVATION_TOKEN=activation-token
+      - TZ=Europe/Bratislava
+    user: 0:0
+    command: >
+      -n gateway-name
+      -m 1024
+      --
+      wrapper.java.initmemory=1024
+      -Dignition.allowunsignedmodules=true
+    network_mode: bridge
+    restart: unless-stopped
+
+  node-red:
+    container_name: node-red
+    image: nodered/node-red:latest
+    ports:
+      - 1880:1880  
+    volumes:
+      - ./node:/data
+    environment:
+      - UID=1000
+      - GID=1000
+      - TZ=Europe/Bratislava
+    user: 0:0
+    network_mode: bridge
+    restart: unless-stopped
+
+  octoprint:
+    container_name: octoprint
+    image: octoprint/octoprint:latest
+    ports:
+      - 9000:80
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes: # not testes in this configuration
+     - ./octoprint/uploads:/octoprint/octoprint/uploads
+     - ./octoprint/plugins:/octoprint/plugins
+    devices:
+     - /dev/ttyACM0:/dev/ttyACM0
+    user: 0:0
+    network_mode: bridge
+    restart: unless-stopped

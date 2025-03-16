@@ -88,6 +88,7 @@ Docs for containers and services on each machine / VM:
 - [SRV-Media](/SRV-Media/readme.md)
 - [SRV-Personal](/SRV-Personal/readme.md)
 - [SRV-VPN](/SRV-VPN/readme.md)
+- [Misc](/Misc/readme.md)
 
 # Misc
 Change hostname:

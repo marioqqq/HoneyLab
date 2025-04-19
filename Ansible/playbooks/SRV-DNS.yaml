@@ -75,20 +75,19 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
 
-    - name: Disable DNSStubListener in resolved.conf
+    - name: Disable DNSStubListener in /etc/systemd/resolved.conf
       lineinfile:
         path: /etc/systemd/resolved.conf
-        regexp: '^#?DNSStubListener=.*'
+        regexp: '^#?DNSStubListener='
         line: 'DNSStubListener=no'
-        create: yes
         backup: yes
 
-    - name: Remove existing /etc/resolv.conf if it exists
+    - name: Remove existing /etc/resolv.conf symlink or file
       file:
         path: /etc/resolv.conf
         state: absent
 
-    - name: Create symbolic link to /run/systemd/resolve/resolv.conf
+    - name: Link /etc/resolv.conf to /run/systemd/resolve/resolv.conf
       file:
         src: /run/systemd/resolve/resolv.conf
         dest: /etc/resolv.conf
@@ -98,3 +97,25 @@
       systemd:
         name: systemd-resolved
         state: restarted
+        enabled: yes
+
+    - name: Get the primary network interface name
+      set_fact:
+        primary_interface: "{{ ansible_default_ipv4.interface }}"
+
+    - name: Create netplan config to use Pi-hole for DNS
+      copy:
+        dest: /etc/netplan/99-pihole-dns.yaml
+        content: |
+          network:
+            version: 2
+            ethernets:
+              {{ primary_interface }}:
+                dhcp4: true
+                dhcp4-overrides:
+                  use-dns: false
+                nameservers:
+                  addresses: [127.0.0.1]
+
+    - name: Apply Netplan configuration
+      command: netplan apply

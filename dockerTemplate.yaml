@@ -33,6 +33,7 @@ services:
     network_mode: bridge / host
     networks:
       - network
+    hostname: name
     restart: unless-stopped
 
 networks:

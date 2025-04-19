@@ -10,9 +10,8 @@ services:
       - PGID=1000
       - TZ=Europe/Bratislava
     volumes:
-      - ./portainer/data:/data
+      - portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
-    user: 0:0
     networks:
       - management
     restart: unless-stopped
@@ -99,3 +98,8 @@ networks:
   management:
     name: management
     driver: bridge
+
+volumes:
+  portainer:
+    name: portainer
+    driver: local

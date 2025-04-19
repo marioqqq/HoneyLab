@@ -74,3 +74,27 @@
         dest: "/home/{{ ansible_user }}/SRV-DNS/.env"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
+
+    - name: Disable DNSStubListener in resolved.conf
+      lineinfile:
+        path: /etc/systemd/resolved.conf
+        regexp: '^#?DNSStubListener=.*'
+        line: 'DNSStubListener=no'
+        create: yes
+        backup: yes
+
+    - name: Remove existing /etc/resolv.conf if it exists
+      file:
+        path: /etc/resolv.conf
+        state: absent
+
+    - name: Create symbolic link to /run/systemd/resolve/resolv.conf
+      file:
+        src: /run/systemd/resolve/resolv.conf
+        dest: /etc/resolv.conf
+        state: link
+
+    - name: Restart systemd-resolved
+      systemd:
+        name: systemd-resolved
+        state: restarted

@@ -14,6 +14,8 @@ services:
     runtime: nvidia
     devices:
       - device:device
+    device_cgroup_rules:
+      - rule
     privileged: true
     user: 0:0
     command:

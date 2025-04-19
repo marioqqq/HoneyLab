@@ -47,7 +47,8 @@ services:
 
   immich:
     container_name: immich
-    image: ghcr.io/imagegenius/immich:cuda # change tag if you don't have a nvidia card, check docs
+    # image: ghcr.io/imagegenius/immich:cuda # NVIDIA
+    image: ghcr.io/imagegenius/immich:openvino # INTEL
     ports:
       - 8080:8080
     environment:
@@ -66,17 +67,19 @@ services:
       - MACHINE_LEARNING_PORT=3003
       - MACHINE_LEARNING_WORKERS=1
       - MACHINE_LEARNING_WORKER_TIMEOUT=120
-      - NVIDIA_VISIBLE_DEVICES=all # comment out if you don't have a nvidia card
-      - NVIDIA_DRIVER_CAPABILITIES=all # comment out if you don't have a nvidia card
+      # - NVIDIA_VISIBLE_DEVICES=all # NVIDIA
+      # - NVIDIA_DRIVER_CAPABILITIES=all # NVIDIA
     volumes:
       - ./immich/config:/config
-      - libraries:/libraries
       - photos:/photos
-      - copy:/copy:ro # if you want to copy photos from another location
+    devices:
+      - /dev/dri # INTEL
+    device_cgroup_rules:
+      - c 189:* rmw # INTEL
     depends_on:
       - postgres
       - redis
-    runtime: nvidia # comment out if you don't have a nvidia card
+    # runtime: nvidia # NVIDIA
     networks:
       - media
     restart: unless-stopped
@@ -108,16 +111,16 @@ services:
       - PUID=1000
       - TZ=Europe/Bratislava
       - VERSION=docker
-      - NVIDIA_VISIBLE_DEVICES=all # comment out if you don't have a nvidia card
-      - NVIDIA_DRIVER_CAPABILITIES=all # comment out if you don't have a nvidia card
+      # - NVIDIA_VISIBLE_DEVICES=all # NVIDIA
+      # - NVIDIA_DRIVER_CAPABILITIES=all # NVIDIA
     volumes:
       - ./plex/config:/config
       - movies:/movies
       - movies-czsk:/movies-czsk # remove if you don't have a czech/slovak movies share
       - music:/music
-    # devices: # uncomment out if you don't have a nvidia card
-    #   - /dev/dri:/dev/dri # uncomment out if you don't have a nvidia card
-    runtime: nvidia # comment out if you don't have a nvidia card
+    devices: # INTEL
+      - /dev/dri:/dev/dri # INTEL
+    # runtime: nvidia # NVIDIA
     network_mode: host
     restart: unless-stopped
 
@@ -231,13 +234,6 @@ networks:
     driver: bridge
 
 volumes:
-  copy:
-    name: copy
-    driver: local
-    driver_opts:
-      type: nfs
-      o: addr=${IP},rw,nolock,soft,nfsvers=4
-      device: ${COPY}
   downloads:
     name: downloads
     driver: local
@@ -245,13 +241,6 @@ volumes:
       type: nfs
       o: addr=${IP},rw,nolock,soft,nfsvers=4
       device: ${DOWNLOADS}
-  libraries:
-    name: libraries
-    driver: local
-    driver_opts:
-      type: nfs
-      o: addr=${IP},rw,nolock,soft,nfsvers=4
-      device: ${LIBRARIES}
   movies:
     name: movies
     driver: local

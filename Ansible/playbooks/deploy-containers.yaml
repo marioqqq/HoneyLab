@@ -1,0 +1,11 @@
+- hosts: 'SRV_Collection'
+  tasks:
+    - name: Set compose directory based on hostname
+      set_fact:
+        directory: "{{ (group_names | reject('equalto', 'SRV_Collection') | select('match', '^SRV_') | list | first).replace('_', '-') }}"
+
+    - name: Run docker compose up -d
+      become_user: "{{ ansible_user }}"
+      args:
+        chdir: "/home/{{ ansible_user }}/{{ directory }}"
+      command: docker compose up -d

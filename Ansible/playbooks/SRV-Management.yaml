@@ -57,22 +57,15 @@
 
     - name: Download docker-compose.yaml
       get_url:
-        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/{{ compose_subdir }}/docker-compose.yaml"
+        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/SRV-Management/docker-compose.yaml"
         dest: "/home/{{ ansible_user }}/SRV-Management/docker-compose.yaml"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
 
     - name: Download .env file
       get_url:
-        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/{{ compose_subdir }}/.env"
+        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/SRV-Management/.env"
         dest: "/home/{{ ansible_user }}/SRV-Management/.env"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-
-    - name: Download adguardhome.conf file
-      get_url:
-        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/SRV-Management/adguardhome.conf"
-        dest: "/etc/systemd/resolved.conf.d/adguardhome.conf"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
 
@@ -82,26 +75,21 @@
         state: directory
         owner: root
         group: root
-      when: "'SRV_Management' in group_names"
 
-    - name: Copy adguardhome.conf file from local files
-      copy:
-        src: "/home/{{ ansible_user }}/HoneyLab/SRV-Management/adguardhome.conf"
+    - name: Download adguardhome.conf file
+      get_url:
+        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/SRV-Management/adguardhome.conf"
         dest: "/etc/systemd/resolved.conf.d/adguardhome.conf"
-        owner: root
-        group: root
-      when: "'SRV_Management' in group_names"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
 
     - name: Backup existing /etc/resolv.conf
       command: mv /etc/resolv.conf /etc/resolv.conf.backup
-      when: "'SRV_Management' in group_names"
 
     - name: Create symlink for /etc/resolv.conf
       command: ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
-      when: "'SRV_Management' in group_names"
 
     - name: Reload systemd-resolved
       systemd:
         name: systemd-resolved
         state: restarted
-      when: "'SRV_Management' in group_names"

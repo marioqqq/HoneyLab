@@ -57,14 +57,14 @@
 
     - name: Download docker-compose.yaml
       get_url:
-        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/{{ compose_subdir }}/docker-compose.yaml"
+        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/SRV-Personal/docker-compose.yaml"
         dest: "/home/{{ ansible_user }}/SRV-Personal/docker-compose.yaml"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
 
     - name: Download .env file
       get_url:
-        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/{{ compose_subdir }}/.env"
+        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/SRV-Personal/.env"
         dest: "/home/{{ ansible_user }}/SRV-Personal/.env"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"

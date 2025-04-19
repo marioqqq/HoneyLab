@@ -37,13 +37,31 @@ services:
   adguardhome:
     container_name: adguardhome
     image: adguard/adguardhome:latest
-    volumes:
-        - ./adguardhome/config:/opt/adguardhome/conf
-        - ./adguardhome/work:/opt/adguardhome/work
     ports:
-        - 53:53
-        - 8080:80
-        - 3000:3000
+      - 53:53
+      - 8080:80
+      - 3000:3000
+    volumes:
+      - ./adguardhome/config:/opt/adguardhome/conf
+      - ./adguardhome/work:/opt/adguardhome/work
+    networks:
+      - management
+    restart: unless-stopped
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - 53:53
+      - 8080:80
+    environment:
+      - TZ=Europe/Bratislava
+      - FTLCONF_webserver_api_password=test
+      - FTLCONF_dns_listeningMode=all
+    volumes:
+      - './pihole:/etc/pihole'
+    cap_add:
+      - SYS_NICE
     networks:
       - management
     restart: unless-stopped

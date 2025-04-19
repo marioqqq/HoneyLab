@@ -75,19 +75,7 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
 
-    - name: Make /etc/systemd/resolved.conf.d directory
-      file:
-        path: "/etc/systemd/resolved.conf.d"
-        state: directory
-        owner: root
-        group: root
-
-    - name: Download adguardhome.conf file
-      get_url:
-        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/SRV-Management/adguardhome.conf"
-        dest: "/etc/systemd/resolved.conf.d/adguardhome.conf"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
+    # Work in progress
 
     - name: Backup existing /etc/resolv.conf
       command: mv /etc/resolv.conf /etc/resolv.conf.backup

@@ -34,6 +34,20 @@ services:
     restart: unless-stopped
 
   # Specific
+  adguardhome:
+    container_name: adguardhome
+    image: adguard/adguardhome:latest
+    volumes:
+        - ./adguardhome/config:/opt/adguardhome/conf
+        - ./adguardhome/work:/opt/adguardhome/work
+    ports:
+        - 53:53
+        - 8080:80
+        - 3000:3000
+    networks:
+      - management
+    restart: unless-stopped
+    
   duckdns:
     container_name: duckdns
     image: lscr.io/linuxserver/duckdns:latest

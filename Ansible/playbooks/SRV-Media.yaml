@@ -1,0 +1,70 @@
+- hosts: 'SRV_Media'
+  become: yes
+  tasks:
+    - name: Update packages
+      apt:
+        update_cache: yes
+        upgrade: "yes"
+        autoremove: True
+
+    - name: Set timezone
+      command: timedatectl set-timezone Europe/Bratislava
+
+    - name: Set hostname
+      hostname:
+        name: "SRV-Media"
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Create directory for Docker Compose
+      file:
+        path: "/home/{{ ansible_user }}/.docker/cli-plugins"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Get latest Docker Compose release tag
+      uri:
+        url: "https://api.github.com/repos/docker/compose/releases/latest"
+        return_content: yes
+      register: compose_release
+
+    - name: Download Docker Compose binary
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/{{ compose_release.json.tag_name }}/docker-compose-linux-x86_64"
+        dest: "/home/{{ ansible_user }}/.docker/cli-plugins/docker-compose"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Verify Docker Compose binary permissions
+      command: chmod +x /home/{{ ansible_user }}/.docker/cli-plugins/docker-compose
+
+    - name: Add current user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    - name: Create container directory
+      file:
+        path: "/home/{{ ansible_user }}/SRV-Media"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Download docker-compose.yaml
+      get_url:
+        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/{{ compose_subdir }}/docker-compose.yaml"
+        dest: "/home/{{ ansible_user }}/SRV-Media/docker-compose.yaml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Download .env file
+      get_url:
+        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/{{ compose_subdir }}/.env"
+        dest: "/home/{{ ansible_user }}/SRV-Media/.env"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"

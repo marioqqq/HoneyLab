@@ -1,0 +1,16 @@
+[SRV_Collection]
+xx.xx.xx.xx
+yy.yy.yy.yy
+zz.zz.zz.zz
+
+[SRV_Management]
+xx.xx.xx.xx
+
+[SRV_Media]
+yy.yy.yy.yy
+
+[SRV_Personal]
+zz.zz.zz.zz
+
+[SRV_Collection:vars]
+ansible_user=your_username

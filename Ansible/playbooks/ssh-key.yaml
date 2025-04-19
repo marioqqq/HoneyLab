@@ -1,0 +1,11 @@
+- hosts: 'SRV_Management'
+  tasks:
+    - name: Generate ssh key
+      command : ssh-keygen -q -t rsa -f ~/.ssh/id_rsa -C "" -N ""
+
+- hosts: 'SRV_Collection'
+  tasks:
+    - name: Copy ssh key
+      authorized_key:
+        user: "{{ ansible_user }}"
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"

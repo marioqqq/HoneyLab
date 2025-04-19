@@ -1,0 +1,59 @@
+services:
+  # Common
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    ports:
+      - 9443:9443
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./portainer/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    user: 0:0
+    networks:
+      - management
+    restart: unless-stopped
+
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - WATCHTOWER_MONITOR_ONLY=false
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 6 0 * * 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - management
+    restart: unless-stopped
+
+  # Specific
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - 53:53
+      - 80:80
+    environment:
+      - TZ=Europe/Bratislava
+      - FTLCONF_webserver_api_password=${PASSWORD}
+      - FTLCONF_dns_listeningMode=all
+    volumes:
+      - './pihole:/etc/pihole'
+    cap_add:
+      - SYS_NICE
+    networks:
+      - dns
+    hostname: PiHole
+    restart: unless-stopped
+
+networks:
+  dns:
+    name: dns
+    driver: bridge

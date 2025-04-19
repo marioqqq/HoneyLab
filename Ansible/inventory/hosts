@@ -2,6 +2,7 @@
 xx.xx.xx.xx
 yy.yy.yy.yy
 zz.zz.zz.zz
+ww.ww.ww.ww
 
 [SRV_Management]
 xx.xx.xx.xx
@@ -11,6 +12,9 @@ yy.yy.yy.yy
 
 [SRV_Personal]
 zz.zz.zz.zz
+
+[SRV_DNS]
+ww.ww.ww.ww
 
 [SRV_Collection:vars]
 ansible_user=your_username

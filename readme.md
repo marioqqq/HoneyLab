@@ -142,7 +142,7 @@ Then edit [hosts](/Ansible/inventory/hosts) file.
 
 Test connection to all machines:
 ```bash
-ansible -i ./Anslible/inventory/hosts SRV_Collection -m ping --ask-pass
+ansible -i ./Ansible/inventory/hosts SRV_Collection -m ping --ask-pass
 ```
 
 To run playbook, use:

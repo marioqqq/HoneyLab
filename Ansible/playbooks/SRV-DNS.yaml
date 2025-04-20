@@ -1,0 +1,63 @@
+- hosts: 'SRV_DNS'
+  become: yes
+  tasks:
+    - name: Update packages
+      apt:
+        update_cache: yes
+        upgrade: "yes"
+        autoremove: True
+
+    - name: Set timezone
+      command: timedatectl set-timezone Europe/Bratislava
+
+    - name: Set hostname
+      hostname:
+        name: "SRV-DNS"
+
+    - name: Install nano text editor
+      apt:
+        name: nano
+        state: present
+        update_cache: yes
+
+    - name: Download and run AdGuardHome install script
+      shell: |
+        curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
+      args:
+        executable: /bin/bash
+
+    - name: Ensure /etc/systemd/resolved.conf.d directory exists
+      file:
+        path: /etc/systemd/resolved.conf.d
+        state: directory
+
+    - name: Create drop-in resolved configuration
+      copy:
+        dest: /etc/systemd/resolved.conf.d/adguardhome.conf
+        content: |
+          [Resolve]
+          DNS=127.0.0.1
+          DNSStubListener=no
+        owner: root
+        group: root
+
+    - name: Backup existing resolv.conf
+      command: mv /etc/resolv.conf /etc/resolv.conf.bkp
+      args:
+        removes: /etc/resolv.conf
+
+    - name: Symlink systemd-managed resolv.conf
+      file:
+        src: /run/systemd/resolve/resolv.conf
+        dest: /etc/resolv.conf
+        state: link
+        force: yes
+
+    - name: Reload or restart systemd-resolved
+      systemd:
+        name: systemd-resolved
+        state: restarted
+        daemon_reload: yes
+
+    - name: Start AdGuardHome service
+      shell: /opt/AdGuardHome/AdGuardHome -s start

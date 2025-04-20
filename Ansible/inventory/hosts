@@ -3,6 +3,7 @@ xx.xx.xx.xx
 yy.yy.yy.yy
 zz.zz.zz.zz
 ww.ww.ww.ww
+qq.qq.qq.qq
 
 [SRV_Management]
 xx.xx.xx.xx
@@ -15,6 +16,9 @@ zz.zz.zz.zz
 
 [SRV_DNS]
 ww.ww.ww.ww
+
+[SRV_DNS_BKP]
+qq.qq.qq.qq
 
 [SRV_Collection:vars]
 ansible_user=your_username

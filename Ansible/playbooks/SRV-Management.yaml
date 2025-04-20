@@ -74,3 +74,10 @@
         dest: "/home/{{ ansible_user }}/SRV-Management/.env"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
+
+    - name: Download adguardhome-sync file
+      get_url:
+        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/SRV-Management/adguardhome-sync.yaml"
+        dest: "/home/{{ ansible_user }}/SRV-Management/adguardhome-sync.yaml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"

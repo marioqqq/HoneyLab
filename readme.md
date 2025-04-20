@@ -4,7 +4,7 @@
 </div>
 
 This repository contains scripts and docker containers for each machine / VM after fresh install. It is spread across multiple folders, depending on the purpose of the machine.
-
+# TODO REDO SERVICES
 <div class="intro" align="center">
     <img src="./img/services.svg" width="75%" alt="services">
 </div>
@@ -151,6 +151,8 @@ ansible-playbook ./Ansible/playbooks/ssh-key.yaml -i ./Ansible/inventory/hosts -
 ansible-playbook ./Ansible/playbooks/SRV-Management.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ansible-playbook ./Ansible/playbooks/SRV-Media.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ansible-playbook ./Ansible/playbooks/SRV-Personal.yaml -i ./Ansible/inventory/hosts --ask-become-pass
+ansible-playbook ./Ansible/playbooks/SRV-DNS.yaml -i ./Ansible/inventory/hosts --ask-become-pass
+ansible-playbook ./Ansible/playbooks/SRV-DNS-BKP.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ```
 
 # Before use
@@ -177,6 +179,9 @@ Script will perform update and upgrade of the system, sets user do use docker wi
 - Discord
 - Wireguard
 - Thunderbird
+
+# DNS filter list
+[Firebog](https://firebog.net/)
 
 # Container docs
 Docs for containers and services on each machine / VM:

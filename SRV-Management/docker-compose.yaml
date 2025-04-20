@@ -32,7 +32,23 @@ services:
       - management
     restart: unless-stopped
 
-  # Specific    
+  # Specific
+  adguardhome-sync:
+    container_name: adguardhome-sync
+    image: lscr.io/linuxserver/adguardhome-sync:latest
+    ports:
+      - 8080:8080
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./adguardhome-sync/config:/config
+      - ./adguardhome-sync.yaml:/config/adguardhome-sync.yaml
+    networks:
+      - management
+    restart: unless-stopped
+    
   duckdns:
     container_name: duckdns
     image: lscr.io/linuxserver/duckdns:latest

@@ -4,7 +4,7 @@
 </div>
 
 This repository contains scripts and docker containers for each machine / VM after fresh install. It is spread across multiple folders, depending on the purpose of the machine.
-# TODO REDO SERVICES
+
 <div class="intro" align="center">
     <img src="./img/services.svg" width="75%" alt="services">
 </div>
@@ -180,13 +180,48 @@ Script will perform update and upgrade of the system, sets user do use docker wi
 - Wireguard
 - Thunderbird
 
-# DNS filter list
-[Firebog](https://firebog.net/)
+# Adguard home
+```bash
+curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
+```
+[Blacklists](https://firebog.net/)
 
-# Container docs
-Docs for containers and services on each machine / VM:
-- [SRV-Cloud](/SRV-Cloud/readme.md)
-- [SRV-Management](/SRV-Management/readme.md)
-- [SRV-Media](/SRV-Media/readme.md)
-- [SRV-Personal](/SRV-Personal/readme.md)
-- [Misc](/Misc/readme.md)
+# Containers
+- SRV-Management
+    - Portainer
+    - Watchtower
+    - Adguardhome-sync
+    - DuckDNS
+    - Nginx Proxy Manager
+    - Rustdesk
+    - Wireguard
+- SRV-Media
+    - Portainer agent
+    - Watchtower
+    - Bazarr
+    - Immich
+    - Lidarr
+    - Plex
+    - Postgres
+    - Prowlarr
+    - Radarr
+    - Redis
+    - Transmission
+- SRV-Personal
+    - Portainer agent
+    - Watchtower
+    - Grafana
+    - Homepage
+    - MariaDB
+    - NocoDB
+    - Vaultwarden
+- SRV-Cloud
+    - Watchtower
+    - Grav
+    - Kasm
+    - Minecraft
+    - Nginx Proxy Manager
+- Misc
+    - Ignition gateway
+    - Node-Red
+    - Octoprint

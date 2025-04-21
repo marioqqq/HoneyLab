@@ -84,6 +84,26 @@ services:
       - management
     restart: unless-stopped
 
+  rustdesk-hbbs:
+    container_name: rustdesk-hbbs
+    image: rustdesk/rustdesk-server:latest
+    volumes:
+      - ./rustdesk/data:/root
+    command: hbbs
+    depends_on:
+      - rustdesk-hbbr
+    network_mode: host
+    restart: unless-stopped
+
+  rustdesk-hbbr:
+    container_name: rustdesk-hbbr
+    image: rustdesk/rustdesk-server:latest
+    volumes:
+      - ./rustdesk/data:/root
+    command: hbbr
+    network_mode: host
+    restart: unless-stopped
+
   wireguard:
     container_name: wireguard
     image: linuxserver/wireguard:latest

@@ -1,0 +1,56 @@
+- name: Configure desktop environment
+  hosts: localhost
+  become: true
+  tasks:
+
+    - name: Remove Firefox
+      apt:
+        name: firefox
+        state: absent
+        purge: yes
+        autoremove: yes
+        update_cache: yes
+
+    - name: Install Brave browser key
+      apt_key:
+        url: https://brave.com/static-assets/repo/brave-core.asc
+        state: present
+
+    - name: Add Brave APT repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main"
+        state: present
+        filename: brave-browser
+
+    - name: Install Brave browser package
+      apt:
+        name: brave-browser
+        state: latest
+        update_cache: yes
+
+    - name: Download latest VS Code .deb
+      shell: |
+        curl -L -o /tmp/code_latest.deb "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
+      args:
+        executable: /bin/bash
+
+    - name: Install VS Code
+      apt:
+        deb: /tmp/code_latest.deb
+
+    - name: Get latest RustDesk release URL
+      shell: |
+        curl -s https://api.github.com/repos/rustdesk/rustdesk/releases/latest \
+        | grep "browser_download_url" \
+        | grep "amd64.deb" \
+        | cut -d '"' -f 4
+      register: rustdesk_url
+
+    - name: Download RustDesk .deb
+      get_url:
+        url: "{{ rustdesk_url.stdout }}"
+        dest: /tmp/rustdesk_latest.deb
+
+    - name: Install RustDesk
+      apt:
+        deb: /tmp/rustdesk_latest.deb

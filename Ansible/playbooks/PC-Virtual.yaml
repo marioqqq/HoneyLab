@@ -48,12 +48,23 @@
     #   apt:
     #     deb: /tmp/code_latest.deb
 
-    - name: Download and install latest RustDesk .deb
-      shell: |
-        PAGE_URL=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/rustdesk/rustdesk/releases/latest)
-        FILE_URL=$(curl -s "$PAGE_URL" | grep -oP '/rustdesk/rustdesk/releases/download/[^"]+amd64.deb' | head -n1)
-        FULL_URL="https://github.com$FILE_URL"
-        wget -O /tmp/rustdesk.deb "$FULL_URL"
-        apt install -y /tmp/rustdesk.deb
-      args:
-        executable: /bin/bash
+    - name: Get latest release information from GitHub API
+      uri:
+        url: https://api.github.com/repos/rustdesk/rustdesk/releases/latest
+        method: GET
+        return_content: yes
+      register: github_release_info
+
+    - name: Extract the download URL for the .deb file
+      set_fact:
+        deb_file_url: "{{ github_release_info.json.assets | selectattr('name', 'search', '.*\.deb') | map(attribute='browser_download_url') | first }}"
+
+    - name: Download the .deb file
+      get_url:
+        url: "{{ deb_file_url }}"
+        dest: "/tmp/rustdesk_latest.deb"
+
+    - name: Install the .deb file (optional, if you want to install it after download)
+      apt:
+        deb: "/tmp/rustdesk_latest.deb"
+        state: present

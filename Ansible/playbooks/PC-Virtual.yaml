@@ -48,19 +48,27 @@
       apt:
         deb: /tmp/code_latest.deb
 
-    - name: Get latest RustDesk release URL
+    - name: Download and install latest RustDesk .deb
       shell: |
-        curl -s https://api.github.com/repos/rustdesk/rustdesk/releases/latest \
-        | grep "browser_download_url" \
-        | grep "amd64.deb" \
-        | cut -d '"' -f 4
-      register: rustdesk_url
+        LATEST_URL=$(curl -s https://api.github.com/repos/rustdesk/rustdesk/releases/latest | grep browser_download_url | grep amd64.deb | cut -d '"' -f 4)
+        wget -O /tmp/rustdesk.deb "$LATEST_URL"
+        apt install -y /tmp/rustdesk.deb
+      args:
+        executable: /bin/bash
 
-    - name: Download RustDesk .deb
-      get_url:
-        url: "{{ rustdesk_url.stdout }}"
-        dest: /tmp/rustdesk_latest.deb
+    # - name: Get latest RustDesk release URL
+    #   shell: |
+    #     curl -s https://api.github.com/repos/rustdesk/rustdesk/releases/latest \
+    #     | grep "browser_download_url" \
+    #     | grep "amd64.deb" \
+    #     | cut -d '"' -f 4
+    #   register: rustdesk_url
 
-    - name: Install RustDesk
-      apt:
-        deb: /tmp/rustdesk_latest.deb
+    # - name: Download RustDesk .deb
+    #   get_url:
+    #     url: "{{ rustdesk_url.stdout }}"
+    #     dest: /tmp/rustdesk_latest.deb
+
+    # - name: Install RustDesk
+    #   apt:
+    #     deb: /tmp/rustdesk_latest.deb

@@ -2,73 +2,58 @@
   hosts: localhost
   become: true
   tasks:
-    - name: Remove Firefox
-      apt:
-        name: firefox
-        state: absent
-        purge: yes
-        autoremove: yes
-        update_cache: yes
+    # - name: Remove Firefox
+    #   apt:
+    #     name: firefox
+    #     state: absent
+    #     purge: yes
+    #     autoremove: yes
+    #     update_cache: yes
 
-    - name: Install required packages
-      apt:
-        name:
-          - curl
-          - gnupg
-        state: present
-        update_cache: yes
+    # - name: Install required packages
+    #   apt:
+    #     name:
+    #       - curl
+    #       - gnupg
+    #     state: present
+    #     update_cache: yes
 
-    - name: Download Brave browser GPG key
-      get_url:
-        url: https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-        dest: /usr/share/keyrings/brave-browser-archive-keyring.gpg
+    # - name: Download Brave browser GPG key
+    #   get_url:
+    #     url: https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+    #     dest: /usr/share/keyrings/brave-browser-archive-keyring.gpg
 
-    - name: Add Brave APT repository
-      apt_repository:
-        repo: "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main"
-        state: present
-        filename: brave-browser
+    # - name: Add Brave APT repository
+    #   apt_repository:
+    #     repo: "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main"
+    #     state: present
+    #     filename: brave-browser
 
-    - name: Update APT cache
-      apt:
-        update_cache: yes
+    # - name: Update APT cache
+    #   apt:
+    #     update_cache: yes
 
-    - name: Install Brave browser
-      apt:
-        name: brave-browser
-        state: latest
+    # - name: Install Brave browser
+    #   apt:
+    #     name: brave-browser
+    #     state: latest
 
-    - name: Download latest VS Code .deb
-      shell: |
-        curl -L -o /tmp/code_latest.deb "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
-      args:
-        executable: /bin/bash
+    # - name: Download latest VS Code .deb
+    #   shell: |
+    #     curl -L -o /tmp/code_latest.deb "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
+    #   args:
+    #     executable: /bin/bash
 
-    - name: Install VS Code
-      apt:
-        deb: /tmp/code_latest.deb
+    # - name: Install VS Code
+    #   apt:
+    #     deb: /tmp/code_latest.deb
 
     - name: Download and install latest RustDesk .deb
       shell: |
-        LATEST_URL=$(curl -s https://api.github.com/repos/rustdesk/rustdesk/releases/latest | grep browser_download_url | grep amd64.deb | cut -d '"' -f 4)
-        wget -O /tmp/rustdesk.deb "$LATEST_URL"
+        PAGE_URL=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/rustdesk/rustdesk/releases/latest)
+        FILE_URL=$(curl -s "$PAGE_URL" | grep -oP '/rustdesk/rustdesk/releases/download/[^"]+amd64.deb' | head -n1)
+        FULL_URL="https://github.com$FILE_URL"
+        wget -O /tmp/rustdesk.deb "$FULL_URL"
         apt install -y /tmp/rustdesk.deb
       args:
         executable: /bin/bash
-
-    # - name: Get latest RustDesk release URL
-    #   shell: |
-    #     curl -s https://api.github.com/repos/rustdesk/rustdesk/releases/latest \
-    #     | grep "browser_download_url" \
-    #     | grep "amd64.deb" \
-    #     | cut -d '"' -f 4
-    #   register: rustdesk_url
-
-    # - name: Download RustDesk .deb
-    #   get_url:
-    #     url: "{{ rustdesk_url.stdout }}"
-    #     dest: /tmp/rustdesk_latest.deb
-
-    # - name: Install RustDesk
-    #   apt:
-    #     deb: /tmp/rustdesk_latest.deb

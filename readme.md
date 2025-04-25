@@ -153,6 +153,9 @@ ansible-playbook ./Ansible/playbooks/SRV-Media.yaml -i ./Ansible/inventory/hosts
 ansible-playbook ./Ansible/playbooks/SRV-Personal.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ansible-playbook ./Ansible/playbooks/SRV-DNS.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ansible-playbook ./Ansible/playbooks/SRV-DNS-BKP.yaml -i ./Ansible/inventory/hosts --ask-become-pass
+
+#tmp
+ansible-playbook desktop-setup.yaml -i localhost, --connection=local
 ```
 
 # Before use

@@ -21,9 +21,7 @@ api:
   darkMode: true
 
   metrics:
-    enabled: true
-    scrapeInterval: 30s 
-    queryLogLimit: 10000
+    enabled: false
 
 features:
   generalSettings: true

@@ -24,7 +24,7 @@ services:
       - ACCEPT_IGNITION_EULA=Y
       - GATEWAY_ADMIN_USERNAME=admin
       - GATEWAY_ADMIN_PASSWORD=admin-password
-      - IGNITION_EDITION=maker # maker / edge / maker
+      - IGNITION_EDITION=maker # standard / edge / maker
       - IGNITION_LICENSE_KEY=license-key
       - IGNITION_ACTIVATION_TOKEN=activation-token
       - TZ=Europe/Bratislava

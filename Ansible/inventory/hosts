@@ -14,11 +14,5 @@ yy.yy.yy.yy
 [SRV_Personal]
 zz.zz.zz.zz
 
-[SRV_DNS]
-ww.ww.ww.ww
-
-[SRV_DNS_BKP]
-qq.qq.qq.qq
-
 [SRV_Collection:vars]
 ansible_user=your_username

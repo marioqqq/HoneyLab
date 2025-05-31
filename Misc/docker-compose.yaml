@@ -11,6 +11,7 @@ services:
       - ./ignition/diagnostics:/usr/local/bin/ignition/data/diagnostics
       - ./ignition/email-profiles:/usr/local/bin/ignition/data/email-profiles
       - ./ignition/gateway-network:/usr/local/bin/ignition/data/gateway-network
+      - ./ignition/leased-activation:/usr/local/bin/ignition/data/leased-activation
       - ./ignition/local:/usr/local/bin/ignition/data/local
       - ./ignition/metricsdb:/usr/local/bin/ignition/data/metricsdb
       - ./ignition/module-info:/usr/local/bin/ignition/data/module-info

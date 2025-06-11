@@ -46,7 +46,23 @@ services:
       - vpn
     restart: unless-stopped
 
-  # Tailstacle
+  tailscale:
+    container_name: tailscale
+    image: tailscale/tailscale:latest
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+      - TS_EXTRA_ARGS=--login-server=${LOGIN_SERVER} --advertise-routes ${ADVERTISE_ROUTES}
+    volumes:
+      - ./tailscale/data:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - net_admin
+      - sys_module
+    networks:
+      - vpn
+    restart: unless-stopped
 
   wireguard:
     container_name: wireguard

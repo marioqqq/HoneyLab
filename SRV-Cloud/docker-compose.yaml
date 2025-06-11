@@ -32,7 +32,18 @@ services:
       - cloud
     restart: unless-stopped
 
-  # Headscale
+  headscale:
+    container_name: headscale
+    image: headscale/headscale:stable
+    ports:
+      - 8080:8080
+    volumes:
+      - ./headscale:/var/lib/headscale
+      - ./config.yaml:/etc/headscale/config.yaml
+    command: serve
+    networks:
+      - cloud
+    restart: unless-stopped
 
   kasm:
     container_name: kasm

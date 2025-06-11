@@ -151,11 +151,7 @@ ansible-playbook ./Ansible/playbooks/ssh-key.yaml -i ./Ansible/inventory/hosts -
 ansible-playbook ./Ansible/playbooks/SRV-Management.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ansible-playbook ./Ansible/playbooks/SRV-Media.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ansible-playbook ./Ansible/playbooks/SRV-Personal.yaml -i ./Ansible/inventory/hosts --ask-become-pass
-ansible-playbook ./Ansible/playbooks/SRV-DNS.yaml -i ./Ansible/inventory/hosts --ask-become-pass
-ansible-playbook ./Ansible/playbooks/SRV-DNS-BKP.yaml -i ./Ansible/inventory/hosts --ask-become-pass
-
-#tmp
-ansible-playbook desktop-setup.yaml -i localhost, --connection=local
+ansible-playbook ./Ansible/playbooks/SRV-VPN.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ```
 
 # Before use

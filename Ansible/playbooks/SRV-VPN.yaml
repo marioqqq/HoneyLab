@@ -1,4 +1,4 @@
-- hosts: 'SRV_Management'
+- hosts: 'SRV_VPN'
   become: yes
   tasks:
     - name: Update packages
@@ -12,7 +12,7 @@
 
     - name: Set hostname
       hostname:
-        name: "SRV-Management"
+        name: "SRV-VPN"
 
     - name: Install nano text editor
       apt:
@@ -56,14 +56,21 @@
 
     - name: Create container directory
       file:
-        path: "/home/{{ ansible_user }}/SRV-Management"
+        path: "/home/{{ ansible_user }}/SRV-VPN"
         state: directory
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
 
     - name: Download docker-compose.yaml
       get_url:
-        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/SRV-Management/docker-compose.yaml"
-        dest: "/home/{{ ansible_user }}/SRV-Management/docker-compose.yaml"
+        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/SRV-VPN/docker-compose.yaml"
+        dest: "/home/{{ ansible_user }}/SRV-VPN/docker-compose.yaml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Download .env file
+      get_url:
+        url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/SRV-VPN/.env"
+        dest: "/home/{{ ansible_user }}/SRV-VPN/.env"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"

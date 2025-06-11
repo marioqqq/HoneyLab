@@ -33,19 +33,15 @@ services:
     restart: unless-stopped
 
   # Specific
-  duckdns:
-    container_name: duckdns
-    image: lscr.io/linuxserver/duckdns:latest
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Bratislava
-      - SUBDOMAINS=${SUBDOMAINS}
-      - TOKEN=${TOKEN}
-      - UPDATE_IP=ipv4
-      - LOG_FILE=true
+  adguard_home:
+    container_name: adguard_home
+    image: adguard/adguardhome:latest
+    ports:
+      - ${IP}:53:53/tcp
+      - ${IP}:53:53/udp
     volumes:
-      - ./duckdns/config:/config
+      - ./adguard_home/work:/opt/adguardhome/work
+      - ./adguard_home/conf:/opt/adguardhome/conf
     networks:
       - management
     restart: unless-stopped
@@ -86,32 +82,6 @@ services:
       - ./rustdesk/data:/root
     command: hbbr
     network_mode: host
-    restart: unless-stopped
-
-  wireguard:
-    container_name: wireguard
-    image: linuxserver/wireguard:latest
-    ports:
-      - 51820:51820/udp
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Bratislava
-      - SERVERURL=${SERVERURL}
-      - SERVERPORT=51820
-      - PEERS=${PEERS}
-      - PEERDNS=auto
-      - INTERNAL_SUBNET=10.13.13.0
-    volumes:
-      - ./wireguard/config:/config
-      - /lib/modules:/lib/modules
-    cap_add:
-      - NET_ADMIN
-      - SYS_MODULE
-    sysctls:
-      - net.ipv4.conf.all.src_valid_mark=1
-    networks:
-      - management
     restart: unless-stopped
 
 networks:

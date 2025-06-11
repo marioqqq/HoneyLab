@@ -32,6 +32,8 @@ services:
       - cloud
     restart: unless-stopped
 
+  # Headscale
+
   kasm:
     container_name: kasm
     image: lscr.io/linuxserver/kasm:latest
@@ -44,8 +46,8 @@ services:
       - TZ=Europe/Bratislava
       - KASM_PORT=8443
     volumes:
-      - ./data:/opt
-      - ./profiles:/profiles
+      - ./kasm/data:/opt
+      - ./kasm/profiles:/profiles
       - /dev/input:/dev/input
       - /run/udev/data:/run/udev/data
     privileged: true
@@ -71,7 +73,7 @@ services:
       - MAX_MEMORY=8G
       - MOTD=Minecraft server
     volumes:
-      - ./data:/data
+      - ./minecraft/data:/data
     networks:
       - cloud
     restart: unless-stopped.

@@ -3,7 +3,6 @@ xx.xx.xx.xx
 yy.yy.yy.yy
 zz.zz.zz.zz
 ww.ww.ww.ww
-qq.qq.qq.qq
 
 [SRV_Management]
 xx.xx.xx.xx
@@ -14,5 +13,9 @@ yy.yy.yy.yy
 [SRV_Personal]
 zz.zz.zz.zz
 
+[SRV_VPN]
+ww.ww.ww.ww
+
 [SRV_Collection:vars]
 ansible_user=your_username
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'

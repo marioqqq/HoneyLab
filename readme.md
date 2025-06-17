@@ -61,10 +61,13 @@ Script will perform update and upgrade of the system, sets user do use docker wi
 - SRV-Personal
     - Portainer agent
     - Watchtower
+    - Docmost
     - Grafana
     - Homepage
     - MariaDB
     - NocoDB
+    - Postgres
+    - Redis
     - Vaultwarden
 - SRV-VPN
     - Portainer agent

@@ -18,10 +18,10 @@ Copy the key to .env file and run the container.
 docker exec headscale headscale nodes list
 docker exec headscale headscale nodes rename new-name -i id-from-nodes-list
 docker exec headscale headscale nodes routes list
-headscale nodes approve-routes --identifier id-from-routes-list --routes ip/subnet-mask
+docker exec headscale headscale nodes approve-routes --identifier id-from-routes-list --routes ip/subnet-mask
 docker exec headscale headscale nodes routes list
 ```
 Then on the client side run:
 ```bash
-docker exec tailscale tailscale set --accept-routes`
+docker exec tailscale tailscale set --accept-routes
 ```

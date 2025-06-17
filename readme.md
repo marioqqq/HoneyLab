@@ -73,12 +73,12 @@ Script will perform update and upgrade of the system, sets user do use docker wi
     - Portainer agent
     - Watchtower
     - DuckDNS
-    - Tailscale - TBD
+    - Tailscale
     - Wireguard
 - SRV-Cloud
     - Watchtower
     - Grav
-    - Headscale - TBD
+    - Headscale
     - Kasm
     - Minecraft
     - Nginx Proxy Manager

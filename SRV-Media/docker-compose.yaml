@@ -55,11 +55,11 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Bratislava
-      - DB_HOSTNAME=x.x.x.x
+      - DB_HOSTNAME=${DB_HOSTNAME}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_DATABASE_NAME=${DB_DATABASE_NAME}
-      - REDIS_HOSTNAME=x.x.x.x
+      - REDIS_HOSTNAME=${REDIS_HOSTNAME}
       - DB_PORT=5432
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD}

@@ -79,7 +79,9 @@ Script will perform update and upgrade of the system, sets user do use docker wi
     - Watchtower
     - Headscale
     - Kasm
+    - Kimai
     - Minecraft
+    - MySQL
     - Nginx Proxy Manager
 - Misc
     - Grav

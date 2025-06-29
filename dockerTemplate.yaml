@@ -20,6 +20,11 @@ services:
     user: 0:0
     command:
       - command
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     entrypoint: entrypoint
     pid: host
     cap_add:

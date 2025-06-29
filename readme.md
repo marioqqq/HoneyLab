@@ -77,12 +77,12 @@ Script will perform update and upgrade of the system, sets user do use docker wi
     - Wireguard
 - SRV-Cloud
     - Watchtower
-    - Grav
     - Headscale
     - Kasm
     - Minecraft
     - Nginx Proxy Manager
 - Misc
+    - Grav
     - Ignition gateway
     - Node-Red
     - Octoprint

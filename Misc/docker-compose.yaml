@@ -1,4 +1,18 @@
 services:
+  grav:
+    container_name: grav
+    image: lscr.io/linuxserver/grav:latest
+    ports:
+      - 8088:80
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./grav/config:/config
+    network_mode: bridge
+    restart: unless-stopped
+
   ignition-gateway:
     container_name: ignition-gateway
     image: inductiveautomation/ignition:latest

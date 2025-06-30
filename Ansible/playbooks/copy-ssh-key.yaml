@@ -1,6 +1,6 @@
-- hosts: 'SRV_Collection'
+- hosts: 'SRV_Collection, PC_Desktop'
   tasks:
-    - name: Copy ssh key
+    - name: Copy SSH key
       authorized_key:
         user: "{{ ansible_user }}"
         key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"

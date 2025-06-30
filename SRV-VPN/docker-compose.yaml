@@ -53,7 +53,7 @@ services:
       - TS_AUTHKEY=${TS_AUTHKEY}
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_USERSPACE=false
-      - TS_EXTRA_ARGS=--login-server=${LOGIN_SERVER} --advertise-routes ${ADVERTISE_ROUTES}
+      - TS_EXTRA_ARGS=--login-server=${LOGIN_SERVER} --advertise-routes ${ADVERTISE_ROUTES} --restart
     volumes:
       - ./tailscale/data:/var/lib/tailscale
       - /dev/net/tun:/dev/net/tun

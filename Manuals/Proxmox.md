@@ -127,7 +127,8 @@ And add - change for number of sensors:
         const c5 = value.match(/Core 21.*?\+([\d\.]+)Â/)[1];
         const c6 = value.match(/Core 22.*?\+([\d\.]+)Â/)[1];
         const c7 = value.match(/Core 23.*?\+([\d\.]+)Â/)[1];
-        return `E0: ${c0} | E1: ${c1} | E2: ${c2} | E3: ${c3} | E4: ${c4} | E5: ${c5} | E6: ${c6} | E7: ${c7}` >                }
+        return `E0: ${c0} | E1: ${c1} | E2: ${c2} | E3: ${c3} | E4: ${c4} | E5: ${c5} | E6: ${c6} | E7: ${c7}`
+        }
 }  
 ```
 

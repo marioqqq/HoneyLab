@@ -16,6 +16,13 @@ zz.zz.zz.zz
 [SRV_VPN]
 ww.ww.ww.ww
 
+[PC_Desktop]
+qq.qq.qq.qq
+
 [SRV_Collection:vars]
+ansible_user=your_username
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[PC_Desktop:vars]
 ansible_user=your_username
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'

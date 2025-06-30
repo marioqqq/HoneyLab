@@ -1,0 +1,207 @@
+- hosts: 'PC_Desktop'
+  become: yes
+  tasks:
+    - name: Update packages
+      apt:
+        update_cache: yes
+        upgrade: "yes"
+        autoremove: True
+
+    - name: Add Brave browser GPG key
+      apt_key:
+        url: https://brave-browser-apt-release.s3.brave.com/brave-core.asc
+        state: present
+
+    - name: Add Brave browser repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main"
+        state: present
+
+    - name: Install Brave browser
+      apt:
+        name: brave-browser
+        state: present
+        update_cache: yes
+
+    - name: Remove Firefox
+      apt:
+        name: firefox
+        state: absent
+        purge: yes
+
+    - name: Install VSCode GPG key
+      apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        state: present
+
+    - name: Add VSCode repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+        state: present
+
+    - name: Install VSCode
+      apt:
+        name: code
+        state: present
+        update_cache: yes
+
+    - name: Get latest DBeaver CE release info
+      uri:
+        url: https://api.github.com/repos/dbeaver/dbeaver/releases/latest
+        return_content: yes
+      register: dbeaver_release
+
+    - name: Set DBeaver download URL
+      set_fact:
+        dbeaver_deb_url: "{{ (dbeaver_release.json.assets | selectattr('name', 'search', 'amd64.deb') | list)[0].browser_download_url }}"
+
+    - name: Download DBeaver CE latest .deb package
+      get_url:
+        url: "{{ dbeaver_deb_url }}"
+        dest: /tmp/dbeaver-ce.deb
+
+    - name: Install DBeaver CE
+      apt:
+        deb: /tmp/dbeaver-ce.deb
+
+    - name: Remove DBeaver installer
+      file:
+        path: /tmp/dbeaver-ce.deb
+        state: absent
+
+    - name: Install FileZilla
+      apt:
+        name: filezilla
+        state: present
+
+    - name: Install AnyDesk repository key
+      apt_key:
+        url: https://keys.anydesk.com/repos/DEB-GPG-KEY
+        state: present
+
+    - name: Add AnyDesk repository
+      apt_repository:
+        repo: "deb http://deb.anydesk.com/ all main"
+        state: present
+
+    - name: Install AnyDesk
+      apt:
+        name: anydesk
+        state: present
+        update_cache: yes
+
+    - name: Get latest RustDesk release info
+      uri:
+        url: https://api.github.com/repos/rustdesk/rustdesk/releases/latest
+        return_content: yes
+      register: rustdesk_release
+
+    - name: Set RustDesk download URL
+      set_fact:
+        rustdesk_deb_url: "{{ (rustdesk_release.json.assets | selectattr('name', 'search', '(amd64|x86_64)\\.deb') | list)[0].browser_download_url }}"
+
+    - name: Download RustDesk latest .deb package
+      get_url:
+        url: "{{ rustdesk_deb_url }}"
+        dest: /tmp/rustdesk.deb
+
+    - name: Install RustDesk
+      apt:
+        deb: /tmp/rustdesk.deb
+
+    - name: Remove RustDesk installer
+      file:
+        path: /tmp/rustdesk.deb
+        state: absent
+
+    - name: Configure GDM for automatic login and disable Wayland
+      blockinfile:
+        path: /etc/gdm3/custom.conf
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        block: |
+          [daemon]
+          WaylandEnable=false
+          AutomaticLoginEnable=true
+          AutomaticLogin=\$USERNAME
+
+    - name: Create resolution set script
+      become_user: "{{ ansible_user }}"
+      copy:
+        dest: /home/{{ ansible_user }}/set_resolution.sh
+        mode: '0755'
+        content: |
+          #!/bin/bash
+          output=$(xrandr | grep " connected" | cut -d' ' -f1)
+          xrandr --output "$output" --mode 1920x1080
+
+    - name: Create autostart directory
+      become_user: "{{ ansible_user }}"
+      file:
+        path: /home/{{ ansible_user }}/.config/autostart
+        state: directory
+        mode: '0755'
+
+    - name: Create autostart desktop entry to run resolution script
+      become_user: "{{ ansible_user }}"
+      copy:
+        dest: /home/{{ ansible_user }}/.config/autostart/set_resolution.desktop
+        mode: '0644'
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Exec=/home/{{ ansible_user }}/set_resolution.sh
+          Hidden=false
+          NoDisplay=false
+          X-GNOME-Autostart-enabled=true
+          Name=Set Screen Resolution
+          Comment=Set resolution to 1920x1080 at login
+
+    - name: Set GTK dark theme
+      become_user: "{{ ansible_user }}"
+      shell: >
+        gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
+
+    - name: Set shell color scheme to prefer dark
+      become_user: "{{ ansible_user }}"
+      shell: >
+        gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+
+    - name: Set WM theme to Adwaita-dark
+      become_user: "{{ ansible_user }}"
+      shell: >
+        gsettings set org.gnome.desktop.wm.preferences theme 'Adwaita-dark'
+
+    - name: Set dock position to bottom
+      become_user: "{{ ansible_user }}"
+      shell: >
+        gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
+
+    - name: Clear all pinned apps from dock
+      become_user: "{{ ansible_user }}"
+      shell: >
+        gsettings set org.gnome.shell favorite-apps "[]"
+
+    - name: Set pinned apps in dock order
+      become_user: "{{ ansible_user }}"
+      shell: >
+        gsettings set org.gnome.shell favorite-apps "['org.gnome.Nautilus.desktop', 'brave-browser.desktop', 'org.gnome.Terminal.desktop', 'code.desktop', 'filezilla.desktop', 'dbeaver-ce.desktop']"
+
+    - name: Set desktop icon size to small
+      become_user: "{{ ansible_user }}"
+      shell: >
+        gsettings set org.gnome.shell.extensions.ding icon-size 'small'
+
+    - name: Hide Home folder icon on desktop
+      become_user: "{{ ansible_user }}"
+      shell: >
+        gsettings set org.gnome.shell.extensions.ding show-home false
+
+    - name: Set dock icon size to 40
+      become_user: "{{ ansible_user }}"
+      shell: >
+        gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 40
+
+    - name: Reboot machine safely to apply changes
+      ansible.builtin.reboot:
+        reboot_timeout: 600
+        test_command: whoami

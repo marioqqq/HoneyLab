@@ -1,0 +1,213 @@
+- name: Deploy Ceph for K3s
+  hosts: Cluster
+  become: yes
+  vars:
+    disk_device: /dev/sdb
+    mount_path: /mnt/k3s
+  vars_files:
+    - ../group_vars/cluster.yml
+  tasks:
+    - name: Install prerequisites
+      apt:
+        name:
+          - curl
+          - python3
+          - python3-apt
+          - chrony
+          - firewalld
+          - podman
+        state: present
+
+    # - name: Ensure firewalld is running
+    #   service:
+    #     name: firewalld
+    #     state: started
+    #     enabled: true
+
+    # - name: Open Ceph required ports
+    #   ansible.posix.firewalld:
+    #     port: "{{ item }}"
+    #     permanent: true
+    #     immediate: yes
+    #     state: enabled
+    #   loop:
+    #     - 6789/tcp
+    #     - 3300/tcp
+
+    - name: Check if disk exists
+      stat:
+        path: "{{ disk_device }}"
+      register: sdb_stat
+
+    - name: Fail if disk missing
+      fail:
+        msg: "{{ disk_device }} not found on {{ inventory_hostname }}. Please attach disk."
+      when: not sdb_stat.stat.exists
+
+  # handlers:
+  #   - name: Reload firewalld
+  #     ansible.posix.firewalld:
+  #       state: reloaded
+  #     become: true
+
+    - name: Add cluster hosts to /etc/hosts on bootstrap node
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ hostvars[item].ansible_host }} {{ item }}"
+        state: present
+        create: yes
+      loop: "{{ groups['Cluster'] }}"
+      when: inventory_hostname == groups['Cluster'][0]
+    
+    - name: Download cephadm binary
+      get_url:
+        url: "https://github.com/ceph/ceph/raw/octopus/src/cephadm/cephadm"
+        dest: /usr/local/bin/cephadm
+        mode: '0755'
+
+    - name: Bootstrap Ceph monitor on first node (only run on first)
+      command: >
+        /usr/local/bin/cephadm bootstrap
+        --mon-ip {{ ansible_host }}
+        --initial-dashboard-user admin
+        --initial-dashboard-password admin
+      when: inventory_hostname == groups['Cluster'][0]
+
+    - name: Wait for Ceph health OK on first node
+      command: /usr/local/bin/cephadm shell -- ceph health
+      register: ceph_health
+      retries: 5
+      delay: 15
+      until: "'HEALTH_OK' in ceph_health.stdout"
+      when: inventory_hostname == groups['Cluster'][0]
+
+    - name: Export cephadm public key on bootstrap node
+      command: /usr/local/bin/cephadm shell -- ceph cephadm get-pub-key
+      register: cephadm_pubkey
+      run_once: true
+      delegate_to: "{{ groups['Cluster'][0] }}"
+
+    - name: Add cephadm public key to authorized_keys on all other nodes
+      authorized_key:
+        user: root
+        key: "{{ hostvars[groups['Cluster'][0]].cephadm_pubkey.stdout }}"
+      when: inventory_hostname != groups['Cluster'][0]
+
+    - name: Add other nodes to the cluster (run only on bootstrap node)
+      command: /usr/local/bin/cephadm shell -- ceph orch host add {{ item }}
+      when: inventory_hostname == groups['Cluster'][0]
+      loop: "{{ groups['Cluster'] | difference([groups['Cluster'][0]]) }}"
+
+    - name: Deploy OSD on disk (run only on bootstrap node)
+      command: /usr/local/bin/cephadm shell -- ceph orch daemon add osd {{ item }}:"{{ disk_device }}"
+      when: inventory_hostname == groups['Cluster'][0]
+      loop: "{{ groups['Cluster'] }}"
+
+    - name: Wait for all OSDs to be up and in
+      command: /usr/local/bin/cephadm shell -- ceph health
+      register: ceph_health
+      retries: 5
+      delay: 15
+      until: "'HEALTH_OK' in ceph_health.stdout"
+      when: inventory_hostname == groups['Cluster'][0]
+
+    - name: Create CephFS filesystem
+      command: cephadm shell -- ceph fs volume create cephfs
+      when: inventory_hostname == groups['Cluster'][0]
+
+    # - name: Create NFS cluster
+    #   command: cephadm shell -- ceph nfs cluster create cephfs my-nfs "{{ inventory_hostname }}"
+      # when: inventory_hostname == groups['Cluster'][0]
+
+    # - name: Create CephFS NFS export for cephfs
+    #   command: cephadm shell -- ceph nfs export create cephfs cephfs my-nfs /myshare /
+      # when: inventory_hostname == groups['Cluster'][0]
+
+    # - name: Install nfs-common
+    #   apt:
+    #     name: nfs-common
+    #     state: present
+    #     update_cache: yes
+
+    # - name: Create mount directory if not exists
+    #   file:
+    #     path: "{{ mount_path }}"
+    #     state: directory
+    #     owner: 1000
+    #     group: 1000
+    #     mode: '0755'
+
+    # - name: Mount NFS share from first Cluster host
+    #   mount:
+    #     path: "{{ mount_path }}"
+    #     src: "{{ hostvars[groups['Cluster'][0]].ansible_host }}:/myshare"
+    #     fstype: nfs
+    #     opts: defaults
+    #     state: mounted
+
+    - name: Install ceph-common package
+      apt:
+        name: ceph-common
+        state: present
+        update_cache: yes
+
+    - name: Create mount directory
+      file:
+        path: "{{ mount_path }}"
+        state: directory
+        owner: 1000
+        group: 1000
+        mode: '0755'
+
+    - name: Copy ceph.conf to client
+      copy:
+        src: /etc/ceph/ceph.conf
+        dest: /etc/ceph/ceph.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Fetch client admin keyring from first cluster node
+      fetch:
+        src: /etc/ceph/ceph.client.admin.keyring
+        dest: /tmp/ceph.client.admin.keyring
+        flat: yes
+      when: inventory_hostname == groups['Cluster'][0]
+
+    - name: Copy client admin keyring to /tmp on each node
+      copy:
+        src: /tmp/ceph.client.admin.keyring
+        dest: /tmp/ceph.client.admin.keyring
+        mode: '0600'
+
+    - name: Read Ceph admin key from fetched keyring file
+      slurp:
+        src: /tmp/ceph.client.admin.keyring
+      register: ceph_keyring_b64
+
+    - name: Extract the base64 key from keyring content
+      set_fact:
+        ceph_key: "{{ (ceph_keyring_b64.content | b64decode).split('key = ')[1].splitlines()[0] }}"
+
+    - copy:
+        content: "{{ ceph_key }}"
+        dest: /etc/ceph/ceph.client.admin.key
+        mode: '0600'
+
+    - mount:
+        path: "{{ mount_path }}"
+        src: "{{ hostvars[groups['Cluster'][0]].ansible_host }}:/"
+        fstype: ceph
+        opts: "name=admin,secretfile=/etc/ceph/ceph.client.admin.key"
+        state: mounted
+
+    - file:
+        path: "{{ mount_path }}"
+        owner: 1000
+        group: 1000
+        recurse: yes
+
+    - name: Remove temporary admin key file
+      file:
+        path: /tmp/ceph.client.admin.keyring
+        state: absent

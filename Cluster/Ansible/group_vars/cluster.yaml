@@ -1,0 +1,9 @@
+ceph_release: "quincy"
+ceph_public_network: "xx.xx.xx.0/24"
+ceph_cluster_network: "xx.xx.xx.0/24"
+
+osd_devices:
+  - /dev/...
+
+cephadm_pull_policy: "always"
+cephadm_bin: /usr/local/bin/cephadm

@@ -84,24 +84,24 @@ services:
       - media
     restart: unless-stopped
 
-  lidarr:
-    container_name: lidarr
-    image: lscr.io/linuxserver/lidarr:latest
-    ports:
-      - 8686:8686
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Bratislava
-    volumes:
-      - ./lidarr/config:/config
-      - downloads:/downloads
-      - music:/music
-    depends_on:
-      - prowlarr
-    networks:
-      - media
-    restart: unless-stopped
+  # lidarr:
+  #   container_name: lidarr
+  #   image: lscr.io/linuxserver/lidarr:latest
+  #   ports:
+  #     - 8686:8686
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=Europe/Bratislava
+  #   volumes:
+  #     - ./lidarr/config:/config
+  #     - downloads:/downloads
+  #     - music:/music
+  #   depends_on:
+  #     - prowlarr
+  #   networks:
+  #     - media
+  #   restart: unless-stopped
 
   plex:
     container_name: plex

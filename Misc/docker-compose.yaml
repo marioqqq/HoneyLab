@@ -1,4 +1,46 @@
 services:
+  docmost:
+    container_name: docmost
+    image: docmost/docmost:latest
+    ports:
+      - 4000:3000
+    environment:
+      - APP_URL=${APP_URL}
+      - APP_SECRET=${APP_SECRET}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./docmost:/app/data/storage
+    depends_on:
+      - postgres
+      - redis
+    network_mode: bridge  
+    restart: unless-stopped
+
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    network_mode: bridge
+    restart: unless-stopped
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis:/data
+    network_mode: bridge
+    restart: unless-stopped
+
   grav:
     container_name: grav
     image: lscr.io/linuxserver/grav:latest
@@ -83,5 +125,66 @@ services:
     devices:
      - /dev/ttyACM0:/dev/ttyACM0
     user: 0:0
+    network_mode: bridge
+    restart: unless-stopped
+
+  rustdesk-hbbs:
+    container_name: rustdesk-hbbs
+    image: rustdesk/rustdesk-server:latest
+    volumes:
+      - ./rustdesk/data:/root
+    command: hbbs
+    depends_on:
+      - rustdesk-hbbr
+    network_mode: host
+    restart: unless-stopped
+
+  rustdesk-hbbr:
+    container_name: rustdesk-hbbr
+    image: rustdesk/rustdesk-server:latest
+    volumes:
+      - ./rustdesk/data:/root
+    command: hbbr
+    network_mode: host
+    restart: unless-stopped
+
+  duckdns:
+    container_name: duckdns
+    image: lscr.io/linuxserver/duckdns:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - SUBDOMAINS=${SUBDOMAINS}
+      - TOKEN=${TOKEN}
+      - UPDATE_IP=ipv4
+      - LOG_FILE=true
+    volumes:
+      - ./duckdns/config:/config
+    network_mode: bridge
+    restart: unless-stopped
+
+  wireguard:
+    container_name: wireguard
+    image: linuxserver/wireguard:latest
+    ports:
+      - 51820:51820/udp
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - SERVERURL=${SERVERURL}
+      - SERVERPORT=51820
+      - PEERS=${PEERS}
+      - PEERDNS=auto
+      - INTERNAL_SUBNET=10.13.13.0
+    volumes:
+      - ./wireguard/config:/config
+      - /lib/modules:/lib/modules
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
     network_mode: bridge
     restart: unless-stopped

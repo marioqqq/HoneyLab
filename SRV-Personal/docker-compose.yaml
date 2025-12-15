@@ -29,25 +29,6 @@ services:
     restart: unless-stopped
 
   # Specific
-  docmost:
-    container_name: docmost
-    image: docmost/docmost:latest
-    ports:
-      - 4000:3000
-    environment:
-      - APP_URL=${APP_URL}
-      - APP_SECRET=${APP_SECRET}
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
-      - REDIS_URL=redis://redis:6379
-    volumes:
-      - ./docmost:/app/data/storage
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - personal    
-    restart: unless-stopped
-
   grafana:
     container_name: grafana
     image: grafana/grafana:latest
@@ -106,32 +87,6 @@ services:
       - ./nocodb/data:/usr/app/data
     depends_on:
       - mariadb
-    networks:
-      - personal
-    restart: unless-stopped
-
-  postgres:
-    container_name: postgres
-    image: postgres:latest
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    volumes:
-      - ./postgres:/var/lib/postgresql/data
-    networks:
-      - personal
-    restart: unless-stopped
-
-  redis:
-    container_name: redis
-    image: redis:latest
-    ports:
-      - 6379:6379
-    volumes:
-      - ./redis:/data
     networks:
       - personal
     restart: unless-stopped

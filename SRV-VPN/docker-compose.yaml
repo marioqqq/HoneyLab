@@ -29,28 +29,11 @@ services:
     restart: unless-stopped
 
 #Specific
-  duckdns:
-    container_name: duckdns
-    image: lscr.io/linuxserver/duckdns:latest
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Bratislava
-      - SUBDOMAINS=${SUBDOMAINS}
-      - TOKEN=${TOKEN}
-      - UPDATE_IP=ipv4
-      - LOG_FILE=true
-    volumes:
-      - ./duckdns/config:/config
-    networks:
-      - vpn
-    restart: unless-stopped
-
   tailscale:
     container_name: tailscale
     image: tailscale/tailscale:latest
     environment:
-      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_AUTHKEY=${TS_AUTHKEY} # Comment after initial run
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_USERSPACE=false
       - TS_EXTRA_ARGS=--login-server=${LOGIN_SERVER} --advertise-routes ${ADVERTISE_ROUTES} --restart
@@ -60,32 +43,6 @@ services:
     cap_add:
       - net_admin
       - sys_module
-    networks:
-      - vpn
-    restart: unless-stopped
-
-  wireguard:
-    container_name: wireguard
-    image: linuxserver/wireguard:latest
-    ports:
-      - 51820:51820/udp
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Bratislava
-      - SERVERURL=${SERVERURL}
-      - SERVERPORT=51820
-      - PEERS=${PEERS}
-      - PEERDNS=auto
-      - INTERNAL_SUBNET=10.13.13.0
-    volumes:
-      - ./wireguard/config:/config
-      - /lib/modules:/lib/modules
-    cap_add:
-      - NET_ADMIN
-      - SYS_MODULE
-    sysctls:
-      - net.ipv4.conf.all.src_valid_mark=1
     networks:
       - vpn
     restart: unless-stopped

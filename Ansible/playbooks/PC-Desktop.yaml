@@ -90,30 +90,6 @@
         state: present
         update_cache: yes
 
-    - name: Get latest RustDesk release info
-      uri:
-        url: https://api.github.com/repos/rustdesk/rustdesk/releases/latest
-        return_content: yes
-      register: rustdesk_release
-
-    - name: Set RustDesk download URL
-      set_fact:
-        rustdesk_deb_url: "{{ (rustdesk_release.json.assets | selectattr('name', 'search', '(amd64|x86_64)\\.deb') | list)[0].browser_download_url }}"
-
-    - name: Download RustDesk latest .deb package
-      get_url:
-        url: "{{ rustdesk_deb_url }}"
-        dest: /tmp/rustdesk.deb
-
-    - name: Install RustDesk
-      apt:
-        deb: /tmp/rustdesk.deb
-
-    - name: Remove RustDesk installer
-      file:
-        path: /tmp/rustdesk.deb
-        state: absent
-
     - name: Configure GDM for automatic login and disable Wayland
       blockinfile:
         path: /etc/gdm3/custom.conf

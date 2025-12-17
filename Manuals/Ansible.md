@@ -30,7 +30,7 @@ To run playbook, use:
 ```bash
 ansible-playbook ./Ansible/playbooks/generate-ssh-key.yaml -i ./Ansible/inventory/hosts --ask-pass
 ansible-playbook ./Ansible/playbooks/copy-ssh-key.yaml -i ./Ansible/inventory/hosts --ask-pass
-ansible-playbook ./Ansible/playbooks/apt.yaml -i ./Ansible/inventory/hosts --ask-become-pass
+ansible-playbook ./Ansible/playbooks/update.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ansible-playbook ./Ansible/playbooks/SRV-Management.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ansible-playbook ./Ansible/playbooks/SRV-Media.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ansible-playbook ./Ansible/playbooks/SRV-Personal.yaml -i ./Ansible/inventory/hosts --ask-become-pass

@@ -41,6 +41,22 @@ services:
     network_mode: bridge
     restart: unless-stopped
 
+  duckdns:
+    container_name: duckdns
+    image: lscr.io/linuxserver/duckdns:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - SUBDOMAINS=${SUBDOMAINS}
+      - TOKEN=${TOKEN}
+      - UPDATE_IP=ipv4
+      - LOG_FILE=true
+    volumes:
+      - ./duckdns/config:/config
+    network_mode: bridge
+    restart: unless-stopped
+
   grav:
     container_name: grav
     image: lscr.io/linuxserver/grav:latest
@@ -146,22 +162,6 @@ services:
       - ./rustdesk/data:/root
     command: hbbr
     network_mode: host
-    restart: unless-stopped
-
-  duckdns:
-    container_name: duckdns
-    image: lscr.io/linuxserver/duckdns:latest
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Bratislava
-      - SUBDOMAINS=${SUBDOMAINS}
-      - TOKEN=${TOKEN}
-      - UPDATE_IP=ipv4
-      - LOG_FILE=true
-    volumes:
-      - ./duckdns/config:/config
-    network_mode: bridge
     restart: unless-stopped
 
   wireguard:

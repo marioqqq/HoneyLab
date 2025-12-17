@@ -45,7 +45,6 @@ Script will perform update and upgrade of the system, sets user do use docker wi
     - Watchtower
     - Adguard home
     - Nginx Proxy Manager
-    - Rustdesk
 - SRV-Media
     - Portainer agent
     - Watchtower
@@ -61,20 +60,15 @@ Script will perform update and upgrade of the system, sets user do use docker wi
 - SRV-Personal
     - Portainer agent
     - Watchtower
-    - Docmost
     - Grafana
     - Homepage
     - MariaDB
     - NocoDB
-    - Postgres
-    - Redis
     - Vaultwarden
 - SRV-VPN
     - Portainer agent
     - Watchtower
-    - DuckDNS
     - Tailscale
-    - Wireguard
 - SRV-Cloud
     - Watchtower
     - Headscale
@@ -84,7 +78,13 @@ Script will perform update and upgrade of the system, sets user do use docker wi
     - MySQL
     - Nginx Proxy Manager
 - Misc
+    - Docmost
+    - Postgres
+    - Redis
+    - DuckDNS
     - Grav
     - Ignition gateway
     - Node-Red
     - Octoprint
+    - Rustdesk
+    - Wireguard

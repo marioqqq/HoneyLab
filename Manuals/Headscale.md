@@ -1,7 +1,8 @@
 Create user `docker exec headscale headscale users create USERNAME`
 
-To connect phone, download Tailscale app. Close login and open Settings/Accounts/3 dots/ Use an alternate server. Put your URL and copy its content to the server 
+To connect phone, download Tailscale app. Close login and open Settings/Accounts/3 dots/Use an alternate server. Put your URL and copy its content to the server. 
 ```bash
+docker exec headscale headscale user list
 docker exec headscale headscale nodes register --user USERNAME --key randomstring
 docker exec headscale headscale nodes list
 docker exec headscale headscale nodes rename new-name -i id-from-nodes-list
@@ -13,7 +14,7 @@ To connect Tailscale container for LAN access, run on Headsclale server
 ```bash
 docker exec headscale headscale preauthkeys create --user id-from-users-list
 ```
-Copy the key to .env file and run the container.
+Copy the key to .env file and run the [container](./../SRV-VPN/.env). After that on server side execute these commands.
 ```bash
 docker exec headscale headscale nodes list
 docker exec headscale headscale nodes rename new-name -i id-from-nodes-list

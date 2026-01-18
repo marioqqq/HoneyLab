@@ -1,7 +1,7 @@
 services:
   # Common
-  protainer-agent:
-    container_name: protainer-agent
+  portainer-agent:
+    container_name: portainer-agent
     image: portainer/agent:latest
     ports:
       - 9001:9001

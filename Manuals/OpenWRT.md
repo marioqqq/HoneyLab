@@ -64,3 +64,60 @@ service dnsmasq restart
 service odhcpd restart
 exit 0
 ```
+
+## Tailscale
+```
+opkg update
+opkg install tailscale
+```
+
+```
+/etc/init.d/tailscale enable
+/etc/init.d/tailscale start
+```
+If it fails `tailscaled &`
+
+```
+uci add firewall zone
+uci set firewall.@zone[-1].name='tailscale'
+uci set firewall.@zone[-1].input='ACCEPT'
+uci set firewall.@zone[-1].output='ACCEPT'
+uci set firewall.@zone[-1].forward='ACCEPT'
+uci set firewall.@zone[-1].masq='1'
+uci set firewall.@zone[-1].device='tailscale0'
+```
+
+```
+uci add firewall forwarding
+uci set firewall.@forwarding[-1].src='lan'
+uci set firewall.@forwarding[-1].dest='tailscale'
+```
+
+```
+uci add firewall forwarding
+uci set firewall.@forwarding[-1].src='tailscale'
+uci set firewall.@forwarding[-1].dest='lan'
+```
+
+```
+uci commit firewall
+/etc/init.d/firewall restart
+```
+
+```
+uci set network.lan.delegate='1'
+uci commit network
+/etc/init.d/network restart
+```
+
+```
+echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+```
+
+[TS_AUTHKEY setup](./Headscale.md)
+```
+tailscale up \
+  --authkey=TS_AUTHKEY \
+  --login-server=https://your.headscale.domain \
+  --accept-routes
+```

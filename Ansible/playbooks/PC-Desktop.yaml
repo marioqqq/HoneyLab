@@ -90,15 +90,26 @@
         state: present
         update_cache: yes
 
-    - name: Configure GDM for automatic login and disable Wayland
+    - name: Check if running in a virtual machine
+      shell: systemd-detect-virt --vm
+      register: virt_type
+      changed_when: false
+      failed_when: false
+
+    - name: Display virtualization type
+      debug:
+        msg: "System virtualization: {{ virt_type.stdout }}"
+
+    - name: Configure GDM for automatic login with Wayland (VM only)
       blockinfile:
         path: /etc/gdm3/custom.conf
         marker: "# {mark} ANSIBLE MANAGED BLOCK"
         block: |
           [daemon]
-          WaylandEnable=false
+          WaylandEnable=true
           AutomaticLoginEnable=true
-          AutomaticLogin=\$USERNAME
+          AutomaticLogin=$USERNAME
+      when: virt_type.stdout != "none"
 
     - name: Create resolution set script
       become_user: "{{ ansible_user }}"

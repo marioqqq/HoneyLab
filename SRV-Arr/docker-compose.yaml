@@ -9,7 +9,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/volumes:/var/lib/docker/volumes
     networks:
-      - media
+      - arr
     restart: unless-stopped
 
   watchtower:
@@ -25,99 +25,98 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - media
+      - arr
     restart: unless-stopped
 
   # Specific
-  immich:
-    container_name: immich
-    # image: ghcr.io/imagegenius/immich:cuda # NVIDIA
-    image: ghcr.io/imagegenius/immich:openvino # INTEL
+  bazarr:
+    container_name: bazarr
+    image: lscr.io/linuxserver/bazarr:latest
     ports:
-      - 8080:8080
+      - 6767:6767
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Bratislava
-      - DB_HOSTNAME=postgres
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_DATABASE_NAME=${DB_DATABASE_NAME}
-      - REDIS_HOSTNAME=redis
-      - DB_PORT=5432
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - MACHINE_LEARNING_HOST=0.0.0.0
-      - MACHINE_LEARNING_PORT=3003
-      - MACHINE_LEARNING_WORKERS=1
-      - MACHINE_LEARNING_WORKER_TIMEOUT=120
-      # - NVIDIA_VISIBLE_DEVICES=all # NVIDIA
-      # - NVIDIA_DRIVER_CAPABILITIES=all # NVIDIA
     volumes:
-      - ./immich/config:/config
-      - ./immich/libraries:/libraries
-      - photos:/photos
-    devices:
-      - /dev/dri # INTEL
-    device_cgroup_rules:
-      - c 189:* rmw # INTEL
-    depends_on:
-      - postgres
-      - redis
-    # runtime: nvidia # NVIDIA
-    networks:
-      - media
-    restart: unless-stopped
-
-  plex:
-    container_name: plex
-    image: lscr.io/linuxserver/plex:latest
-    environment:
-      - PGID=1000
-      - PUID=1000
-      - TZ=Europe/Bratislava
-      - VERSION=docker
-      # - NVIDIA_VISIBLE_DEVICES=all # NVIDIA
-      # - NVIDIA_DRIVER_CAPABILITIES=all # NVIDIA
-    volumes:
-      - ./plex/config:/config
+      - ./bazarr/config:/config
       - movies:/movies
-      - movies-czsk:/movies-czsk # remove if you don't have a czech/slovak movies share
-      - music:/music
-    devices: # INTEL
-      - /dev/dri:/dev/dri # INTEL
-    # runtime: nvidia # NVIDIA
-    network_mode: host
+    networks:
+      - arr
     restart: unless-stopped
 
-  postgres:
-    container_name: postgres
-    image: tensorchord/pgvecto-rs:pg14-v0.2.0
+  # lidarr:
+  #   container_name: lidarr
+  #   image: lscr.io/linuxserver/lidarr:latest
+  #   ports:
+  #     - 8686:8686
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=Europe/Bratislava
+  #   volumes:
+  #     - ./lidarr/config:/config
+  #     - downloads:/downloads
+  #     - music:/music
+  #   depends_on:
+  #     - prowlarr
+  #   networks:
+  #     - arr
+  #   restart: unless-stopped
+
+  prowlarr:
+    container_name: prowlarr
+    image: lscr.io/linuxserver/prowlarr:latest
     ports:
-      - 5432:5432
+      - 9696:9696
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Bratislava
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_DATABASE_NAME}
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data
+      - ./prowlarr/config:/config
+    depends_on:
+      - transmission
     networks:
-      - media
+      - arr
     restart: unless-stopped
 
-  redis:
-    container_name: redis
-    image: redis:latest
+  radarr:
+    container_name: radarr
+    image: lscr.io/linuxserver/radarr:latest
     ports:
-      - 6379:6379
+      - 7878:7878
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
     volumes:
-      - ./redis/dаta:/data
-    entrypoint: redis-server --requirepass ${REDIS_PASSWORD}
+      - ./radarr/config:/config
+      - downloads:/downloads
+      - movies:/movies
+    depends_on:
+      - prowlarr
     networks:
-      - media
+      - arr
+    restart: unless-stopped
+
+  radarr-czsk: # remove if you don't have a czech/slovak movies share
+    container_name: radarr-czsk
+    image: lscr.io/linuxserver/radarr:latest
+    ports:
+      - 7879:7878
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./radarr-czsk/config:/config
+      - downloads:/downloads
+      - movies-czsk:/movies
+    depends_on:
+      - prowlarr
+    networks:
+      - arr
     restart: unless-stopped
 
   transmission:
@@ -136,15 +135,22 @@ services:
       - downloads:/downloads
       - watch:/watch
     networks:
-      - media
+      - arr
     restart: unless-stopped
 
 networks:
-  media:
-    name: media
+  arr:
+    name: arr
     driver: bridge
 
 volumes:
+  downloads:
+    name: downloads
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${IP},rw,nolock,soft,nfsvers=4
+      device: ${DOWNLOADS}
   movies:
     name: movies
     driver: local
@@ -166,10 +172,10 @@ volumes:
       type: nfs
       o: addr=${IP},rw,nolock,soft,nfsvers=4
       device: ${MUSIC}
-  photos:
-    name: photos
+  watch:
+    name: watch
     driver: local
     driver_opts:
       type: nfs
       o: addr=${IP},rw,nolock,soft,nfsvers=4
-      device: ${PHOTOS}
+      device: ${WATCH}

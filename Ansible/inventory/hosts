@@ -4,21 +4,25 @@ yy.yy.yy.yy
 zz.zz.zz.zz
 ww.ww.ww.ww
 aa.aa.aa.aa
+bb.bb.bb.bb
 
 [SRV_Management]
 xx.xx.xx.xx
 
-[SRV_Media]
+[SRV_Arr]
 yy.yy.yy.yy
 
-[SRV_Personal]
+[SRV_Media]
 zz.zz.zz.zz
 
-[SRV_VPN]
+[SRV_Personal]
 ww.ww.ww.ww
 
-[SRV_NUT]
+[SRV_VPN]
 aa.aa.aa.aa
+
+[SRV_NUT]
+bb.bb.bb.bb
 
 [PC_Desktop]
 qq.qq.qq.qq

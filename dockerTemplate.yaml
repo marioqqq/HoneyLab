@@ -35,6 +35,7 @@ services:
       - links
     depends_on:
       - depends_on
+    stop_grace_period: time
     network_mode: bridge / host
     networks:
       - network

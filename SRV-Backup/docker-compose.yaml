@@ -1,0 +1,78 @@
+services:
+  # Common
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    ports:
+      - 9443:9443
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - backup
+    restart: unless-stopped
+
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - WATCHTOWER_MONITOR_ONLY=false
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 6 0 * * 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - backup
+    restart: unless-stopped
+
+  # Specific
+  windows:
+    container_name: windows
+    image: dockurr/windows
+    ports:
+      - 8006:8006
+      - 3389:3389/tcp
+      - 3389:3389/udp
+    environment:
+      - VERSION=11
+      - DISK_SIZE=64G
+      - CPU_CORES=8
+      - RAM_SIZE=6G
+      - USERNAME=${USERNAME}
+      - PASSWORD=${PASSWORD}
+      - LANGUAGE=English
+      - REGION=sk-SK
+      - KEYBOARD=en-US
+    volumes:
+      - windows:/storage # must be root
+#      - ./windows:/storage
+    devices:
+      - /dev/kvm
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    stop_grace_period: 2m
+    networks:
+      - backup
+    restart: unless-stopped
+
+networks:
+  backup:
+    name: backup
+    driver: bridge
+
+volumes:
+  windows:
+    name: windows
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${IP},rw,nolock,soft,nfsvers=4
+      device: ${WINDOWS}

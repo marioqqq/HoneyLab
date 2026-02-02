@@ -18,7 +18,7 @@ services:
 
   watchtower:
     container_name: watchtower
-    image: containrrr/watchtower:latest
+    image: nickfedor/watchtower::latest
     environment:
       - PUID=1000
       - PGID=1000
@@ -26,6 +26,10 @@ services:
       - WATCHTOWER_MONITOR_ONLY=false
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_SCHEDULE=0 6 0 * * 0
+      - WATCHTOWER_NOTIFICATIONS=gotify
+      - WATCHTOWER_NOTIFICATION_GOTIFY_URL=${GOTIFY_URL}
+      - WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN=${GOTIFY_TOKEN}
+      - WATCHTOWER_NOTIFICATIONS_HOSTNAME=SRV-Backup
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
@@ -33,35 +37,8 @@ services:
     restart: unless-stopped
 
   # Specific
-  windows:
-    container_name: windows
-    image: dockurr/windows
-    ports:
-      - 8006:8006
-      - 3389:3389/tcp
-      - 3389:3389/udp
-    environment:
-      - VERSION=11
-      - DISK_SIZE=64G
-      - CPU_CORES=8
-      - RAM_SIZE=6G
-      - USERNAME=${USERNAME}
-      - PASSWORD=${PASSWORD}
-      - LANGUAGE=English
-      - REGION=sk-SK
-      - KEYBOARD=en-US
-    volumes:
-      - windows:/storage # must be root
-#      - ./windows:/storage
-    devices:
-      - /dev/kvm
-      - /dev/net/tun
-    cap_add:
-      - NET_ADMIN
-    stop_grace_period: 2m
-    networks:
-      - backup
-    restart: unless-stopped
+  container:
+    TBA
 
 networks:
   backup:

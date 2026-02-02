@@ -2,14 +2,18 @@ services:
   # Common
   watchtower:
     container_name: watchtower
-    image: containrrr/watchtower:latest
+    image: nickfedor/watchtower:latest
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=1001
+      - PGID=1001
       - TZ=Europe/Bratislava
       - WATCHTOWER_MONITOR_ONLY=false
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_SCHEDULE=0 6 0 * * 0
+      - WATCHTOWER_NOTIFICATIONS=gotify
+      - WATCHTOWER_NOTIFICATION_GOTIFY_URL=${GOTIFY_URL}
+      - WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN=${GOTIFY_TOKEN}
+      - WATCHTOWER_NOTIFICATIONS_HOSTNAME=SRV-Cloud
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
@@ -17,11 +21,21 @@ services:
     restart: unless-stopped
 
   # Specific
+  gotifi:
+    container_name: gotify
+    image: gotify/server:latest
+    environment:
+      - TZ=Europe/Bratislava
+      - GOTIFY_DEFAULTUSER_PASS=${GOTIFY_PASS}
+    volumes:
+      - ./gotify:/app/data
+    networks:
+      - cloud
+    restart: unless-stopped
+
   headscale:
     container_name: headscale
     image: headscale/headscale:stable
-    ports:
-      - 8080:8080
     volumes:
       - ./headscale:/var/lib/headscale
       - ./config.yaml:/etc/headscale/config.yaml
@@ -30,87 +44,36 @@ services:
       - cloud
     restart: unless-stopped
 
-  kasm:
-    container_name: kasm
-    image: lscr.io/linuxserver/kasm:latest
-    ports:
-      - 3000:3000
-      - 8443:8443
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Bratislava
-      - KASM_PORT=8443
-    volumes:
-      - ./kasm/data:/opt
-      - ./kasm/profiles:/profiles
-      - /dev/input:/dev/input
-      - /run/udev/data:/run/udev/data
-    privileged: true
-    networks:
-      - cloud
-    restart: unless-stopped
-
   kimai:
-    container_name: kamai
-    image: kimai/kimai2:apache
-    ports:
-      - 8001:8001
+    container_name: kimai
+    image: lscr.io/linuxserver/kimai:latest
     environment:
-      - ADMINMAIL=${ADMINMAIL}
-      - ADMINPASS=${ADMINPASS}
-      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql/${MYSQL_DATABASE}
+      - PUID=1001
+      - PGID=1001
+      - TZ=Europe/Bratislava
+      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mariadb/${MYSQL_DATABASE}
+      - TRUSTED_PROXIES=*
     volumes:
-      - ./kamai/data:/opt/kimai/var/data
-      - ./kamai/plugins:/opt/kimai/var/plugins
+      - ./kimai:/config
     depends_on:
-      - mysql
+      - mariadb
     networks:
       - cloud
     restart: unless-stopped
 
-  minecraft:
-    container_name: Minecraft
-    image: itzg/minecraft-server:latest
-    ports:
-      - 25565:25565
+  mariadb:
+    container_name: mariadb
+    image: lscr.io/linuxserver/mariadb:latest
     environment:
+      - PUID=1001
+      - PGID=1001
       - TZ=Europe/Bratislava
-      - EULA=TRUE
-      - TYPE=VANILLA
-      - DEBUG=true
-      - DIFFICULTY=normal
-      - VERSION=1.20.1
-      - MAX_PLAYERS=10
-      - ONLINE_MODE=TRUE
-      - INIT_MEMORY=2G
-      - MAX_MEMORY=8G
-      - MOTD=Minecraft server
-    volumes:
-      - ./minecraft/data:/data
-    networks:
-      - cloud
-    restart: unless-stopped.
-
-  mysql:
-    container_name: mysql
-    image: mysql:latest
-    ports:
-      - 3006:3006
-    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
-      - ./mysql/data:/var/lib/mysql
-    command: --default-storage-engine innodb
-    healthcheck:
-      test: mysqladmin -p$$MYSQL_ROOT_PASSWORD ping -h localhost
-      interval: 20s
-      start_period: 10s
-      timeout: 10s
-      retries: 3
+      - ./mariadb:/config
     networks:
       - cloud
     restart: unless-stopped
@@ -123,8 +86,8 @@ services:
       - 81:81
       - 443:443
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=1001
+      - PGID=1001
       - TZ=Europe/Bratislava
     volumes:
       - ./nginx_proxy_manager/data:/data
@@ -136,4 +99,4 @@ services:
 networks:
   cloud:
     name: cloud
-    external: true
+    driver: bridge

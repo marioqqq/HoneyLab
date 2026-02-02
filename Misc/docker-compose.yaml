@@ -111,6 +111,48 @@ services:
     network_mode: bridge
     restart: unless-stopped
 
+  kasm:
+    container_name: kasm
+    image: lscr.io/linuxserver/kasm:latest
+    ports:
+      - 3000:3000
+      - 8443:8443
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - KASM_PORT=8443
+    volumes:
+      - ./kasm/data:/opt
+      - ./kasm/profiles:/profiles
+      - /dev/input:/dev/input
+      - /run/udev/data:/run/udev/data
+    privileged: true
+    network_mode: bridge
+    restart: unless-stopped
+
+  minecraft:
+    container_name: Minecraft
+    image: itzg/minecraft-server:latest
+    ports:
+      - 25565:25565
+    environment:
+      - TZ=Europe/Bratislava
+      - EULA=TRUE
+      - TYPE=VANILLA
+      - DEBUG=true
+      - DIFFICULTY=normal
+      - VERSION=1.20.1
+      - MAX_PLAYERS=10
+      - ONLINE_MODE=TRUE
+      - INIT_MEMORY=2G
+      - MAX_MEMORY=8G
+      - MOTD=Minecraft server
+    volumes:
+      - ./minecraft/data:/data
+    network_mode: bridge
+    restart: unless-stopped
+
   node-red:
     container_name: node-red
     image: nodered/node-red:latest
@@ -162,6 +204,36 @@ services:
       - ./rustdesk/data:/root
     command: hbbr
     network_mode: host
+    restart: unless-stopped
+
+  windows:
+    container_name: windows
+    image: dockurr/windows
+    ports:
+      - 8006:8006
+      - 3389:3389/tcp
+      - 3389:3389/udp
+    environment:
+      - VERSION=11
+      - DISK_SIZE=64G
+      - CPU_CORES=8
+      - RAM_SIZE=6G
+      - USERNAME=${USERNAME}
+      - PASSWORD=${PASSWORD}
+      - LANGUAGE=English
+      - REGION=sk-SK
+      - KEYBOARD=en-US
+    volumes:
+      - windows:/storage # must be root
+#      - ./windows:/storage
+    devices:
+      - /dev/kvm
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    stop_grace_period: 2m
+    networks:
+      - backup
     restart: unless-stopped
 
   wireguard:

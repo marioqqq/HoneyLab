@@ -29,7 +29,7 @@ ansible-playbook ./Ansible/playbooks/copy-ssh-key.yaml -i ./Ansible/inventory/ho
 
 If you need to copy SSH key to new machine:
 ```bash
-ansible-playbook ./Ansible/playbooks/copy-ssh-key.yaml -i ./Ansible/inventory/hosts --ask-pass --limit "SRV-xyz"
+ansible-playbook ./Ansible/playbooks/copy-ssh-key.yaml -i ./Ansible/inventory/hosts --ask-pass --limit "SRV_xyz"
 ```
 
 Test connection to all machines:

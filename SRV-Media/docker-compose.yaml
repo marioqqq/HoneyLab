@@ -14,7 +14,7 @@ services:
 
   watchtower:
     container_name: watchtower
-    image: containrrr/watchtower:latest
+    image: nickfedor/watchtower::latest
     environment:
       - PUID=1000
       - PGID=1000
@@ -22,6 +22,10 @@ services:
       - WATCHTOWER_MONITOR_ONLY=false
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_SCHEDULE=0 6 0 * * 0
+      - WATCHTOWER_NOTIFICATIONS=gotify
+      - WATCHTOWER_NOTIFICATION_GOTIFY_URL=${GOTIFY_URL}
+      - WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN=${GOTIFY_TOKEN}
+      - WATCHTOWER_NOTIFICATIONS_HOSTNAME=SRV-Media
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:

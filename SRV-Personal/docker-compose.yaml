@@ -106,15 +106,8 @@ services:
       - TZ=Europe/Bratislava
       - ADMIN_TOKEN=${ADMIN_TOKEN}
       - WEBSOCKET_ENABLED=true
-      - SIGNUPS_ALLOWED=false
-      - INVITATIONS_ALLOWED=true
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_FROM=${SMTP_FROM}
-      - SMTP_FROM_NAME=${SMTP_FROM_NAME}
-      - SMTP_SECURITY=${SMTP_SECURITY}
-      - SMTP_PORT=${SMTP_PORT}
-      - SMTP_USERNAME=${SMTP_USERNAME}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SIGNUPS_ALLOWED=true
+      - INVITATIONS_ALLOWED=false
       - DOMAIN=${DOMAIN}
     volumes:
       - ./vaultwarden/data:/data

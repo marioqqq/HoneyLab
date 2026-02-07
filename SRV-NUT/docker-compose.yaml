@@ -1,0 +1,113 @@
+services:
+  # Common
+  portainer-agent:
+    container_name: portainer-agent
+    image: portainer/agent:latest
+    ports:
+      - 9001:9001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    networks:
+      - nut
+    restart: unless-stopped
+
+  watchtower:
+    container_name: watchtower
+    image: nickfedor/watchtower::latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - WATCHTOWER_MONITOR_ONLY=false
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 6 0 * * 0
+      - WATCHTOWER_NOTIFICATIONS=gotify
+      - WATCHTOWER_NOTIFICATION_GOTIFY_URL=${GOTIFY_URL}
+      - WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN=${GOTIFY_TOKEN}
+      - WATCHTOWER_NOTIFICATIONS_HOSTNAME=SRV-NUT
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - nut
+    restart: unless-stopped
+
+  # Specific
+  adguard_home:
+    container_name: adguard_home
+    image: adguard/adguardhome:latest
+    ports:
+      - ${IP}:53:53/tcp
+      - ${IP}:53:53/udp
+      - 3000:3000
+    volumes:
+      - ./adguard_home/work:/opt/adguardhome/work
+      - ./adguard_home/conf:/opt/adguardhome/conf
+    networks:
+      - nut
+    restart: unless-stopped
+
+  nutify:
+    container_name: Nutify
+    image: dartsteven/nutify:arm64-latest
+    ports:
+      - 3493:3493
+      - 5050:5050
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - UDEV=1
+    volumes:
+      - ./nutify/logs:/app/nutify/logs
+      - ./nutify/instance:/app/nutify/instance
+      - ./nutify/ssl:/app/ssl
+      - ./nutify/etc/nut:/etc/nut
+      - /dev:/dev:rw              # Full /dev access improves hotplug handling
+      - /run/udev:/run/udev:ro    # Access to udev events
+    devices:
+      - /dev/bus/usb:/dev/bus/usb:rwm
+    device_cgroup_rules:
+      - 'c 189:* rwm'
+    privileged: true
+    user: root
+    cap_add:
+      - SYS_ADMIN
+      - SYS_RAWIO
+      - MKNOD
+    networks:
+      - nut
+    restart: always
+
+  upsnap:
+    container_name: upsnap
+    image: ghcr.io/seriousm4x/upsnap:latest # images are also available on docker hub: seriousm4x/upsnap:5
+    environment:
+      - TZ=Europe/Bratislava
+      - UPSNAP_INTERVAL=*/10 * * * * *
+      - UPSNAP_SCAN_RANGE=${RANGE}   
+    volumes:
+      - ./upsnap:/app/pb_data
+    network_mode: host
+    restart: unless-stopped
+
+  upswake:
+    container_name: upswake
+    image: thedarthmole/upswake:latest
+    environment:
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./upswake/config.yaml:/config.yaml:ro
+      - ./upswake/rules:/rules:ro
+      - ./upswake/cache:/.cache
+    user: 1000:1000
+    command: ["serve"]
+    cap_drop: [ all ]
+    security_opt: [no-new-privileges:true]
+    depends_on:
+      - nutify
+    network_mode: host
+    restart: unless-stopped
+
+networks:
+  nut:
+    name: nut
+    driver: bridge

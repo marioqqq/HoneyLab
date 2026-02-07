@@ -45,6 +45,6 @@ ansible-playbook ./Ansible/playbooks/SRV-Arr.yaml -i ./Ansible/inventory/hosts -
 ansible-playbook ./Ansible/playbooks/SRV-Media.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ansible-playbook ./Ansible/playbooks/SRV-Personal.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ansible-playbook ./Ansible/playbooks/SRV-VPN.yaml -i ./Ansible/inventory/hosts --ask-become-pass
-ansible-playbook ./Ansible/playbooks/SRV-Backup.yaml -i ./Ansible/inventory/hosts --ask-become-pass
+ansible-playbook ./Ansible/playbooks/SRV-NUT.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ansible-playbook ./Ansible/playbooks/PC-Desktop.yaml -i ./Ansible/inventory/hosts --ask-become-pass
 ```

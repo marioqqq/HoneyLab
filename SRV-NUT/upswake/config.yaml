@@ -1,0 +1,21 @@
+nut_servers:
+  - name: ups
+    host: ip
+    port: 3493
+    username: user
+    password: pass
+    targets:
+      - name: nas
+        mac: "XX:XX:XX:XX:XX:XX"
+        broadcast: XX.XX.XX.255
+        port: 9
+        interval: 10s
+        rules:
+          - wake_on_80.rego
+      - name: proxmox
+        mac: "XX:XX:XX:XX:XX:XX"
+        broadcast: XX.XX.XX.255
+        port: 9
+        interval: 1m
+        rules:
+          - wake_on_80.rego

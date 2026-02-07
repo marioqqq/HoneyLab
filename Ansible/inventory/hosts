@@ -21,11 +21,8 @@ ww.ww.ww.ww
 [SRV_VPN]
 aa.aa.aa.aa
 
-[SRV_Backup]
-bb.bb.bb.bb
-
 [SRV_NUT]
-cc.cc.cc.cc
+bb.bb.bb.bb
 
 [PC_Desktop]
 qq.qq.qq.qq

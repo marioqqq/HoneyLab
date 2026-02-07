@@ -29,6 +29,10 @@ services:
     pid: host
     cap_add:
       - cap_add
+    cap_drop:
+      - cap_drop
+    security_opt:
+      - security_opt
     sysctls:
       - sysctls
     links:

@@ -125,19 +125,27 @@ services:
 
   transmission:
     container_name: transmission
-    image: lscr.io/linuxserver/transmission:latest
+    image: haugene/transmission-openvpn:latest
     ports:
       - 9091:9091
-      - 51413:51413
-      - 51413:51413/udp
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Bratislava
+      - OPENVPN_CONFIG=${CONFIG}
+      - OPENVPN_PROVIDER=${PROVIDER}
+      - OPENVPN_USERNAME=${USERNAME}
+      - OPENVPN_PASSWORD=${PASSWORD}
+      - DISABLE_PORT_FORWARDER=false
+      - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
+      - LOCAL_NETWORK=${LOCAL_NETWORK}
+      - GLOBAL_APPLY_PERMISSIONS=false
     volumes:
       - ./transmission/config:/config
-      - downloads:/downloads
+      - downloads:/data
       - watch:/watch
+    cap_add:
+      - NET_ADMIN
     networks:
       - arr
     restart: unless-stopped

@@ -96,6 +96,13 @@ services:
       - cloud
     restart: unless-stopped
 
+  omni_tools:
+    container_name: omni_tools
+    image: iib0011/omni-tools:latest
+    networks:
+      - cloud
+    restart: unless-stopped
+
 networks:
   cloud:
     name: cloud

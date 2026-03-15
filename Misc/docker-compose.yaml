@@ -206,6 +206,24 @@ services:
     network_mode: host
     restart: unless-stopped
 
+  transmission:
+    container_name: transmission
+    image: lscr.io/linuxserver/transmission:latest
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./transmission/config:/config
+      - ./transmission/downloads:/downloads
+      - ./transmission/watch:/watch
+    network_mode: bridge
+    restart: unless-stopped
+
   windows:
     container_name: windows
     image: dockurr/windows
@@ -232,8 +250,7 @@ services:
     cap_add:
       - NET_ADMIN
     stop_grace_period: 2m
-    networks:
-      - backup
+    network_mode: bridge
     restart: unless-stopped
 
   wireguard:

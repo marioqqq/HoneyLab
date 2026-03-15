@@ -51,6 +51,21 @@ services:
       - management
     restart: unless-stopped
 
+  linux_update_dashboard:
+    container_name: linux_update_dashboard
+    image: ghcr.io/theduffman85/linux-update-dashboard:latest
+    ports:
+      - 3001:3001
+    environment:
+      - LUDASH_ENCRYPTION_KEY=${LUDASH_ENCRYPTION_KEY}
+      - LUDASH_DB_PATH=/data/dashboard.db
+      - NODE_ENV=production
+    volumes:
+      - ./linux_update_dashboard:/data
+    networks:
+      - management
+    restart: unless-stopped
+
   nginx_proxy_manager:
     container_name: nginx_proxy_manager
     image: jc21/nginx-proxy-manager:latest
@@ -65,6 +80,29 @@ services:
     volumes:
       - ./nginx_proxy_manager/data:/data
       - ./nginx_proxy_manager/letsencrypt:/etc/letsencrypt
+    networks:
+      - management
+    restart: unless-stopped
+  
+  rackpeek:
+    container_name: rackpeek
+    image: aptacode/rackpeek:latest
+    ports:
+      - 8080:8080
+    volumes:
+      - ./rackpeek:/app/config
+    user: 0:0
+    networks:
+      - management
+    restart: unless-stopped
+  
+  uptime_kuma:
+    container_name: uptime_kuma
+    image: louislam/uptime-kuma:2
+    volumes:
+      - ./uptime_kuma:/app/data
+    ports:
+      - 3002:3001
     networks:
       - management
     restart: unless-stopped

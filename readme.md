@@ -40,23 +40,36 @@ Script will perform update and upgrade of the system, sets user do use docker wi
 [Adguard home blacklists](https://firebog.net/)
 
 # Containers
+- SRV-Cloud
+    - Watchtower
+    - Gotify
+    - Headscale
+    - Kimai
+    - MySQL
+    - Nginx Proxy Manager
+    - Omni tools
 - SRV-Management
     - Portainer
     - Watchtower
     - Adguard home
+    - Linux update dashboard
     - Nginx Proxy Manager
-- SRV-Media
+    - Rackpeek
+    - Uptime-kuma
+- SRV-Arr
     - Portainer agent
     - Watchtower
     - Bazarr
-    - Immich
-    - Lidarr
-    - Plex
-    - Postgres
     - Prowlarr
     - Radarr
+    - Transmission with VPN
+- SRV-Media
+    - Portainer agent
+    - Watchtower
+    - Immich
+    - Plex
+    - Postgres
     - Redis
-    - Transmission
 - SRV-Personal
     - Portainer agent
     - Watchtower
@@ -69,14 +82,13 @@ Script will perform update and upgrade of the system, sets user do use docker wi
     - Portainer agent
     - Watchtower
     - Tailscale
-- SRV-Cloud
+- SRV-NUT
+    - Portainer agent
     - Watchtower
-    - Headscale
-    - Kasm
-    - Kimai
-    - Minecraft
-    - MySQL
-    - Nginx Proxy Manager
+    - Adguard home
+    - Nutify
+    - Upsnap
+    - Upswake
 - Misc
     - Docmost
     - Postgres
@@ -84,7 +96,11 @@ Script will perform update and upgrade of the system, sets user do use docker wi
     - DuckDNS
     - Grav
     - Ignition gateway
+    - Kasm
+    - Minecraft
     - Node-Red
     - Octoprint
     - Rustdesk
+    - Transmission
+    - Windows
     - Wireguard

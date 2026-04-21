@@ -44,6 +44,8 @@ services:
     networks:
       - network
     hostname: name
+    dns:
+      - x.x.x.x
     restart: unless-stopped
 
 networks:

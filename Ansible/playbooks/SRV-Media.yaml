@@ -53,6 +53,40 @@
         name: "{{ ansible_user }}"
         groups: docker
         append: yes
+    
+    - name: Install ubuntu-drivers-common
+      apt:
+        name: ubuntu-drivers-common
+        state: present
+        update_cache: yes
+
+    - name: Install recommended Nvidia driver
+      command: ubuntu-drivers install
+      args:
+        creates: /usr/bin/nvidia-smi
+
+    - name: Add Nvidia container toolkit GPG key
+      shell: |
+        curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+      args:
+        creates: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+
+    - name: Add Nvidia container toolkit repository
+      shell: |
+        curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+        sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+        tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+      args:
+        creates: /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+    - name: Install Nvidia container toolkit
+      apt:
+        name: nvidia-container-toolkit
+        state: present
+        update_cache: yes
+
+    - name: Configure Nvidia container toolkit for Docker
+      command: nvidia-ctk runtime configure --runtime=docker
 
     - name: Create container directory
       file:
@@ -74,3 +108,7 @@
         dest: "/home/{{ ansible_user }}/SRV-Media/.env"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
+
+    - name: Reboot
+      reboot:
+        reboot_timeout: 120

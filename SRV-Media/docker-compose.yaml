@@ -35,8 +35,8 @@ services:
   # Specific
   immich:
     container_name: immich
-    # image: ghcr.io/imagegenius/immich:cuda # NVIDIA
-    image: ghcr.io/imagegenius/immich:openvino # INTEL
+    image: ghcr.io/imagegenius/immich:cuda # NVIDIA
+    # image: ghcr.io/imagegenius/immich:openvino # INTEL
     ports:
       - 8080:8080
     environment:
@@ -55,20 +55,20 @@ services:
       - MACHINE_LEARNING_PORT=3003
       - MACHINE_LEARNING_WORKERS=1
       - MACHINE_LEARNING_WORKER_TIMEOUT=120
-      # - NVIDIA_VISIBLE_DEVICES=all # NVIDIA
-      # - NVIDIA_DRIVER_CAPABILITIES=all # NVIDIA
+      - NVIDIA_VISIBLE_DEVICES=all # NVIDIA
+      - NVIDIA_DRIVER_CAPABILITIES=all # NVIDIA
     volumes:
       - ./immich/config:/config
       - ./immich/libraries:/libraries
       - photos:/photos
-    devices:
-      - /dev/dri # INTEL
-    device_cgroup_rules:
-      - c 189:* rmw # INTEL
+    # devices:
+    #   - /dev/dri # INTEL
+    # device_cgroup_rules:
+    #   - c 189:* rmw # INTEL
     depends_on:
       - postgres
       - redis
-    # runtime: nvidia # NVIDIA
+    runtime: nvidia # NVIDIA
     networks:
       - media
     restart: unless-stopped
@@ -81,16 +81,16 @@ services:
       - PUID=1000
       - TZ=Europe/Bratislava
       - VERSION=docker
-      # - NVIDIA_VISIBLE_DEVICES=all # NVIDIA
-      # - NVIDIA_DRIVER_CAPABILITIES=all # NVIDIA
+      - NVIDIA_VISIBLE_DEVICES=all # NVIDIA
+      - NVIDIA_DRIVER_CAPABILITIES=all # NVIDIA
     volumes:
       - ./plex/config:/config
       - movies:/movies
       - movies-czsk:/movies-czsk # remove if you don't have a czech/slovak movies share
       - music:/music
-    devices: # INTEL
-      - /dev/dri:/dev/dri # INTEL
-    # runtime: nvidia # NVIDIA
+    # devices: # INTEL
+    #   - /dev/dri:/dev/dri # INTEL
+    runtime: nvidia # NVIDIA
     network_mode: host
     restart: unless-stopped
 

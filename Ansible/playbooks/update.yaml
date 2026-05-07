@@ -6,3 +6,7 @@
         update_cache: yes
         upgrade: "yes"
         autoremove: True
+
+    - name: Reboot
+      reboot:
+        reboot_timeout: 120

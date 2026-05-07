@@ -86,3 +86,7 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         recurse: yes
+
+    - name: Reboot
+      reboot:
+        reboot_timeout: 120

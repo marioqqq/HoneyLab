@@ -38,7 +38,7 @@ services:
     image: headscale/headscale:stable
     volumes:
       - ./headscale:/var/lib/headscale
-      - ./config.yaml:/etc/headscale/config.yaml
+      - ./headscale/config.yaml:/etc/headscale/config.yaml
     command: serve
     networks:
       - cloud

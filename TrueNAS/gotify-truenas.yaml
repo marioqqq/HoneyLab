@@ -1,0 +1,9 @@
+services:
+  gotify-truenas:
+    container_name: gotify
+    image: ghcr.io/ztube/truenas-gotify-adapter:main
+    environment:
+      - GOTIFY_URL=GOTIFY_URL
+      - GOTIFY_TOKEN=GOTIFY_TOKEN
+    network_mode: host
+    restart: unless-stopped

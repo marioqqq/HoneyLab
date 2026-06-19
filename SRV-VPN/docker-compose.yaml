@@ -1,5 +1,25 @@
 services:
   # Common
+  beszel-agent:
+    container_name: beszel-agent
+    image: henrygd/beszel-agent:latest
+    environment:
+      LISTEN: 45876
+      KEY: # get from Dashboard
+      TOKEN: # get from Dashboard
+      HUB_URL: # get from Dashboard
+    volumes:
+      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
+      - /var/run/systemd/private:/var/run/systemd/private:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ./beszel_agent:/var/lib/beszel-agent
+    privileged: true
+    security_opt:
+      - apparmor:unconfined
+    network_mode: host
+    restart: unless-stopped
+
   portainer-agent:
     container_name: portainer-agent
     image: portainer/agent:latest

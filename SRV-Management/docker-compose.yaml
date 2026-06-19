@@ -1,19 +1,23 @@
 services:
   # Common
-  portainer:
-    container_name: portainer
-    image: portainer/portainer-ce:latest
-    ports:
-      - 9443:9443
+  beszel-agent:
+    container_name: beszel-agent
+    image: henrygd/beszel-agent:latest
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Bratislava
+      LISTEN: 45876
+      KEY: # get from Dashboard
+      TOKEN: # get from Dashboard
+      HUB_URL: # get from Dashboard
     volumes:
-      - portainer:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - management
+      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
+      - /var/run/systemd/private:/var/run/systemd/private:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ./beszel_agent:/var/lib/beszel-agent
+    privileged: true
+    security_opt:
+      - apparmor:unconfined
+    network_mode: host
     restart: unless-stopped
 
   watchtower:
@@ -51,6 +55,19 @@ services:
       - management
     restart: unless-stopped
 
+  beszel:
+    container_name: beszel
+    image: henrygd/beszel:latest
+    ports:
+      - 8090:8090
+    environment:
+      - APP_URL=${APP_URL}
+    volumes:
+      - ./beszel:/beszel_data
+    networks:
+      - management
+    restart: unless-stopped
+
   linux_update_dashboard:
     container_name: linux_update_dashboard
     image: ghcr.io/theduffman85/linux-update-dashboard:latest
@@ -83,19 +100,23 @@ services:
     networks:
       - management
     restart: unless-stopped
-  
-  rackpeek:
-    container_name: rackpeek
-    image: aptacode/rackpeek:latest
+
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
     ports:
-      - 8080:8080
+      - 9443:9443
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
     volumes:
-      - ./rackpeek:/app/config
-    user: 0:0
+      - portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - management
     restart: unless-stopped
-  
+
   uptime_kuma:
     container_name: uptime_kuma
     image: louislam/uptime-kuma:2

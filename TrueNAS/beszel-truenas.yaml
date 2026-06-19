@@ -1,0 +1,23 @@
+services:  
+  beszel-agent:
+    container_name: beszel-agent
+    image: henrygd/beszel-agent:latest
+    environment:
+      LISTEN: 45876
+      KEY: # get from Dashboard
+      TOKEN: # get from Dashboard
+      HUB_URL: # get from Dashboard
+      FILESYSTEM: /mnt/YOUR_DATASET
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /mnt/YOUR_DATASET:/mnt/YOUR_DATASET:ro
+    devices:
+      - /dev/disk:/dev/disk
+      # add all
+    cap_add:
+      - SYS_RAWIO
+      - SYS_ADMIN
+    stop_grace_period: 5m
+    network_mode: host
+    restart: unless-stopped

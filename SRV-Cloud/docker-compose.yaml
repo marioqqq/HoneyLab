@@ -72,6 +72,7 @@ services:
       - TZ=Europe/Bratislava
       - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mariadb/${MYSQL_DATABASE}
       - TRUSTED_PROXIES=*
+      - APP_SECRET=${APP_SECRET}
     volumes:
       - ./kimai:/config
     depends_on:

@@ -1,0 +1,11 @@
+{
+  "randomizeClientPort": true,
+
+  "acls": [
+    {
+      "action": "accept",
+      "src": ["*"],
+      "dst": ["*:*"]
+    }
+  ]
+}

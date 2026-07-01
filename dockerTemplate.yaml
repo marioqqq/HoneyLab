@@ -50,7 +50,7 @@ services:
     network_mode: bridge / host
     networks:
       - network
-    hostname: name
+    hostname: hostname
     dns:
       - x.x.x.x
     restart: unless-stopped

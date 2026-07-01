@@ -57,6 +57,7 @@ services:
     volumes:
       - ./headscale:/var/lib/headscale
       - ./headscale/config.yaml:/etc/headscale/config.yaml
+      - ./headscale/policy.hujson:/etc/headscale/policy.hujson:ro
     command: serve
     networks:
       - cloud

@@ -3,7 +3,6 @@ xx.xx.xx.xx
 yy.yy.yy.yy
 zz.zz.zz.zz
 ww.ww.ww.ww
-aa.aa.aa.aa
 bb.bb.bb.bb
 
 [SRV_Management]
@@ -17,9 +16,6 @@ zz.zz.zz.zz
 
 [SRV_Personal]
 ww.ww.ww.ww
-
-[SRV_VPN]
-aa.aa.aa.aa
 
 [SRV_NUT]
 bb.bb.bb.bb

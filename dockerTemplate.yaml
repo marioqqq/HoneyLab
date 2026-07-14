@@ -34,6 +34,8 @@ services:
       retries: 3
     entrypoint: entrypoint
     pid: host
+    tmpfs:
+      - /tmp
     cap_add:
       - cap_add
     cap_drop:

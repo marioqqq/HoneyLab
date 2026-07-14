@@ -8,6 +8,7 @@ services:
       KEY: # get from Dashboard
       TOKEN: # get from Dashboard
       HUB_URL: # get from Dashboard
+      PRIMARY_SENSOR: cpu_thermal
     volumes:
       - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
       - /var/run/systemd/private:/var/run/systemd/private:ro

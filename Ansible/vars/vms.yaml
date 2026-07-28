@@ -1,78 +1,82 @@
+defaults:
+  # Guest OS
+  ostype: l26
+  iso: local:iso/Ubuntu_24.04.1_Server.iso
+
+  # CPU
+  cpu: x86-64-v2-AES
+  sockets: 1
+
+  # Storage
+  scsihw: virtio-scsi-single
+
+  # Networking
+  bridge: vmbr0
+  firewall: true
+
+  # Boot
+  boot: "order=scsi0;ide2"
+  onboot: true
+
+  # Display
+  vga: std
+
 vms:
-  - id: 250
-    name: SRV-Cluster1
-    # Guest OS
-    ostype: l26
-    iso: local:iso/Ubuntu_24.04.1_Server.iso
-    # CPU & memory
-    cpu: x86-64-v2-AES
-    sockets: 1
+  - id: 100
+    name: SRV-Management
+    cores: 4
+    memory: 4096
+    disks:
+      scsi0: local-lvm:64,iothread=1
+    mac: XX:XX:XX:XX:XX:XX
+
+  - id: 101
+    name: SRV-Arr
+    cores: 4
+    memory: 4096
+    disks:
+      scsi0: local-lvm:64,iothread=1
+    mac: XX:XX:XX:XX:XX:XX
+
+  - id: 102
+    name: SRV-Media
+    cores: 8
+    memory: 8192
+    disks:
+      scsi0: local-lvm:64,iothread=1
+    mac: XX:XX:XX:XX:XX:XX
+
+  - id: 103
+    name: SRV-Personal
     cores: 2
     memory: 4096
-    # Storage
-    scsihw: virtio-scsi-single
-    iothread: true
+    disks:
+      scsi0: local-lvm:64,iothread=1
+    mac: XX:XX:XX:XX:XX:XX
+
+  - id: 250
+    name: SRV-Cluster1
+    cores: 2
+    memory: 4096
     disks:
       scsi0: local-lvm:32,iothread=1
       scsi1: local-lvm:64,iothread=1
-    # Networking
-    bridge: vmbr0
     mac: XX:XX:XX:XX:XX:XX
-    firewall: true
-    # Boot
-    boot: "order=ide2;scsi0"
-    onboot: true
-    # Display
-    vga: std
 
   - id: 251
     name: SRV-Cluster2
-    # Guest OS
-    ostype: l26
-    iso: local:iso/Ubuntu_24.04.1_Server.iso
-    # CPU & memory
-    cpu: x86-64-v2-AES
-    sockets: 1
     cores: 2
     memory: 4096
-    # Storage
-    scsihw: virtio-scsi-single
-    iothread: true
     disks:
       scsi0: local-lvm:32,iothread=1
       scsi1: local-lvm:64,iothread=1
-    # Networking
-    bridge: vmbr0
     mac: XX:XX:XX:XX:XX:XX
-    firewall: true
-    # Boot
-    boot: "order=ide2;scsi0"
-    onboot: true
-    # Display
-    vga: std
 
   - id: 252
     name: SRV-Cluster3
-    # Guest OS
-    ostype: l26
-    iso: local:iso/Ubuntu_24.04.1_Server.iso
-    # CPU & memory
-    cpu: x86-64-v2-AES
-    sockets: 1
     cores: 2
     memory: 4096
-    # Storage
-    scsihw: virtio-scsi-single
-    iothread: true
     disks:
       scsi0: local-lvm:32,iothread=1
       scsi1: local-lvm:64,iothread=1
-    # Networking
-    bridge: vmbr0
     mac: XX:XX:XX:XX:XX:XX
-    firewall: true
-    # Boot
-    boot: "order=ide2;scsi0"
-    onboot: true
-    # Display
-    vga: std

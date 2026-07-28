@@ -22,32 +22,32 @@
         name: "{{ vm.name }}"
 
         # Guest operating system
-        ostype: "{{ vm.ostype }}"
+        ostype: "{{ vm.ostype | default(defaults.ostype) }}"
 
         # CPU and memory
-        cpu: "{{ vm.cpu }}"
-        sockets: "{{ vm.sockets }}"
+        cpu: "{{ vm.cpu | default(defaults.cpu) }}"
+        sockets: "{{ vm.sockets | default(defaults.sockets) }}"
         cores: "{{ vm.cores }}"
         memory: "{{ vm.memory }}"
 
         # Storage controller and disks
-        scsihw: "{{ vm.scsihw }}"
+        scsihw: "{{ vm.scsihw | default(defaults.scsihw) }}"
         scsi: "{{ vm.disks }}"
 
         # Installation media
         ide:
-          ide2: "{{ vm.iso }},media=cdrom"
+          ide2: "{{ vm.iso | default(defaults.iso) }},media=cdrom"
 
         # Network interface
         net:
-          net0: "virtio={{ vm.mac }},bridge={{ vm.bridge }},firewall={{ 1 if vm.firewall else 0 }}"
+          net0: "virtio={{ vm.mac }},bridge={{ vm.bridge | default(defaults.bridge) }},firewall={{ 1 if (vm.firewall | default(defaults.firewall)) else 0 }}"
 
         # Display configuration
-        vga: "{{ vm.vga }}"
+        vga: "{{ vm.vga | default(defaults.vga) }}"
 
         # Boot configuration
-        boot: "{{ vm.boot }}"
-        onboot: "{{ vm.onboot }}"
+        boot: "{{ vm.boot | default(defaults.boot) }}"
+        onboot: "{{ vm.onboot | default(defaults.onboot) }}"
 
         # Ensure the VM exists
         state: present

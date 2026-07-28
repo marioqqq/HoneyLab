@@ -1,0 +1,24 @@
+all:
+  children:
+    cluster:
+      hosts:
+        SRV-Cluster1:
+          ansible_host: XX.XX.XX.XX
+
+        SRV-Cluster2:
+          ansible_host: YY.YY.YY.YY
+
+        SRV-Cluster3:
+          ansible_host: ZZ.ZZ.ZZ.ZZ
+
+    # lab:
+    #   hosts:
+
+  vars:
+    # SSH
+    ansible_user: marioqqq
+    ansible_port: 22
+    ansible_python_interpreter: /usr/bin/python3
+
+    # SSH authentication
+    ansible_ssh_private_key_file: ~/.ssh/id_rsa

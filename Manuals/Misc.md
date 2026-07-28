@@ -6,4 +6,5 @@ docker exec -it kimai console kimai:user:create your_username admin@example.com 
 `
 
 [Windows Activation Scripts](https://github.com/massgravel/Microsoft-Activation-Scripts)
+
 [Windows Tool](https://christitus.com/windows-tool/)

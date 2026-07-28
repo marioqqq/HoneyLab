@@ -1,0 +1,10 @@
+proxmox:
+  # API
+  api_host: PROXMOX_HOST
+  api_user: ansible@pve
+  api_token_id: ansible
+  api_token_secret: API_TOKEN_SECRET
+  validate_certs: false
+
+  # Target node
+  node: PVE-Proxmox

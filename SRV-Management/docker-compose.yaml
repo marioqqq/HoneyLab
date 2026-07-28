@@ -24,15 +24,12 @@ services:
     container_name: watchtower
     image: nickfedor/watchtower:latest
     environment:
-      - PUID=1000
-      - PGID=1000
       - TZ=Europe/Bratislava
       - WATCHTOWER_MONITOR_ONLY=false
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_SCHEDULE=0 6 0 * * 0
-      - WATCHTOWER_NOTIFICATIONS=gotify
-      - WATCHTOWER_NOTIFICATION_GOTIFY_URL=${GOTIFY_URL}
-      - WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN=${GOTIFY_TOKEN}
+      - WATCHTOWER_NOTIFICATION_URL=gotify://${GOTIFY_URL}/${GOTIFY_TOKEN}
+      - WATCHTOWER_NO_STARTUP_MESSAGE=true
       - WATCHTOWER_NOTIFICATIONS_HOSTNAME=SRV-Management
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -76,6 +73,8 @@ services:
     environment:
       - LUDASH_ENCRYPTION_KEY=${LUDASH_ENCRYPTION_KEY}
       - LUDASH_DB_PATH=/data/dashboard.db
+      - LUDASH_BASE_URL=${LUDASH_BASE_URL}
+      - LUDASH_TRUST_PROXY=true
       - NODE_ENV=production
     volumes:
       - ./linux_update_dashboard:/data

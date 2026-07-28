@@ -44,15 +44,12 @@ services:
     container_name: watchtower
     image: nickfedor/watchtower:latest
     environment:
-      - PUID=1000
-      - PGID=1000
       - TZ=Europe/Bratislava
       - WATCHTOWER_MONITOR_ONLY=false
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_SCHEDULE=0 6 0 * * 0
-      - WATCHTOWER_NOTIFICATIONS=gotify
-      - WATCHTOWER_NOTIFICATION_GOTIFY_URL=${GOTIFY_URL}
-      - WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN=${GOTIFY_TOKEN}
+      - WATCHTOWER_NOTIFICATION_URL=gotify://${GOTIFY_URL}/${GOTIFY_TOKEN}
+      - WATCHTOWER_NO_STARTUP_MESSAGE=true
       - WATCHTOWER_NOTIFICATIONS_HOSTNAME=SRV-Media
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -144,25 +141,6 @@ services:
     volumes:
       - ./redis/dаta:/data
     entrypoint: redis-server --requirepass ${REDIS_PASSWORD}
-    networks:
-      - media
-    restart: unless-stopped
-
-  transmission:
-    container_name: transmission
-    image: lscr.io/linuxserver/transmission:latest
-    ports:
-      - 9091:9091
-      - 51413:51413
-      - 51413:51413/udp
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Bratislava
-    volumes:
-      - ./transmission/config:/config
-      - downloads:/downloads
-      - watch:/watch
     networks:
       - media
     restart: unless-stopped

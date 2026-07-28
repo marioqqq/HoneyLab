@@ -1,0 +1,20 @@
+- name: Test Proxmox API connection
+  hosts: localhost
+  gather_facts: false
+
+  vars_files:
+    - ../vars/proxmox.yaml
+
+  tasks:
+    - name: Get Proxmox nodes
+      community.proxmox.proxmox_node_info:
+        api_host: "{{ proxmox.api_host }}"
+        api_user: "{{ proxmox.api_user }}"
+        api_token_id: "{{ proxmox.api_token_id }}"
+        api_token_secret: "{{ proxmox.api_token_secret }}"
+        validate_certs: "{{ proxmox.validate_certs }}"
+      register: proxmox_nodes
+
+    - name: Show nodes
+      ansible.builtin.debug:
+        var: proxmox_nodes

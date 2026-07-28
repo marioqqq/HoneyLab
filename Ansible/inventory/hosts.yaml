@@ -4,15 +4,23 @@ all:
       hosts:
         SRV-Cluster1:
           ansible_host: XX.XX.XX.XX
-
         SRV-Cluster2:
           ansible_host: YY.YY.YY.YY
-
         SRV-Cluster3:
           ansible_host: ZZ.ZZ.ZZ.ZZ
 
-    # lab:
-    #   hosts:
+    lab:
+      hosts:
+        SRV-Management:
+          ansible_host: AA.AA.AA.AA
+        SRV-Arr:
+          ansible_host: BB.BB.BB.BB
+        SRV-Media:
+          ansible_host: CC.CC.CC.CC
+        SRV-Personal:
+          ansible_host: DD.DD.DD.DD
+        SRV-NUT:
+          ansible_host: EE.EE.EE.EE
 
   vars:
     # SSH

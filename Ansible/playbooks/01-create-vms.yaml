@@ -1,0 +1,58 @@
+- name: Create Proxmox virtual machines
+  hosts: localhost
+  gather_facts: false
+
+  vars_files:
+    - ../vars/proxmox.yaml
+    - ../vars/vms.yaml
+
+  tasks:
+    - name: Create virtual machines
+      community.proxmox.proxmox_kvm:
+        # API connection
+        api_host: "{{ proxmox.api_host }}"
+        api_user: "{{ proxmox.api_user }}"
+        api_token_id: "{{ proxmox.api_token_id }}"
+        api_token_secret: "{{ proxmox.api_token_secret }}"
+        validate_certs: "{{ proxmox.validate_certs }}"
+
+        # VM identity and placement
+        node: "{{ proxmox.node }}"
+        vmid: "{{ vm.id }}"
+        name: "{{ vm.name }}"
+
+        # Guest operating system
+        ostype: "{{ vm.ostype }}"
+
+        # CPU and memory
+        cpu: "{{ vm.cpu }}"
+        sockets: "{{ vm.sockets }}"
+        cores: "{{ vm.cores }}"
+        memory: "{{ vm.memory }}"
+
+        # Storage controller and disks
+        scsihw: "{{ vm.scsihw }}"
+        scsi: "{{ vm.disks }}"
+
+        # Installation media
+        ide:
+          ide2: "{{ vm.iso }},media=cdrom"
+
+        # Network interface
+        net:
+          net0: "virtio={{ vm.mac }},bridge={{ vm.bridge }},firewall={{ 1 if vm.firewall else 0 }}"
+
+        # Display configuration
+        vga: "{{ vm.vga }}"
+
+        # Boot configuration
+        boot: "{{ vm.boot }}"
+        onboot: "{{ vm.onboot }}"
+
+        # Ensure the VM exists
+        state: present
+
+      loop: "{{ vms }}"
+      loop_control:
+        loop_var: vm
+        label: "{{ vm.name }}"

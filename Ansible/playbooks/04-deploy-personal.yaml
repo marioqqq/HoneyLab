@@ -1,0 +1,30 @@
+- name: Deploy SRV-Personal containers
+  hosts: SRV-Personal
+  become: true
+  gather_facts: false
+
+  vars:
+    container_directory: "/home/{{ ansible_user }}/SRV-Personal"
+    repository_base_url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/SRV-Personal"
+
+  tasks:
+    - name: Create SRV-Personal directory
+      ansible.builtin.file:
+        path: "{{ container_directory }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Download Docker Compose file
+      ansible.builtin.get_url:
+        url: "{{ repository_base_url }}/docker-compose.yaml"
+        dest: "{{ container_directory }}/docker-compose.yaml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Download environment file
+      ansible.builtin.get_url:
+        url: "{{ repository_base_url }}/.env"
+        dest: "{{ container_directory }}/.env"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"

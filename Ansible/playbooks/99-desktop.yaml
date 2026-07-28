@@ -1,0 +1,281 @@
+- name: Configure desktop PC
+  hosts: PC-Desktop
+  become: true
+  gather_facts: true
+
+  vars:
+    desktop_user: "{{ ansible_user }}"
+    desktop_home: "/home/{{ ansible_user }}"
+
+  tasks:
+    - name: Update packages
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: true
+        autoremove: true
+
+    - name: Install repository prerequisites
+      ansible.builtin.apt:
+        name:
+          - curl
+          - gpg
+          - ca-certificates
+          - apt-transport-https
+        state: present
+
+    # Brave
+
+    - name: Download Brave repository key
+      ansible.builtin.get_url:
+        url: https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+        dest: /usr/share/keyrings/brave-browser-archive-keyring.gpg
+        force: true
+
+    - name: Add Brave repository
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/brave-browser-release.list
+        content: |
+          deb [arch=amd64 signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main
+
+    - name: Install Brave browser
+      ansible.builtin.apt:
+        name: brave-browser
+        state: present
+        update_cache: true
+
+    # Firefox
+
+    - name: Remove Firefox APT package
+      ansible.builtin.apt:
+        name: firefox
+        state: absent
+        purge: true
+
+    - name: Check whether Firefox Snap is installed
+      ansible.builtin.command:
+        cmd: snap list firefox
+      register: firefox_snap
+      changed_when: false
+      failed_when: false
+
+    - name: Remove Firefox Snap
+      ansible.builtin.command:
+        cmd: snap remove firefox
+      when: firefox_snap.rc == 0
+
+    # Visual Studio Code
+
+    - name: Download Microsoft repository key
+      ansible.builtin.get_url:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        dest: /tmp/microsoft.asc
+        force: true
+
+    - name: Convert Microsoft repository key
+      ansible.builtin.command:
+        cmd: >
+          gpg --dearmor
+          --yes
+          --output /usr/share/keyrings/microsoft.gpg
+          /tmp/microsoft.asc
+      changed_when: true
+
+    - name: Remove temporary Microsoft key
+      ansible.builtin.file:
+        path: /tmp/microsoft.asc
+        state: absent
+
+    - name: Add Visual Studio Code repository
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/vscode.list
+        content: |
+          deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main
+
+    - name: Install Visual Studio Code
+      ansible.builtin.apt:
+        name: code
+        state: present
+        update_cache: true
+
+    # DBeaver
+
+    - name: Get latest DBeaver Community release
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/dbeaver/dbeaver/releases/latest
+        return_content: true
+      register: dbeaver_release
+
+    - name: Find DBeaver AMD64 Debian package
+      ansible.builtin.set_fact:
+        dbeaver_deb_url: >-
+          {{
+            (
+              dbeaver_release.json.assets
+              | selectattr('name', 'search', '_amd64.deb$')
+              | map(attribute='browser_download_url')
+              | first
+            )
+          }}
+
+    - name: Download DBeaver Community
+      ansible.builtin.get_url:
+        url: "{{ dbeaver_deb_url }}"
+        dest: /tmp/dbeaver-ce.deb
+        force: true
+
+    - name: Install DBeaver Community
+      ansible.builtin.apt:
+        deb: /tmp/dbeaver-ce.deb
+
+    - name: Remove DBeaver installer
+      ansible.builtin.file:
+        path: /tmp/dbeaver-ce.deb
+        state: absent
+
+    # Other applications
+
+    - name: Install FileZilla
+      ansible.builtin.apt:
+        name: filezilla
+        state: present
+
+    - name: Download AnyDesk repository key
+      ansible.builtin.get_url:
+        url: https://keys.anydesk.com/repos/DEB-GPG-KEY
+        dest: /tmp/anydesk.asc
+        force: true
+
+    - name: Convert AnyDesk repository key
+      ansible.builtin.command:
+        cmd: >
+          gpg --dearmor
+          --yes
+          --output /usr/share/keyrings/anydesk.gpg
+          /tmp/anydesk.asc
+      changed_when: true
+
+    - name: Remove temporary AnyDesk key
+      ansible.builtin.file:
+        path: /tmp/anydesk.asc
+        state: absent
+
+    - name: Add AnyDesk repository
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/anydesk.list
+        content: |
+          deb [signed-by=/usr/share/keyrings/anydesk.gpg] http://deb.anydesk.com/ all main
+
+    - name: Install AnyDesk
+      ansible.builtin.apt:
+        name: anydesk
+        state: present
+        update_cache: true
+
+    # Virtual machine configuration
+
+    - name: Check whether system is a virtual machine
+      ansible.builtin.command:
+        cmd: systemd-detect-virt --vm
+      register: virtualization
+      changed_when: false
+      failed_when: false
+
+    - name: Display virtualization type
+      ansible.builtin.debug:
+        msg: >-
+          System virtualization:
+          {{ virtualization.stdout if virtualization.rc == 0 else 'none' }}
+
+    - name: Configure GDM automatic login in a virtual machine
+      ansible.builtin.blockinfile:
+        path: /etc/gdm3/custom.conf
+        marker: "# {mark} ANSIBLE MANAGED AUTOMATIC LOGIN"
+        block: |
+          [daemon]
+          WaylandEnable=true
+          AutomaticLoginEnable=true
+          AutomaticLogin={{ desktop_user }}
+      when: virtualization.rc == 0
+
+    - name: Create resolution script
+      ansible.builtin.copy:
+        dest: "{{ desktop_home }}/set_resolution.sh"
+        owner: "{{ desktop_user }}"
+        group: "{{ desktop_user }}"
+        mode: "0755"
+        content: |
+          #!/bin/bash
+          output="$(xrandr | awk '/ connected/{print $1; exit}')"
+
+          if [ -n "$output" ]; then
+              xrandr --output "$output" --mode 1920x1080
+          fi
+      when: virtualization.rc == 0
+
+    - name: Create autostart directory
+      ansible.builtin.file:
+        path: "{{ desktop_home }}/.config/autostart"
+        state: directory
+        owner: "{{ desktop_user }}"
+        group: "{{ desktop_user }}"
+      when: virtualization.rc == 0
+
+    - name: Create resolution autostart entry
+      ansible.builtin.copy:
+        dest: "{{ desktop_home }}/.config/autostart/set_resolution.desktop"
+        owner: "{{ desktop_user }}"
+        group: "{{ desktop_user }}"
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Exec={{ desktop_home }}/set_resolution.sh
+          Hidden=false
+          NoDisplay=false
+          X-GNOME-Autostart-enabled=true
+          Name=Set Screen Resolution
+          Comment=Set resolution to 1920x1080 at login
+      when: virtualization.rc == 0
+
+    # GNOME configuration
+
+    - name: Get desktop user ID
+      ansible.builtin.command:
+        cmd: "id -u {{ desktop_user }}"
+      register: desktop_uid
+      changed_when: false
+
+    - name: Configure GNOME desktop
+      become_user: "{{ desktop_user }}"
+      environment:
+        XDG_RUNTIME_DIR: "/run/user/{{ desktop_uid.stdout }}"
+        DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ desktop_uid.stdout }}/bus"
+      ansible.builtin.command:
+        argv: "{{ item }}"
+      loop:
+        - [gsettings, set, org.gnome.desktop.interface, gtk-theme, Adwaita-dark]
+        - [gsettings, set, org.gnome.desktop.interface, color-scheme, prefer-dark]
+        - [gsettings, set, org.gnome.desktop.wm.preferences, theme, Adwaita-dark]
+        - [gsettings, set, org.gnome.shell.extensions.dash-to-dock, dock-position, BOTTOM]
+        - [gsettings, set, org.gnome.shell.extensions.ding, icon-size, small]
+        - [gsettings, set, org.gnome.shell.extensions.ding, show-home, "false"]
+        - [gsettings, set, org.gnome.shell.extensions.dash-to-dock, dash-max-icon-size, "40"]
+      changed_when: true
+
+    - name: Configure GNOME dock applications
+      become_user: "{{ desktop_user }}"
+      environment:
+        XDG_RUNTIME_DIR: "/run/user/{{ desktop_uid.stdout }}"
+        DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ desktop_uid.stdout }}/bus"
+      ansible.builtin.command:
+        argv:
+          - gsettings
+          - set
+          - org.gnome.shell
+          - favorite-apps
+          - "['org.gnome.Nautilus.desktop', 'brave-browser.desktop', 'org.gnome.Terminal.desktop', 'code.desktop', 'filezilla.desktop', 'dbeaver-ce.desktop']"
+      changed_when: true
+
+    - name: Reboot desktop
+      ansible.builtin.reboot:
+        reboot_timeout: 600
+        test_command: whoami

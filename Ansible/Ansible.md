@@ -65,5 +65,27 @@ ansible-playbook -i inventory/hosts.yaml playbooks/02-post-install.yaml --ask-be
 Install docker on VMs:
 
 ```bash
-ansible-playbook -i inventory/hosts.yaml playbooks/03-docker.yaml
+ansible-playbook -i inventory/hosts.yaml playbooks/03-docker.yaml --ask-become-pass
+```
+
+Deploy docker containers on VMs:
+
+```bash
+ansible-playbook -i inventory/hosts.yaml playbooks/04-deploy-managemnt.yaml --ask-become-pass
+ansible-playbook -i inventory/hosts.yaml playbooks/04-deploy-arr.yaml --ask-become-pass
+ansible-playbook -i inventory/hosts.yaml playbooks/04-deploy-media.yaml --ask-become-pass
+ansible-playbook -i inventory/hosts.yaml playbooks/04-deploy-personal.yaml --ask-become-pass
+ansible-playbook -i inventory/hosts.yaml playbooks/04-deploy-nut.yaml --ask-become-pass
+```
+
+Reboot VMs:
+
+```bash
+ansible-playbook -i inventory/hosts.yaml playbooks/05-reboot-vms.yaml --ask-become-pass
+```
+
+Prepare Desktop:
+
+```bash
+ansible-playbook -i inventory/hosts.yaml playbooks/99-desktop.yaml --ask-become-pass
 ```

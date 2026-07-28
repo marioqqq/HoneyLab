@@ -1,0 +1,74 @@
+- name: Deploy SRV-Media containers
+  hosts: SRV-Media
+  become: true
+  gather_facts: true
+
+  vars:
+    container_directory: "/home/{{ ansible_user }}/SRV-Media"
+    repository_base_url: "https://raw.githubusercontent.com/marioqqq/HoneyLab/main/SRV-Media"
+
+  tasks:
+    - name: Install ubuntu-drivers-common
+      ansible.builtin.apt:
+        name: ubuntu-drivers-common
+        state: present
+        update_cache: true
+
+    - name: Install recommended NVIDIA driver
+      ansible.builtin.command:
+        cmd: ubuntu-drivers install
+      args:
+        creates: /usr/bin/nvidia-smi
+
+    - name: Add NVIDIA Container Toolkit GPG key
+      ansible.builtin.shell: |
+        curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey |
+        gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+      args:
+        creates: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+
+    - name: Add NVIDIA Container Toolkit repository
+      ansible.builtin.shell: |
+        curl -fsSL https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list |
+        sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#' \
+        > /etc/apt/sources.list.d/nvidia-container-toolkit.list
+      args:
+        creates: /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+    - name: Install NVIDIA Container Toolkit
+      ansible.builtin.apt:
+        name: nvidia-container-toolkit
+        state: present
+        update_cache: true
+
+    - name: Configure NVIDIA Container Toolkit for Docker
+      ansible.builtin.command:
+        cmd: nvidia-ctk runtime configure --runtime=docker
+      register: nvidia_runtime
+
+    - name: Restart Docker after NVIDIA runtime configuration
+      ansible.builtin.service:
+        name: docker
+        state: restarted
+      when: nvidia_runtime.changed
+
+    - name: Create SRV-Media directory
+      ansible.builtin.file:
+        path: "{{ container_directory }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Download Docker Compose file
+      ansible.builtin.get_url:
+        url: "{{ repository_base_url }}/docker-compose.yaml"
+        dest: "{{ container_directory }}/docker-compose.yaml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Download environment file
+      ansible.builtin.get_url:
+        url: "{{ repository_base_url }}/.env"
+        dest: "{{ container_directory }}/.env"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"

@@ -86,25 +86,33 @@
       loop_control:
         label: "{{ item.0.inventory_hostname }}:{{ item.1 }}"
 
+    - name: Check whether Grafana service already exists
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph orch ls --service-type grafana --format json"
+      register: grafana_service_check
+      changed_when: false
+ 
     - name: Remove existing Grafana daemon (forces fresh admin user creation)
       ansible.builtin.command:
         cmd: cephadm shell -- ceph orch rm grafana
+      when: grafana_service_check.stdout | trim != '[]'
       changed_when: true
-
+ 
     - name: Wait for Grafana daemon to be removed
       ansible.builtin.pause:
         seconds: 15
-
+      when: grafana_service_check.stdout | trim != '[]'
+ 
     - name: Render Grafana spec
       ansible.builtin.template:
         src: ../templates/grafana-spec.yaml
         dest: /tmp/grafana-spec.yaml
         mode: "0644"
-
+ 
     - name: Apply Grafana admin credentials
       ansible.builtin.command:
         cmd: "cephadm shell --mount /tmp/grafana-spec.yaml:/mnt/grafana-spec.yaml -- ceph orch apply -i /mnt/grafana-spec.yaml"
-
+ 
     - name: Wait for Grafana to redeploy with new config
       ansible.builtin.pause:
         seconds: 15

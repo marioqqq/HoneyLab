@@ -11,7 +11,7 @@
       ansible.builtin.fail:
         msg: >-
           This playbook must be scoped to the new node(s) only, e.g.
-          `ansible-playbook 05-add-node.yaml --limit node`.
+          `ansible-playbook 04-add-nodes.yaml --limit node`.
           Running it against the whole 'ceph' group would repeat
           destructive steps (disk wipe) on existing cluster members.
       when: ansible_play_hosts_all | length == groups['ceph'] | length

@@ -1,22 +1,22 @@
 # Prerequisites
 - Datacenter - Permissions - User - Add
 <div class="user" align="center">
-    <img src="./../img/user_add.png" width="75%" alt="user_add">
+    <img src="./../img/pve_user_add.png" width="75%" alt="user_add">
 </div>
 
 - Datacenter - Permissions - API Tokens - Add
 <div class="user" align="center">
-    <img src="./../img/api_tokens_add.png" width="75%" alt="api_tokens_add">
+    <img src="./../img/pve_api_tokens_add.png" width="75%" alt="api_tokens_add">
 </div>
 
 - Datacenter - Permissions - Add - User Permission
 <div class="user" align="center">
-    <img src="./../img/user_permission_add.png" width="75%" alt="user_permission_add">
+    <img src="./../img/pve_user_permission_add.png" width="75%" alt="user_permission_add">
 </div>
 
 - Datacenter - Permissions - Add - API Token Permission
 <div class="user" align="center">
-    <img src="./../img/api_token_permission_add.png" width="75%" alt="api_token_permission_add">
+    <img src="./../img/pve_api_token_permission_add.png" width="75%" alt="api_token_permission_add">
 </div>
 
 Verify that everything is working by running the following command:
@@ -59,33 +59,33 @@ ansible-playbook -i inventory/localhost.yaml playbooks/01-create-vms.yaml
 Install packages on VMs:
 
 ```bash
-ansible-playbook -i inventory/hosts.yaml playbooks/02-post-install.yaml --ask-become-pass
+ansible-playbook -K -i inventory/hosts.yaml playbooks/02-post-install.yaml
 ```
 
 Install docker on VMs:
 
 ```bash
-ansible-playbook -i inventory/hosts.yaml playbooks/03-docker.yaml --ask-become-pass
+ansible-playbook -K -i inventory/hosts.yaml playbooks/03-docker.yaml
 ```
 
 Deploy docker containers on VMs:
 
 ```bash
-ansible-playbook -i inventory/hosts.yaml playbooks/04-deploy-managemnt.yaml --ask-become-pass
-ansible-playbook -i inventory/hosts.yaml playbooks/04-deploy-arr.yaml --ask-become-pass
-ansible-playbook -i inventory/hosts.yaml playbooks/04-deploy-media.yaml --ask-become-pass
-ansible-playbook -i inventory/hosts.yaml playbooks/04-deploy-personal.yaml --ask-become-pass
-ansible-playbook -i inventory/hosts.yaml playbooks/04-deploy-nut.yaml --ask-become-pass
+ansible-playbook -K -i inventory/hosts.yaml playbooks/04-deploy-managemnt.yaml
+ansible-playbook -K -i inventory/hosts.yaml playbooks/04-deploy-arr.yaml
+ansible-playbook -K -i inventory/hosts.yaml playbooks/04-deploy-media.yaml
+ansible-playbook -K -i inventory/hosts.yaml playbooks/04-deploy-personal.yaml
+ansible-playbook -K -i inventory/hosts.yaml playbooks/04-deploy-nut.yaml
 ```
 
 Reboot VMs:
 
 ```bash
-ansible-playbook -i inventory/hosts.yaml playbooks/05-reboot-vms.yaml --ask-become-pass
+ansible-playbook -K -i inventory/hosts.yaml playbooks/05-reboot-vms.yaml
 ```
 
 Prepare Desktop:
 
 ```bash
-ansible-playbook -i inventory/hosts.yaml playbooks/99-desktop.yaml --ask-become-pass
+ansible-playbook -K -i inventory/hosts.yaml playbooks/99-desktop.yaml
 ```

@@ -1,0 +1,174 @@
+- name: Add new node to Ceph cluster
+  hosts: ceph
+  become: true
+  gather_facts: true
+
+  vars_files:
+    - ../vars/ceph.yaml
+
+  tasks:
+    - name: Refuse to run without --limit
+      ansible.builtin.fail:
+        msg: >-
+          This playbook must be scoped to the new node(s) only, e.g.
+          `ansible-playbook 05-add-node.yaml --limit node`.
+          Running it against the whole 'ceph' group would repeat
+          destructive steps (disk wipe) on existing cluster members.
+      when: ansible_play_hosts_all | length == groups['ceph'] | length
+
+    - name: Check whether this host is already known to Ceph
+      ansible.builtin.command:
+        cmd: cephadm shell -- ceph orch host ls --format=json
+      delegate_to: "{{ groups['bootstrap'][0] }}"
+      register: ceph_hosts_raw
+      changed_when: false
+
+    - name: Determine if host is already registered
+      ansible.builtin.set_fact:
+        already_registered: >-
+          {{ inventory_hostname | lower in
+             (ceph_hosts_raw.stdout | from_json | map(attribute='hostname') | list) }}
+
+    - name: Report already-registered hosts
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} is already part of the cluster - skipping provisioning."
+      when: already_registered
+
+    # ---------- OS-level prep (mirrors 01, scoped to the new node only) ----------
+
+    - name: Install required packages
+      ansible.builtin.apt:
+        name:
+          - curl
+          - gdisk
+          - lvm2
+          - podman
+          - util-linux
+          - chrony
+        state: present
+        update_cache: true
+      when: not already_registered
+
+    - name: Disable systemd-timesyncd
+      ansible.builtin.systemd:
+        name: systemd-timesyncd
+        enabled: false
+        state: stopped
+      failed_when: false
+      when: not already_registered
+
+    - name: Enable and start Chrony
+      ansible.builtin.systemd:
+        name: chrony
+        enabled: true
+        state: started
+      when: not already_registered
+
+    - name: Force immediate clock correction
+      ansible.builtin.command:
+        cmd: chronyc -a makestep
+      changed_when: false
+      when: not already_registered
+
+    - name: Verify hostname matches inventory
+      ansible.builtin.command:
+        cmd: hostname
+      register: hostname_result
+      changed_when: false
+      failed_when: hostname_result.stdout != inventory_hostname | lower
+      when: not already_registered
+
+    - name: Wipe OSD disks
+      ansible.builtin.shell: |
+        set -e
+        wipefs --all --force {{ item }}
+        sgdisk --zap-all {{ item }}
+      loop: "{{ osd_devices }}"
+      when: not already_registered and osd_devices is defined
+      changed_when: true
+
+    # ---------- /etc/hosts must reach EVERY cluster node, not just the new one ----------
+    # delegate_to here bypasses --limit: even though the play itself is scoped
+    # to the new node, this task fans out to all existing nodes too.
+
+    - name: Sync /etc/hosts on every cluster node
+      ansible.builtin.blockinfile:
+        path: /etc/hosts
+        marker: "# {mark} ANSIBLE MANAGED CEPH HOSTS"
+        block: |
+          {% for host in groups['ceph'] %}
+          {{ hostvars[host].ansible_host }} {{ host | lower }}
+          {% endfor %}
+      delegate_to: "{{ item }}"
+      loop: "{{ groups['ceph'] }}"
+      when: not already_registered
+
+    - name: Remove Ubuntu hostname entry
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        regexp: '^127\.0\.1\.1'
+        state: absent
+      when: not already_registered
+
+    # ---------- Ceph-side registration (commands always run on the bootstrap node) ----------
+
+    - name: Get cephadm public SSH key
+      ansible.builtin.command:
+        cmd: cephadm shell -- ceph cephadm get-pub-key
+      delegate_to: "{{ groups['bootstrap'][0] }}"
+      register: cephadm_key
+      changed_when: false
+      when: not already_registered
+
+    - name: Authorize cephadm SSH key on new node
+      ansible.posix.authorized_key:
+        user: root
+        key: "{{ cephadm_key.stdout }}"
+      when: not already_registered
+
+    - name: Add new node to Ceph orchestrator
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph orch host add {{ inventory_hostname | lower }} {{ ansible_host }}"
+      delegate_to: "{{ groups['bootstrap'][0] }}"
+      when: not already_registered
+
+    - name: Add _admin label if this node is a manager
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph orch host label add {{ inventory_hostname | lower }} _admin"
+      delegate_to: "{{ groups['bootstrap'][0] }}"
+      when: not already_registered and inventory_hostname in groups['mgrs']
+
+    - name: Re-apply monitor placement if this node is a mon
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph orch apply mon --placement={{ (groups['mons'] | map('lower') | join(',')) | quote }}"
+      delegate_to: "{{ groups['bootstrap'][0] }}"
+      when: not already_registered and inventory_hostname in groups['mons']
+
+    - name: Re-apply manager placement if this node is a mgr
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph orch apply mgr --placement={{ (groups['mgrs'] | map('lower') | join(',')) | quote }}"
+      delegate_to: "{{ groups['bootstrap'][0] }}"
+      when: not already_registered and inventory_hostname in groups['mgrs']
+
+    - name: Deploy OSDs on this node's devices
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph orch daemon add osd {{ inventory_hostname | lower }}:{{ item }}"
+      delegate_to: "{{ groups['bootstrap'][0] }}"
+      loop: "{{ osd_devices }}"
+      when: not already_registered and osd_devices is defined
+
+    - name: Wait for Ceph services to settle
+      ansible.builtin.pause:
+        seconds: 15
+      when: not already_registered
+
+    - name: Show Ceph status
+      ansible.builtin.command:
+        cmd: cephadm shell -- ceph status
+      delegate_to: "{{ groups['bootstrap'][0] }}"
+      register: ceph_status
+      changed_when: false
+
+    - name: Display Ceph status
+      ansible.builtin.debug:
+        var: ceph_status.stdout_lines

@@ -1,0 +1,74 @@
+- name: Prepare Ceph nodes
+  hosts: ceph
+  become: true
+  gather_facts: true
+
+  vars_files:
+    - ../vars/ceph.yaml
+
+  tasks:
+    - name: Update packages
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+        autoremove: true
+
+    - name: Install required packages
+      ansible.builtin.apt:
+        name:
+          - curl
+          - gdisk
+          - lvm2
+          - podman
+          - util-linux
+          - chrony
+        state: present
+
+    - name: Disable systemd-timesyncd
+      ansible.builtin.systemd:
+        name: systemd-timesyncd
+        enabled: false
+        state: stopped
+      failed_when: false
+
+    - name: Enable and start Chrony
+      ansible.builtin.systemd:
+        name: chrony
+        enabled: true
+        state: started
+
+    - name: Force immediate clock correction
+      ansible.builtin.command:
+        cmd: chronyc -a makestep
+      changed_when: false
+
+    - name: Configure host entries
+      ansible.builtin.blockinfile:
+        path: /etc/hosts
+        marker: "# {mark} ANSIBLE MANAGED CEPH HOSTS"
+        block: |
+          {% for host in groups['ceph'] %}
+          {{ hostvars[host].ansible_host }} {{ host | lower }}
+          {% endfor %}
+
+    - name: Remove Ubuntu hostname entry
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        regexp: '^127\.0\.1\.1'
+        state: absent
+
+    - name: Verify hostname matches inventory
+      ansible.builtin.command:
+        cmd: hostname
+      register: hostname_result
+      changed_when: false
+      failed_when: hostname_result.stdout != inventory_hostname | lower
+
+    - name: Wipe OSD disks
+      ansible.builtin.shell: |
+        set -e
+        wipefs --all --force {{ item }}
+        sgdisk --zap-all {{ item }}
+      loop: "{{ osd_devices }}"
+      when: osd_devices is defined
+      changed_when: true

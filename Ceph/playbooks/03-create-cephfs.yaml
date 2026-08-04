@@ -1,0 +1,63 @@
+- name: Create CephFS
+  hosts: bootstrap
+  become: true
+  gather_facts: false
+
+  vars_files:
+    - ../vars/ceph.yaml
+
+  tasks:
+    - name: Check whether CephFS already exists
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph fs get {{ cephfs_name }}"
+      register: cephfs_check
+      changed_when: false
+      failed_when: false
+
+    - name: Create CephFS volume
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph fs volume create {{ cephfs_name }}"
+      when: cephfs_check.rc != 0
+
+    - name: Apply MDS placement
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph orch apply mds {{ cephfs_name }} --placement={{ (groups['mgrs'] | map('lower') | join(',')) | quote }}"
+
+    - name: Set maximum active MDS count
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph fs set {{ cephfs_name }} max_mds {{ cephfs_mds_count }}"
+
+    - name: Set standby MDS count
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph fs set {{ cephfs_name }} standby_count_wanted {{ cephfs_standby_count }}"
+
+    - name: Wait for CephFS to become available
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph fs status {{ cephfs_name }} --format json"
+      register: cephfs_status
+      changed_when: false
+      retries: 30
+      delay: 10
+      until:
+        - cephfs_status.rc == 0
+        - '"active" in cephfs_status.stdout'
+
+    - name: Show CephFS volumes
+      ansible.builtin.command:
+        cmd: cephadm shell -- ceph fs volume ls
+      register: cephfs_volumes
+      changed_when: false
+
+    - name: Display CephFS volumes
+      ansible.builtin.debug:
+        var: cephfs_volumes.stdout_lines
+
+    - name: Show CephFS status
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph fs status {{ cephfs_name }}"
+      register: cephfs_final_status
+      changed_when: false
+
+    - name: Display CephFS status
+      ansible.builtin.debug:
+        var: cephfs_final_status.stdout_lines

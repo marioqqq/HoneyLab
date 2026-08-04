@@ -1,0 +1,60 @@
+all:
+  hosts:
+    SRV-Cluster1:
+      ansible_host: XX.XX.XX.XX
+    SRV-Cluster2:
+      ansible_host: XX.XX.XX.XX
+    SRV-Cluster3:
+      ansible_host: XX.XX.XX.XX
+    SRV-Cluster4:
+      ansible_host: XX.XX.XX.XX
+    OMV:
+      ansible_host: XX.XX.XX.XX
+      ansible_user: root
+
+  children:
+    ceph:
+      children:
+        bootstrap:
+          hosts:
+            SRV-Cluster1:
+
+        mons:
+          hosts:
+            SRV-Cluster1:
+            SRV-Cluster2:
+            SRV-Cluster3:
+            SRV-Cluster4:
+
+        mgrs:
+          hosts:
+            SRV-Cluster1:
+            SRV-Cluster2:
+
+        osds:
+          hosts:
+            SRV-Cluster1:
+              osd_devices:
+                - /dev/sdb # Select drives you want to use for OSDs on this host
+            SRV-Cluster2:
+              osd_devices:
+                - /dev/sdb # Select drives you want to use for OSDs on this host
+            SRV-Cluster3:
+              osd_devices:
+                - /dev/sdb # Select drives you want to use for OSDs on this host
+            SRV-Cluster4:
+              osd_devices:
+                - /dev/sdb # Select drives you want to use for OSDs on this host
+
+    omv:
+      hosts:
+        OMV:
+
+  vars:
+    # SSH
+    ansible_user: marioqqq
+    ansible_port: 22
+    ansible_python_interpreter: /usr/bin/python3
+
+    # SSH authentication
+    ansible_ssh_private_key_file: ~/.ssh/id_rsa

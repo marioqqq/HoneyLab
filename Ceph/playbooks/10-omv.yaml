@@ -1,0 +1,147 @@
+- name: Prepare OpenMediaVault node
+  hosts: omv
+  become: true
+  gather_facts: true
+
+  vars_files:
+    - ../vars/ceph.yaml
+
+  tasks:
+    - name: Update packages
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+        autoremove: true
+
+    - name: Install ceph-common (provides kernel CephFS mount support)
+      ansible.builtin.apt:
+        name: ceph-common
+        state: present
+
+    - name: Install OpenMediaVault plugin developers repo
+      ansible.builtin.shell:
+        cmd: "wget -O - https://github.com/OpenMediaVault-Plugin-Developers/packages/raw/master/install | bash"
+        creates: /etc/apt/sources.list.d/openmediavault-plugin-developers.list
+
+    - name: Create group {{ omv_mount_group }} (gid {{ omv_mount_gid }})
+      ansible.builtin.group:
+        name: "{{ omv_mount_group }}"
+        gid: "{{ omv_mount_gid }}"
+        state: present
+
+    - name: Create user {{ omv_mount_user }} (uid {{ omv_mount_uid }})
+      ansible.builtin.user:
+        name: "{{ omv_mount_user }}"
+        uid: "{{ omv_mount_uid }}"
+        group: "{{ omv_mount_group }}"
+        create_home: true
+        state: present
+
+- name: Mount CephFS on OpenMediaVault
+  hosts: bootstrap
+  become: true
+  gather_facts: false
+
+  vars_files:
+    - ../vars/ceph.yaml
+
+  vars:
+    omv_host: "{{ groups['omv'][0] }}"
+    cephfs_client_user: omv
+    cephfs_mount_point: /mnt/cephfs
+    cephfs_mount_owner: "{{ omv_mount_user }}"
+    mon_endpoints: >-
+      {{ groups['mons']
+         | map('extract', hostvars, 'ansible_host')
+         | map('regex_replace', '$', ':6789')
+         | join(',') }}
+
+  tasks:
+    - name: Check whether client.{{ cephfs_client_user }} already exists
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph auth get client.{{ cephfs_client_user }}"
+      register: client_check
+      changed_when: false
+      failed_when: false
+
+    - name: Create client.{{ cephfs_client_user }} with rw access to CephFS root
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph fs authorize {{ cephfs_name }} client.{{ cephfs_client_user }} / rw"
+      when: client_check.rc != 0
+
+    - name: Generate minimal Ceph configuration
+      ansible.builtin.command:
+        cmd: cephadm shell -- ceph config generate-minimal-conf
+      register: ceph_minimal_conf
+      changed_when: false
+
+    - name: Extract raw secret key for client.{{ cephfs_client_user }}
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph auth get-key client.{{ cephfs_client_user }}"
+      register: ceph_client_key
+      changed_when: false
+      no_log: true
+
+    - name: Ensure /etc/ceph exists on OMV host
+      ansible.builtin.file:
+        path: /etc/ceph
+        state: directory
+        mode: "0755"
+      delegate_to: "{{ omv_host }}"
+
+    - name: Write ceph.conf on OMV host
+      ansible.builtin.copy:
+        content: "{{ ceph_minimal_conf.stdout }}\n"
+        dest: /etc/ceph/ceph.conf
+        mode: "0644"
+      delegate_to: "{{ omv_host }}"
+
+    - name: Write client secret file on OMV host
+      ansible.builtin.copy:
+        content: "{{ ceph_client_key.stdout }}\n"
+        dest: "/etc/ceph/ceph.client.{{ cephfs_client_user }}.secret"
+        mode: "0600"
+      delegate_to: "{{ omv_host }}"
+      no_log: true
+
+    - name: Ensure CephFS mount point exists
+      ansible.builtin.file:
+        path: "{{ cephfs_mount_point }}"
+        state: directory
+        mode: "0755"
+      delegate_to: "{{ omv_host }}"
+
+    - name: Mount CephFS (persistent, via fstab)
+      ansible.posix.mount:
+        path: "{{ cephfs_mount_point }}"
+        src: "{{ mon_endpoints }}:/"
+        fstype: ceph
+        opts: "name={{ cephfs_client_user }},secretfile=/etc/ceph/ceph.client.{{ cephfs_client_user }}.secret,_netdev"
+        state: mounted
+      delegate_to: "{{ omv_host }}"
+
+    - name: Set ownership on mount point
+      ansible.builtin.file:
+        path: "{{ cephfs_mount_point }}"
+        owner: "{{ cephfs_mount_owner }}"
+        group: "{{ cephfs_mount_owner }}"
+        recurse: true
+      delegate_to: "{{ omv_host }}"
+
+    - name: Set permissions on mount point
+      ansible.builtin.file:
+        path: "{{ cephfs_mount_point }}"
+        mode: "0775"
+        recurse: true
+      delegate_to: "{{ omv_host }}"
+
+    - name: Verify mount
+      ansible.builtin.command:
+        cmd: "ls -ld {{ cephfs_mount_point }}"
+      delegate_to: "{{ omv_host }}"
+      register: mount_check
+      changed_when: false
+
+    - name: Display mount info
+      ansible.builtin.debug:
+        var: mount_check.stdout_lines

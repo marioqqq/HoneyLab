@@ -1,0 +1,130 @@
+- name: Deploy Ceph cluster
+  hosts: bootstrap
+  become: true
+  gather_facts: false
+
+  vars_files:
+    - ../vars/ceph.yaml
+
+  vars:
+    cephadm_url: "https://download.ceph.com/rpm-{{ ceph_release }}/el9/noarch/cephadm"
+
+  tasks:
+    - name: Download cephadm
+      ansible.builtin.get_url:
+        url: "{{ cephadm_url }}"
+        dest: /tmp/cephadm
+        mode: "0755"
+
+    - name: Add Ceph repository
+      ansible.builtin.command:
+        cmd: "/tmp/cephadm add-repo --release {{ ceph_release }}"
+      args:
+        creates: /etc/apt/sources.list.d/ceph.list
+
+    - name: Install cephadm
+      ansible.builtin.command:
+        cmd: /tmp/cephadm install
+      args:
+        creates: /usr/sbin/cephadm
+
+    - name: Bootstrap Ceph cluster
+      ansible.builtin.command:
+        argv:
+          - cephadm
+          - bootstrap
+          - --mon-ip
+          - "{{ ansible_host }}"
+          - --cluster-network
+          - "{{ cluster_network }}"
+          - --initial-dashboard-user
+          - "{{ dashboard_username }}"
+          - --initial-dashboard-password
+          - "{{ dashboard_password }}"
+          - --dashboard-password-noupdate
+          - --ssl-dashboard-port
+          - "{{ dashboard_port | string }}"
+      args:
+        creates: "/etc/ceph/{{ cluster_name }}.conf"
+      no_log: true
+
+    - name: Read Ceph SSH public key
+      ansible.builtin.slurp:
+        src: "/etc/ceph/{{ cluster_name }}.pub"
+      register: ceph_public_key
+
+    - name: Authorize Ceph SSH key on all nodes
+      ansible.posix.authorized_key:
+        user: root
+        key: "{{ ceph_public_key.content | b64decode }}"
+      delegate_to: "{{ item }}"
+      loop: "{{ groups['ceph'] }}"
+
+    - name: Add cluster hosts
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph orch host add {{ item | lower }} {{ hostvars[item].ansible_host }}"
+      loop: "{{ groups['ceph'] }}"
+      when: item | lower != bootstrap_node | lower
+
+    - name: Add _admin label to manager hosts
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph orch host label add {{ item | lower }} _admin"
+      loop: "{{ groups['mgrs'] }}"
+
+    - name: Deploy monitors
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph orch apply mon --placement={{ (groups['mons'] | map('lower') | join(',')) | quote }}"
+
+    - name: Deploy managers
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph orch apply mgr --placement={{ (groups['mgrs'] | map('lower') | join(',')) | quote }}"
+
+    - name: Deploy OSDs on explicit devices
+      ansible.builtin.command:
+        cmd: "cephadm shell -- ceph orch daemon add osd {{ item.0.inventory_hostname | lower }}:{{ item.1 }}"
+      loop: "{{ groups['osds'] | map('extract', hostvars) | list | subelements('osd_devices', skip_missing=True) }}"
+      loop_control:
+        label: "{{ item.0.inventory_hostname }}:{{ item.1 }}"
+
+    - name: Remove existing Grafana daemon (forces fresh admin user creation)
+      ansible.builtin.command:
+        cmd: cephadm shell -- ceph orch rm grafana
+      changed_when: true
+
+    - name: Wait for Grafana daemon to be removed
+      ansible.builtin.pause:
+        seconds: 15
+
+    - name: Render Grafana spec
+      ansible.builtin.template:
+        src: ../templates/grafana-spec.yaml
+        dest: /tmp/grafana-spec.yaml
+        mode: "0644"
+
+    - name: Apply Grafana admin credentials
+      ansible.builtin.command:
+        cmd: "cephadm shell --mount /tmp/grafana-spec.yaml:/mnt/grafana-spec.yaml -- ceph orch apply -i /mnt/grafana-spec.yaml"
+
+    - name: Wait for Grafana to redeploy with new config
+      ansible.builtin.pause:
+        seconds: 15
+
+    - name: Show Ceph hosts
+      ansible.builtin.command:
+        cmd: cephadm shell -- ceph orch host ls
+      register: ceph_hosts
+      changed_when: false
+
+    - name: Display Ceph hosts
+      ansible.builtin.debug:
+        var: ceph_hosts.stdout_lines
+
+    - name: Show Ceph status
+      ansible.builtin.command:
+        cmd: cephadm shell -- ceph status
+      register: ceph_status
+      changed_when: false
+
+    - name: Display Ceph status
+      ansible.builtin.debug:
+        var: ceph_status.stdout_lines

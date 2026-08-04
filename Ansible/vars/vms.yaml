@@ -62,6 +62,7 @@ vms:
       scsi0: local-lvm:32,iothread=1
       scsi1: local-lvm:64,iothread=1
     mac: XX:XX:XX:XX:XX:XX
+    onboot: false
 
   - id: 251
     name: SRV-Cluster2
@@ -71,6 +72,7 @@ vms:
       scsi0: local-lvm:32,iothread=1
       scsi1: local-lvm:64,iothread=1
     mac: XX:XX:XX:XX:XX:XX
+    onboot: false
 
   - id: 252
     name: SRV-Cluster3
@@ -80,3 +82,14 @@ vms:
       scsi0: local-lvm:32,iothread=1
       scsi1: local-lvm:64,iothread=1
     mac: XX:XX:XX:XX:XX:XX
+    onboot: false
+
+  - id: 253
+    name: SRV-Cluster4
+    cores: 2
+    memory: 4096
+    disks:
+      scsi0: local-lvm:32,iothread=1
+      scsi1: local-lvm:64,iothread=1
+    mac: XX:XX:XX:XX:XX:XX
+    onboot: false

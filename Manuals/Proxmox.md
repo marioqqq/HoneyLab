@@ -1,4 +1,9 @@
-## Nvidia GPU passthrough
+# Helper scripts
+[Post-Install](https://community-scripts.org/scripts/post-pve-install)
+
+[Disk Health Tool](https://community-scripts.org/scripts/disk-health)
+
+# Nvidia GPU passthrough
 Edit grub `nano /etc/default/grub` and change:
 ```bash
 GRUB_CMDLINE_LINUX_DEFAULT="quiet"

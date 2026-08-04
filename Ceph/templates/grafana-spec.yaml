@@ -1,0 +1,4 @@
+service_type: grafana
+spec:
+  anonymous_access: false
+  initial_admin_password: {{ grafana_password }}

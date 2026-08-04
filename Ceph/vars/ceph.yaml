@@ -1,0 +1,36 @@
+# Ceph release
+ceph_release: tentacle
+
+# Cluster configuration
+cluster_name: ceph
+
+# Network configuration
+public_network: XX.XX.XX.XX/24
+cluster_network: XX.XX.XX.XX/24
+
+# Bootstrap node
+bootstrap_node: SRV-Cluster1
+
+# Dashboard
+dashboard_enabled: true
+dashboard_port: 8443
+dashboard_username: admin
+dashboard_password: "ChangeMe"
+
+# Grafana
+grafana_password: "ChangeMe"
+
+# CephFS
+cephfs_name: cephfs
+cephfs_data_pool: cephfs_data
+cephfs_metadata_pool: cephfs_metadata
+
+cephfs_mds_count: 1
+cephfs_standby_count: 1
+
+# OMV mount user/group
+omv_mount_user: marioqqq
+omv_mount_uid: 1000
+omv_mount_group: marioqqq
+omv_mount_gid: 1000
+omv_mount_password: "ChangeMe"

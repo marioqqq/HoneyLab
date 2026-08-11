@@ -1,0 +1,137 @@
+- name: Install GlusterFS
+  hosts: gluster
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Install GlusterFS server
+      ansible.builtin.apt:
+        name: glusterfs-server
+        state: present
+        update_cache: true
+
+    - name: Enable and start glusterd
+      ansible.builtin.systemd:
+        name: glusterd
+        enabled: true
+        state: started
+
+- name: Mount brick devices
+  hosts: gluster
+  become: true
+  gather_facts: false
+
+  vars_files:
+    - ../vars/gluster.yaml
+
+  tasks:
+    - name: Get UUID for each brick device
+      ansible.builtin.command:
+        cmd: "blkid -s UUID -o value {{ item }}"
+      loop: "{{ gluster_brick_devices }}"
+      register: brick_uuids
+      changed_when: false
+
+    - name: Create brick mount points
+      ansible.builtin.file:
+        path: "{{ gluster_brick_mount_base }}/disk{{ idx + 1 }}"
+        state: directory
+        mode: "0755"
+      loop: "{{ gluster_brick_devices }}"
+      loop_control:
+        index_var: idx
+
+    - name: Mount brick devices by UUID (persistent, via fstab)
+      ansible.posix.mount:
+        path: "{{ gluster_brick_mount_base }}/disk{{ idx + 1 }}"
+        src: "UUID={{ brick_uuids.results[idx].stdout }}"
+        fstype: "{{ gluster_brick_fs }}"
+        opts: defaults
+        state: mounted
+      loop: "{{ gluster_brick_devices }}"
+      loop_control:
+        index_var: idx
+
+- name: Form the trusted storage pool
+  hosts: "{{ bootstrap_node }}"
+  become: true
+  gather_facts: false
+
+  vars_files:
+    - ../vars/gluster.yaml
+
+  tasks:
+    - name: Get existing peer status
+      ansible.builtin.command:
+        cmd: gluster peer status
+      register: peer_status
+      changed_when: false
+
+    - name: Probe other nodes
+      ansible.builtin.command:
+        cmd: "gluster peer probe {{ hostvars[item].ansible_host }}"
+      loop: "{{ groups['gluster'] }}"
+      when: item != bootstrap_node and hostvars[item].ansible_host not in peer_status.stdout
+
+    - name: Wait for all peers to reach 'Peer in Cluster' state
+      ansible.builtin.command:
+        cmd: gluster peer status
+      register: peer_status_wait
+      changed_when: false
+      retries: 12
+      delay: 5
+      until: peer_status_wait.stdout.count('Peer in Cluster') == (groups['gluster'] | length - 1)
+
+- name: Create and start the dispersed volume
+  hosts: "{{ bootstrap_node }}"
+  become: true
+  gather_facts: false
+
+  vars_files:
+    - ../vars/gluster.yaml
+
+  vars:
+    gluster_bricks: >-
+      {%- set bricks = [] -%}
+      {%- for host in groups['gluster'] -%}
+      {%- for idx in range(hostvars[host].gluster_brick_devices | length) -%}
+      {%- set _ = bricks.append(hostvars[host].ansible_host ~ ':' ~ gluster_brick_mount_base ~ '/disk' ~ (idx + 1)) -%}
+      {%- endfor -%}
+      {%- endfor -%}
+      {{ bricks }}
+
+  tasks:
+    - name: Check whether the volume already exists
+      ansible.builtin.command:
+        cmd: "gluster volume info {{ gluster_volume_name }}"
+      register: volume_check
+      changed_when: false
+      failed_when: false
+
+    - name: Create dispersed volume
+      ansible.builtin.command:
+        cmd: >-
+          gluster volume create {{ gluster_volume_name }}
+          disperse {{ gluster_disperse_count }}
+          redundancy {{ gluster_disperse_redundancy }}
+          {{ gluster_bricks | join(' ') }}
+          force
+      when: volume_check.rc != 0
+
+    - name: Start the volume
+      ansible.builtin.command:
+        cmd: "gluster volume start {{ gluster_volume_name }}"
+      register: volume_start
+      failed_when: >-
+        volume_start.rc != 0 and
+        'already started' not in volume_start.stderr
+
+    - name: Show volume info
+      ansible.builtin.command:
+        cmd: "gluster volume info {{ gluster_volume_name }}"
+      register: volume_info
+      changed_when: false
+
+    - name: Display volume info
+      ansible.builtin.debug:
+        var: volume_info.stdout_lines

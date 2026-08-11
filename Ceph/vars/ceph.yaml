@@ -5,7 +5,7 @@ ceph_release: tentacle
 cluster_name: ceph
 
 # Network configuration
-cluster_network: XX.XX.XX.XX/24
+cluster_network: XX.XX.XX.0/24
 
 # Bootstrap node
 bootstrap_node: SRV-Cluster1

@@ -1,0 +1,71 @@
+- name: Mount Gluster volume on all nodes
+  hosts: gluster
+  become: true
+  gather_facts: false
+
+  vars_files:
+    - ../vars/gluster.yaml
+
+  vars:
+    other_node_ips: >-
+      {{ groups['gluster']
+         | difference([inventory_hostname])
+         | map('extract', hostvars, 'ansible_host')
+         | join(':') }}
+
+  tasks:
+    - name: Install GlusterFS client
+      ansible.builtin.apt:
+        name: glusterfs-client
+        state: present
+        update_cache: true
+
+    - name: Create client mount point
+      ansible.builtin.file:
+        path: "{{ gluster_mount_point }}"
+        state: directory
+        mode: "0755"
+
+    - name: Mount the Gluster volume (persistent, via fstab)
+      ansible.posix.mount:
+        path: "{{ gluster_mount_point }}"
+        src: "localhost:/{{ gluster_volume_name }}"
+        fstype: glusterfs
+        opts: "defaults,_netdev,noauto,x-systemd.automount,backup-volfile-servers={{ other_node_ips }}"
+        state: mounted
+
+    - name: Check whether client group already exists
+      ansible.builtin.command:
+        cmd: "getent group {{ gluster_client_group }}"
+      register: client_group_check
+      changed_when: false
+      failed_when: false
+
+    - name: Create group {{ gluster_client_group }} (gid {{ gluster_client_gid }})
+      ansible.builtin.group:
+        name: "{{ gluster_client_group }}"
+        gid: "{{ gluster_client_gid }}"
+        state: present
+      when: client_group_check.rc != 0
+
+    - name: Check whether client user already exists
+      ansible.builtin.command:
+        cmd: "getent passwd {{ gluster_client_user }}"
+      register: client_user_check
+      changed_when: false
+      failed_when: false
+
+    - name: Create user {{ gluster_client_user }} (uid {{ gluster_client_uid }})
+      ansible.builtin.user:
+        name: "{{ gluster_client_user }}"
+        uid: "{{ gluster_client_uid }}"
+        group: "{{ gluster_client_group }}"
+        state: present
+      when: client_user_check.rc != 0
+
+    - name: Set ownership and permissions on mount point (top-level only)
+      ansible.builtin.file:
+        path: "{{ gluster_mount_point }}"
+        owner: "{{ gluster_client_user }}"
+        group: "{{ gluster_client_group }}"
+        mode: "0775"

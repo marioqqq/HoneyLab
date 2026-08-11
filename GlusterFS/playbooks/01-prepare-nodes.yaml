@@ -1,0 +1,36 @@
+- name: Prepare Gluster nodes
+  hosts: gluster
+  become: true
+  gather_facts: false
+ 
+  vars_files:
+    - ../vars/gluster.yaml
+
+  tasks:
+    - name: Update and upgrade packages
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+        autoremove: true
+
+    - name: Set timezone
+      community.general.timezone:
+        name: Europe/Bratislava
+
+    - name: Set hostname
+      ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: Wipe brick disks
+      ansible.builtin.shell: |
+        set -e
+        wipefs --all --force {{ item }}
+        sgdisk --zap-all {{ item }}
+      loop: "{{ gluster_brick_devices }}"
+      changed_when: true
+ 
+    - name: Format brick devices
+      ansible.builtin.filesystem:
+        fstype: "{{ gluster_brick_fs }}"
+        dev: "{{ item }}"
+      loop: "{{ gluster_brick_devices }}"

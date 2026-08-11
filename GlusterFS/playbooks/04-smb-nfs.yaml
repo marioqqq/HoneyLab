@@ -1,0 +1,82 @@
+- name: Set up SMB/NFS gateway
+  hosts: "{{ smb_nfs_node }}"
+  become: true
+  gather_facts: false
+
+  vars_files:
+    - ../vars/gluster.yaml
+
+  tasks:
+    # --- SMB ---
+    - name: Install Samba
+      ansible.builtin.apt:
+        name: samba
+        state: present
+        update_cache: true
+      when: smb_enabled
+
+    - name: Add SMB share definition
+      ansible.builtin.blockinfile:
+        path: /etc/samba/smb.conf
+        marker: "# {mark} ANSIBLE MANAGED GLUSTER SHARE"
+        block: |
+          [{{ smb_share_name }}]
+             path = {{ gluster_mount_point }}
+             valid users = {{ gluster_client_user }}
+             read only = no
+             browsable = yes
+      when: smb_enabled
+
+    - name: Enable and start smbd
+      ansible.builtin.systemd:
+        name: smbd
+        enabled: true
+        state: restarted
+      when: smb_enabled
+
+    - name: Set SMB password for {{ gluster_client_user }}
+      ansible.builtin.shell: |
+        printf '%s\n%s\n' "{{ smb_password }}" "{{ smb_password }}" | smbpasswd -s -a {{ gluster_client_user }}
+      when: smb_enabled
+      no_log: true
+      changed_when: true
+
+    # --- NFS ---
+    - name: Install NFS kernel server
+      ansible.builtin.apt:
+        name: nfs-kernel-server
+        state: present
+      when: nfs_enabled
+ 
+    - name: Add NFS export
+      ansible.builtin.lineinfile:
+        path: /etc/exports
+        regexp: "^{{ gluster_mount_point }}\\s"
+        line: "{{ gluster_mount_point }} {{ nfs_allowed_network }}({{ nfs_export_options }})"
+        create: true
+      when: nfs_enabled
+ 
+    - name: Clear stale NFS export table
+      ansible.builtin.command:
+        cmd: exportfs -au
+      changed_when: true
+      when: nfs_enabled
+ 
+    - name: Remove stale NFS export state file
+      ansible.builtin.file:
+        path: /var/lib/nfs/etab
+        state: absent
+      when: nfs_enabled
+ 
+    - name: Apply NFS exports
+      ansible.builtin.command:
+        cmd: exportfs -ra
+      changed_when: true
+      when: nfs_enabled
+ 
+    - name: Enable and start nfs-kernel-server
+      ansible.builtin.systemd:
+        name: nfs-kernel-server
+        enabled: true
+        state: restarted
+      when: nfs_enabled

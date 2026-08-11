@@ -1,0 +1,33 @@
+# Runs peer probe / volume create (any node works, glusterd is symmetric)
+bootstrap_node: SRV-Cluster1
+
+# Node that mounts the volume and re-exports it via SMB/NFS
+smb_nfs_node: SRV-Cluster1
+
+# Volume (dispersed only)
+gluster_volume_name: pool-dispersed
+gluster_disperse_count: 3 # Number of bricks (drives) in the volume (must be at least 3)
+gluster_disperse_redundancy: 1 # Number of bricks (drives) that can fail without losing data (must be less than disperse_count)
+
+# Bricks - devices come from gluster_brick_devices in inventory
+gluster_brick_fs: ext4
+gluster_brick_mount_base: /pool
+
+# Client mount point (on smb_nfs_node)
+gluster_mount_point: /mnt/pool-dispersed
+
+# Client mount ownership (applies regardless of whether SMB/NFS is enabled)
+gluster_client_user: marioqqq
+gluster_client_group: marioqqq
+gluster_client_uid: 1000
+gluster_client_gid: 1000
+ 
+# SMB
+smb_enabled: true
+smb_share_name: gluster-share
+smb_password: "ChangeMe"
+ 
+# NFS
+nfs_enabled: true
+nfs_allowed_network: XX.XX.XX.0/24
+nfs_export_options: rw,sync,no_subtree_check,no_root_squash,fsid=1

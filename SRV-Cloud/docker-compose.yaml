@@ -25,7 +25,7 @@ services:
       - TZ=Europe/Bratislava
       - WATCHTOWER_MONITOR_ONLY=false
       - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_SCHEDULE=0 6 0 * * 0
+      - WATCHTOWER_SCHEDULE=0 6 5 * * 0
       - WATCHTOWER_NOTIFICATION_URL=gotify://${GOTIFY_URL}/${GOTIFY_TOKEN}
       - WATCHTOWER_NO_STARTUP_MESSAGE=true
       - WATCHTOWER_NOTIFICATIONS_HOSTNAME=SRV-Cloud
@@ -78,6 +78,36 @@ services:
       - cloud
     restart: unless-stopped
 
+  lyftr-backend:
+    container_name: lyftr-backend
+    image: cwlumm/lyftr-backend:latest
+    environment:
+      - ENV=production
+      - PORT=3008
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - DB_TYPE=sqlite
+      - DB_PATH=/app/data/lyftr.db
+    volumes:
+      - ./lyftr:/app/data
+    networks:
+      lyftr:
+        aliases:
+          - backend
+    restart: unless-stopped
+
+  lyftr-frontend:
+    container_name: lyftr-frontend
+    image: cwlumm/lyftr-frontend:latest
+    environment:
+      - BACKEND_ORIGIN=backend:3008
+    depends_on:
+      - lyftr-backend
+    networks:
+      - lyftr
+      - cloud
+    restart: unless-stopped
+
   mariadb:
     container_name: mariadb
     image: lscr.io/linuxserver/mariadb:latest
@@ -124,3 +154,4 @@ networks:
   cloud:
     name: cloud
     driver: bridge
+  lyftr:

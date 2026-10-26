@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" >
+    <title>GlusterBoard</title>
+    <link rel="stylesheet" href="/static/style.css" >
+</head>
+<body>
+<header>
+    <div>
+        <h1>GlusterBoard</h1>
+        <span>GlusterFS Cluster Monitoring</span>
+    </div>
+    <div class="header-right">
+        <nav class="navigation">
+            <a href="/" class="active" >
+                Overview
+            </a>
+            <a href="/graphs">
+                Graphs
+            </a>
+        </nav>
+        <div id="refresh">
+            Updating...
+        </div>
+    </div>
+</header>
+<main>
+
+    <!-- OVERVIEW -->
+    <section class="summary">
+        <div class="card">
+            <span>Cluster</span>
+            <strong id="cluster-status">-</strong>
+        </div>
+        <div class="card">
+            <span>Nodes</span>
+            <strong id="nodes">-</strong>
+        </div>
+        <div class="card">
+            <span>Bricks</span>
+            <strong id="bricks">-</strong>
+        </div>
+        <div class="card">
+            <span>Pending Heals</span>
+            <strong id="heals">-</strong>
+        </div>
+        <div class="card">
+            <span>Split Brain</span>
+            <strong id="split-brain">-</strong>
+        </div>
+    </section>
+
+    <!-- NODES -->
+    <section>
+        <h2>Nodes</h2>
+        <div id="nodes-grid" class="grid nodes-grid" ></div>
+    </section>
+
+    <!-- VOLUMES -->
+    <section>
+        <h2>Gluster Volumes</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Volume</th>
+                        <th>Status</th>
+                        <th>Bricks</th>
+                        <th>Pending Heals</th>
+                        <th>Split Brain</th>
+                    </tr>
+                </thead>
+                <tbody id="volume-table"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- BRICKS -->
+    <section>
+        <h2>Gluster Bricks</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Volume</th>
+                        <th>Node</th>
+                        <th>Path</th>
+                        <th>Status</th>
+                        <th>Heal</th>
+                        <th>Pending</th>
+                        <th>Port</th>
+                        <th>PID</th>
+                    </tr>
+                </thead>
+                <tbody id="brick-table"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- FILESYSTEMS -->
+    <section>
+        <h2>Filesystems</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Node</th>
+                        <th>Disk</th>
+                        <th>Mount</th>
+                        <th>Used</th>
+                        <th>Free</th>
+                        <th>Total</th>
+                        <th>Usage</th>
+                    </tr>
+                </thead>
+                <tbody id="filesystem-table"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- DISKS -->
+    <section>
+        <h2>Disk Activity</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Node</th>
+                        <th>Disk</th>
+                        <th>Read</th>
+                        <th>Write</th>
+                        <th>Read IOPS</th>
+                        <th>Write IOPS</th>
+                        <th>Read Latency</th>
+                        <th>Write Latency</th>
+                    </tr>
+                </thead>
+                <tbody id="disk-table"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- NETWORK -->
+    <section>
+        <h2>Network</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Node</th>
+                        <th>Interface</th>
+                        <th>Status</th>
+                        <th>Speed</th>
+                        <th>RX</th>
+                        <th>TX</th>
+                        <th>RX Packets</th>
+                        <th>TX Packets</th>
+                        <th>Errors</th>
+                        <th>Drops</th>
+                    </tr>
+                </thead>
+                <tbody id="network-table"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- SMART -->
+    <section>
+        <h2>SMART</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Node</th>
+                        <th>Disk</th>
+                        <th>SMART</th>
+                        <th>Health</th>
+                        <th>Temperature</th>
+                        <th>Power On</th>
+                        <th>Reallocated</th>
+                        <th>Pending</th>
+                        <th>Errors</th>
+                    </tr>
+                </thead>
+                <tbody id="smart-table"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- COLLECTORS -->
+    <section>
+        <h2>Collectors</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Node</th>
+                        <th>Collector</th>
+                        <th>Status</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody id="collector-table"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>

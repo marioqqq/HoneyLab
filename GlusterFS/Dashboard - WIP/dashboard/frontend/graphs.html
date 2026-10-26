@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" >
+    <title>GlusterBoard - Graphs</title>
+    <link rel="stylesheet" href="/static/style.css" >
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<header>
+    <div>
+        <h1>GlusterBoard</h1>
+        <span>GlusterFS Cluster Monitoring</span>
+    </div>
+    <div class="header-right">
+        <nav class="navigation">
+            <a href="/">
+                Overview
+            </a>
+            <a href="/graphs" class="active" >
+                Graphs
+            </a>
+        </nav>
+        <div id="refresh">
+            Updating...
+        </div>
+    </div>
+</header>
+<main>
+
+    <!-- TIME RANGE -->
+    <section class="graph-toolbar">
+        <div id="range-selector" class="range-selector" >
+            <button data-range="5m" class="active" >
+                5m
+            </button>
+            <button data-range="15m">15m</button>
+            <button data-range="30m">30m</button>
+            <button data-range="1h">1h</button>
+            <button data-range="3h">3h</button>
+            <button data-range="6h">6h</button>
+            <button data-range="12h">12h</button>
+            <button data-range="1d">1d</button>
+            <button data-range="1w">1w</button>
+            <button data-range="1mo">1m</button>
+            <button data-range="3mo">3m</button>
+            <button data-range="6mo">6m</button>
+            <button data-range="1y">1y</button>
+            <button data-range="custom">Custom</button>
+        </div>
+        <div id="custom-range" class="custom-range hidden" >
+            <label>
+                From
+                <input type="datetime-local" id="custom-start" >
+            </label>
+            <label>
+                To
+                <input type="datetime-local" id="custom-end" >
+            </label>
+            <button id="custom-apply">
+                Apply
+            </button>
+        </div>
+        <div id="graph-status">
+            Loading...
+        </div>
+    </section>
+
+    <!-- SYSTEM -->
+    <section>
+        <h2>System Performance</h2>
+        <div class="graph-grid">
+            <div class="graph-card">
+                <h3>CPU Usage</h3>
+                <canvas id="cpu-chart"></canvas>
+            </div>
+            <div class="graph-card">
+                <h3>RAM Usage</h3>
+                <canvas id="ram-chart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- NETWORK -->
+    <section>
+        <div class="section-title">
+            <h2>Network</h2>
+            <div class="graph-filters">
+                <select id="network-node">
+                    <option value="all">
+                        All nodes
+                    </option>
+                </select>
+                <select id="network-interface">
+                    <option value="all">
+                        All interfaces
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="graph-card">
+            <h3>RX / TX Throughput</h3>
+            <canvas id="network-chart"></canvas>
+        </div>
+    </section>
+
+    <!-- DISK ACTIVITY -->
+    <section>
+        <div class="section-title">
+            <h2>Disk Activity</h2>
+            <div class="graph-filters">
+                <select id="disk-node">
+                    <option value="all">
+                        All nodes
+                    </option>
+                </select>
+                <select id="disk-device">
+                    <option value="all">
+                        All disks
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="graph-stack">
+            <div class="graph-card">
+                <h3>Throughput</h3>
+                <canvas id="disk-throughput-chart"></canvas>
+            </div>
+            <div class="graph-card">
+                <h3>IOPS</h3>
+                <canvas id="disk-iops-chart"></canvas>
+            </div>
+            <div class="graph-card">
+                <h3>Latency</h3>
+                <canvas id="disk-latency-chart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- SMART -->
+    <section>
+        <div class="section-title">
+            <h2>SMART Temperature</h2>
+            <div class="graph-filters">
+                <select id="smart-node">
+                    <option value="all">
+                        All nodes
+                    </option>
+                </select>
+                <select id="smart-device">
+                    <option value="all">
+                        All disks
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="graph-card">
+            <h3>Disk Temperature</h3>
+            <canvas id="smart-chart"></canvas>
+        </div>
+    </section>
+
+    <!-- GLUSTER HEAL -->
+    <section>
+        <h2>Gluster Heal</h2>
+        <div class="graph-card">
+            <h3>Pending Entries</h3>
+            <canvas id="heal-chart"></canvas>
+        </div>
+    </section>
+</main>
+<script src="/static/graphs.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+services:
+  glusterboard:
+    container_name: glusterboard
+    build: .
+    ports:
+      - 8000:8000
+    environment:
+      - PROMETHEUS_URL=http://node1:9090
+    network_mode: bridge
+    restart: unless-stopped

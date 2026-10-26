@@ -1,0 +1,36 @@
+services:
+  exporter:
+    container_name: glusterboard-exporter
+    build: .
+    environment:
+      - ENABLE_DISK=true
+      - ENABLE_GLUSTER=true
+      - ENABLE_HEAL=true
+      - ENABLE_NETWORK=true
+      - ENABLE_SERVICE=true
+      - ENABLE_SMART=true
+      - ENABLE_SPLIT_BRAIN=true
+      - ENABLE_SYSTEM=true
+    privileged: true
+    pid: host
+    network_mode: host
+    restart: unless-stopped
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+    network_mode: bridge
+    restart: unless-stopped
+
+volumes:
+  prometheus:
+    name: prometheus
+    driver: local

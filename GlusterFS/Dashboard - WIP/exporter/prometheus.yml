@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: glusterboard
+    static_configs:
+      - targets:
+          - node1:9105
+        labels:
+          node: SRV-Cluster1
+
+      - targets:
+          - node2:9105
+        labels:
+          node: SRV-Cluster2
+
+      - targets:
+          - node3:9105
+        labels:
+          node: SRV-Cluster3

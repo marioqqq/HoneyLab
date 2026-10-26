@@ -39,7 +39,7 @@ services:
       - TZ=Europe/Bratislava
       - WATCHTOWER_MONITOR_ONLY=false
       - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_SCHEDULE=0 6 0 * * 0
+      - WATCHTOWER_SCHEDULE=0 6 5 * * 0
       - WATCHTOWER_NOTIFICATION_URL=gotify://${GOTIFY_URL}/${GOTIFY_TOKEN}
       - WATCHTOWER_NO_STARTUP_MESSAGE=true
       - WATCHTOWER_NOTIFICATIONS_HOSTNAME=SRV-Personal
@@ -99,6 +99,21 @@ services:
       - personal
     restart: unless-stopped
 
+  mealie:
+    container_name: mealie
+    image: ghcr.io/mealie-recipes/mealie:latest
+    ports:
+      - 9000:9000
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - ALLOW_SIGNUP=false
+      - BASE_URL=${BASE_URL}
+    volumes:
+      - ./mealie:/app/data/
+    restart: unless-stopped
+
   nocodb:
     container_name: nocodb
     image: nocodb/nocodb:latest
@@ -110,6 +125,19 @@ services:
       - ./nocodb/data:/usr/app/data
     depends_on:
       - mariadb
+    networks:
+      - personal
+    restart: unless-stopped
+
+  tracktor:
+    container_name: tracktor
+    image: ghcr.io/javedh-dev/tracktor:latest
+    ports:
+      - 3088:3000
+    volumes:
+      - ./tracktor:/data
+    environment:
+      - NODE_ENV=production
     networks:
       - personal
     restart: unless-stopped

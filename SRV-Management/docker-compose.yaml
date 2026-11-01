@@ -65,6 +65,38 @@ services:
       - management
     restart: unless-stopped
 
+  homelable-backend:
+    container_name: homelable-backend
+    image: ghcr.io/pouzor/homelable-backend:latest
+    environment:
+      - TZ=Europe/Bratislava
+      - SQLITE_PATH=/app/data/homelab.db
+      - SECRET_KEY=${SECRET_KEY}
+      - AUTH_PASSWORD_HASH=${AUTH_PASSWORD_HASH}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+    volumes:
+      - ./homelable:/app/data
+    cap_add:
+      - NET_RAW
+    network_mode: host
+    restart: unless-stopped
+
+  homelable-frontend:
+    container_name: homelable-frontend
+    image: ghcr.io/pouzor/homelable-frontend:latest
+    ports:
+      - 8088:80
+    environment:
+      - TZ=Europe/Bratislava
+      - BACKEND_UPSTREAM=host.docker.internal:8000
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    depends_on:
+      - homelable-backend
+    networks:
+      - management
+    restart: unless-stopped
+
   linux_update_dashboard:
     container_name: linux_update_dashboard
     image: ghcr.io/theduffman85/linux-update-dashboard:latest

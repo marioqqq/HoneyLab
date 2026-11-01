@@ -191,6 +191,7 @@ Go to Network → Firewall → Traffic Rules, add these rules:
 Rule 1: Allow access FROM your LAN TO KVMs
   - Click Add
   - Name: Allow LAN to KVM
+  - Protocol: any
   - Source zone: lan
   - Destination zone: kvm
   - Action: accept

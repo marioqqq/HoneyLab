@@ -99,21 +99,6 @@ services:
       - personal
     restart: unless-stopped
 
-  mealie:
-    container_name: mealie
-    image: ghcr.io/mealie-recipes/mealie:latest
-    ports:
-      - 9000:9000
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Bratislava
-      - ALLOW_SIGNUP=false
-      - BASE_URL=${BASE_URL}
-    volumes:
-      - ./mealie:/app/data/
-    restart: unless-stopped
-
   nocodb:
     container_name: nocodb
     image: nocodb/nocodb:latest

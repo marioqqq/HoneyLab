@@ -78,36 +78,6 @@ services:
       - cloud
     restart: unless-stopped
 
-  lyftr-backend:
-    container_name: lyftr-backend
-    image: cwlumm/lyftr-backend:latest
-    environment:
-      - ENV=production
-      - PORT=3008
-      - JWT_SECRET=${JWT_SECRET}
-      - CORS_ORIGIN=${CORS_ORIGIN}
-      - DB_TYPE=sqlite
-      - DB_PATH=/app/data/lyftr.db
-    volumes:
-      - ./lyftr:/app/data
-    networks:
-      lyftr:
-        aliases:
-          - backend
-    restart: unless-stopped
-
-  lyftr-frontend:
-    container_name: lyftr-frontend
-    image: cwlumm/lyftr-frontend:latest
-    environment:
-      - BACKEND_ORIGIN=backend:3008
-    depends_on:
-      - lyftr-backend
-    networks:
-      - lyftr
-      - cloud
-    restart: unless-stopped
-
   mariadb:
     container_name: mariadb
     image: lscr.io/linuxserver/mariadb:latest
@@ -146,6 +116,35 @@ services:
   omni_tools:
     container_name: omni_tools
     image: iib0011/omni-tools:latest
+    networks:
+      - cloud
+    restart: unless-stopped
+
+  opengym-api:
+    container_name: opengym-api
+    image: ghcr.io/duartesantos8/opengym-api:latest
+    environment:
+      - TZ=Europe/Bratislava
+      - DATA_DIR=/data
+      - PASSWORD_LOGIN=1
+      - FIRST_USER_ADMIN=1
+      - INVITE_ONLY=1 # comment this line when first user is created
+      - ALLOW_GUEST=0
+      - ORIGIN=https://${ORIGIN}
+      - RP_ID=${ORIGIN}
+    volumes:
+      - ./opengym/data:/data
+    networks:
+      - cloud
+    restart: unless-stopped
+
+  opengym-web:
+    container_name: opengym-web
+    image: ghcr.io/duartesantos8/opengym-web:latest
+    environment:
+      - BACKEND=opengym-api
+    depends_on:
+      - opengym-api
     networks:
       - cloud
     restart: unless-stopped

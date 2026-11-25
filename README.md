@@ -8,9 +8,6 @@ This repository contains scripts, playbooks and docker containers for each machi
 ## Ansible
 Navigate to [Ansible](./Ansible) for instructions on how to use Ansible to deploy and manage your infrastructure.
 
-## Ceph
-Navigate to [Ceph](./Ceph) for instructions on how to deploy and manage your Ceph cluster.
-
 ## Headscake
 Navigate to [Headscale](./Manuals/Headscale.md) for instructions on how to setup and use Headscale with Tailscale.
 

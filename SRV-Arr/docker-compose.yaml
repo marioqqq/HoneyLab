@@ -66,25 +66,6 @@ services:
       - arr
     restart: unless-stopped
 
-  # lidarr:
-  #   container_name: lidarr
-  #   image: lscr.io/linuxserver/lidarr:latest
-  #   ports:
-  #     - 8686:8686
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #     - TZ=Europe/Bratislava
-  #   volumes:
-  #     - ./lidarr/config:/config
-  #     - downloads:/downloads
-  #     - music:/music
-  #   depends_on:
-  #     - prowlarr
-  #   networks:
-  #     - arr
-  #   restart: unless-stopped
-
   prowlarr:
     container_name: prowlarr
     image: lscr.io/linuxserver/prowlarr:latest
@@ -136,6 +117,27 @@ services:
       - movies-czsk:/movies
     depends_on:
       - prowlarr
+    networks:
+      - arr
+    restart: unless-stopped
+
+  seerr:
+    container_name: seerr
+    image: ghcr.io/seerr-team/seerr:latest
+    ports:
+      - 5055:5055
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+    volumes:
+      - ./seerr/config:/app/config
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      - radarr
     networks:
       - arr
     restart: unless-stopped
@@ -194,13 +196,6 @@ volumes:
       type: nfs
       o: addr=${IP},rw,nolock,soft,nfsvers=4
       device: ${MOVIES_CZSK}
-  music:
-    name: music
-    driver: local
-    driver_opts:
-      type: nfs
-      o: addr=${IP},rw,nolock,soft,nfsvers=4
-      device: ${MUSIC}
   watch:
     name: watch
     driver: local

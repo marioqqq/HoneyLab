@@ -112,7 +112,6 @@ services:
       - ./plex/config:/config
       - movies:/movies
       - movies-czsk:/movies-czsk # remove if you don't have a czech/slovak movies share
-      - music:/music
     # devices: # INTEL
     #   - /dev/dri:/dev/dri # INTEL
     runtime: nvidia # NVIDIA
@@ -145,12 +144,52 @@ services:
       - media
     restart: unless-stopped
 
+  tdarr:
+    container_name: tdarr
+    image: ghcr.io/haveagitgat/tdarr:latest
+    ports:
+      - 8265:8265
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bratislava
+      - internalNode=true
+      - inContainer=true
+      - nodeName=SRV-Media-NVIDIA
+      - auth=true
+      - seededApiKey=${TDARR_API_KEY} # comment after initial setup
+      - apiKey=${TDARR_API_KEY}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      - ./tdarr/server:/app/server
+      - ./tdarr/configs:/app/configs
+      - ./tdarr/logs:/app/logs
+      - movies:/movies
+      - movies-czsk:/movies-czsk
+      - type: volume
+        source: cache
+        target: /temp
+        volume:
+          nocopy: true
+    runtime: nvidia
+    networks:
+      - media
+    restart: unless-stopped
+
 networks:
   media:
     name: media
     driver: bridge
 
 volumes:
+  cache:
+    name: cache
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${IP},rw,nolock,soft,nfsvers=4
+      device: ${CACHE}
   movies:
     name: movies
     driver: local
@@ -165,13 +204,6 @@ volumes:
       type: nfs
       o: addr=${IP},rw,nolock,soft,nfsvers=4
       device: ${MOVIES_CZSK}
-  music:
-    name: music
-    driver: local
-    driver_opts:
-      type: nfs
-      o: addr=${IP},rw,nolock,soft,nfsvers=4
-      device: ${MUSIC}
   photos:
     name: photos
     driver: local

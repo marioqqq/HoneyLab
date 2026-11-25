@@ -83,9 +83,3 @@ Reboot VMs:
 ```bash
 ansible-playbook -K -i inventory/hosts.yaml playbooks/05-reboot-vms.yaml
 ```
-
-Prepare Desktop:
-
-```bash
-ansible-playbook -K -i inventory/hosts.yaml playbooks/99-desktop.yaml
-```
